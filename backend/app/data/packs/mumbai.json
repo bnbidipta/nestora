@@ -1,0 +1,60 @@
+{
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "jurisdiction_pack_version": "1.0-pilot",
+  "dcr": {
+    "fsi_limit": 1.5,
+    "setbacks": {
+      "front_m": 3.0,
+      "side_m": 1.5,
+      "rear_m": 3.0
+    },
+    "min_room_areas_sqft": {
+      "living": 150.0,
+      "bedroom": 100.0,
+      "kitchen": 60.0,
+      "toilet": 35.0
+    },
+    "min_ventilation_pct": 10.0,
+    "min_door_widths_mm": {
+      "main": 1000,
+      "bedroom": 900,
+      "toilet": 750
+    },
+    "min_stair_width_mm": 900
+  },
+  "market_rates_inr": {
+    "cement_bag_50kg": 400.0,
+    "steel_rebar_per_kg": 70.0,
+    "sand_per_ton": 2200.0,
+    "aggregate_per_ton": 1400.0,
+    "brick_per_unit": 9.0,
+    "tiles_sqft_range": [60.0, 120.0],
+    "paint_sqft_range": [25.0, 45.0],
+    "labour_sqft": 330.0
+  },
+  "environmental_physics": {
+    "annual_rainfall_mm": 2200.0,
+    "basic_wind_speed_ms": 44.0,
+    "seismic_zone": "Zone III",
+    "seismic_zone_factor_z": 0.16,
+    "latitude_north": 19.07,
+    "longitude_east": 72.87,
+    "prevailing_wind": "South-West",
+    "soil_default": "black_cotton",
+    "soil_bearing_capacity_kn_m2": 120.0,
+    "ground_water_table_m": 4.5
+  },
+  "structural_defaults": {
+    "min_column_size_mm": 230,
+    "wall_load_bearing_mm": 230,
+    "wall_partition_mm": 115,
+    "min_safety_factor": 1.5,
+    "max_beam_span_without_column_m": 6.0,
+    "beam_span_depth_ratio": 16.0
+  },
+  "missing_codes": [
+    "COASTAL_CRZ_2_BUFFER_REVISE_2026",
+    "SLUM_REHABILITATION_TDR_INDEX"
+  ]
+}

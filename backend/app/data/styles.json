@@ -1,0 +1,59 @@
+{
+  "styles": [
+    {
+      "id": "japanese",
+      "name": "Japanese Zen & Wabi-Sabi",
+      "characteristics": ["Tatami mat proportions", "Warm teak & cedar wood", "Screen partitions", "Low seating"],
+      "default_materials": ["teak_wood", "bamboo_flooring", "fluted_glass"],
+      "color_palette": [
+        {"name": "Rice Paper White", "rgb": "248,246,240", "cmyk": "1,1,3,0", "lrv": 88},
+        {"name": "Cedar Tan", "rgb": "210,180,140", "cmyk": "15,25,45,5", "lrv": 65},
+        {"name": "Charcoal Slate", "rgb": "50,50,55", "cmyk": "60,50,45,70", "lrv": 15}
+      ]
+    },
+    {
+      "id": "forest",
+      "name": "Biophilic Forest & Earth",
+      "characteristics": ["Indoor courtyard planter", "Earthy laterite tones", "Natural airflow cross-ventilation"],
+      "default_materials": ["laterite_stone", "clay_terracotta_tiles", "cast_iron_jali"],
+      "color_palette": [
+        {"name": "Forest Moss", "rgb": "90,115,85", "cmyk": "55,30,65,25", "lrv": 40},
+        {"name": "Earthy Clay", "rgb": "185,120,90", "cmyk": "20,55,65,10", "lrv": 48},
+        {"name": "Mist Ivory", "rgb": "242,242,235", "cmyk": "3,2,6,1", "lrv": 86}
+      ]
+    },
+    {
+      "id": "brutalist",
+      "name": "Modern Industrial Brutalism",
+      "characteristics": ["Exposed board-marked concrete", "Unplastered brick accents", "High structural honesty"],
+      "default_materials": ["polished_concrete", "exposed_brickwork", "granite"],
+      "color_palette": [
+        {"name": "Raw Cement Grey", "rgb": "190,190,192", "cmyk": "25,18,18,0", "lrv": 60},
+        {"name": "Basalt Dark Grey", "rgb": "70,72,75", "cmyk": "55,45,40,40", "lrv": 22},
+        {"name": "Safety Amber Accent", "rgb": "245,158,11", "cmyk": "0,42,95,0", "lrv": 65}
+      ]
+    },
+    {
+      "id": "minimalist",
+      "name": "Contemporary Pure Minimalist",
+      "characteristics": ["Flush door frames", "Seamless monolithic surfaces", "High daylight bounce"],
+      "default_materials": ["microcement", "vitrified_tiles", "limewash_plaster"],
+      "color_palette": [
+        {"name": "Warm White", "rgb": "245,240,230", "cmyk": "0,2,6,4", "lrv": 85},
+        {"name": "Alabaster Light", "rgb": "250,250,248", "cmyk": "0,0,1,0", "lrv": 92},
+        {"name": "Graphite Soft", "rgb": "60,62,65", "cmyk": "60,50,45,60", "lrv": 18}
+      ]
+    },
+    {
+      "id": "old_is_gold",
+      "name": "Heritage Old is Gold (Chettinad / Konkan)",
+      "characteristics": ["Carved wooden pillars", "Athangudi-style patterned tiles", "Cool central courtyard"],
+      "default_materials": ["terrazzo", "clay_terracotta_tiles", "teak_wood"],
+      "color_palette": [
+        {"name": "Heritage Ochre Yellow", "rgb": "215,165,55", "cmyk": "15,35,85,5", "lrv": 55},
+        {"name": "Terracotta Red", "rgb": "180,75,55", "cmyk": "15,80,80,15", "lrv": 35},
+        {"name": "Temple Ivory", "rgb": "246,242,230", "cmyk": "2,3,9,1", "lrv": 87}
+      ]
+    }
+  ]
+}
