@@ -22,6 +22,10 @@ backend/*/*/__pycache__/
 .env
 .env*.local
 
+# Vercel
+.vercel/
+frontend/.vercel/
+
 # Temporary screenshots & logs
 *.png
 *.jpg
