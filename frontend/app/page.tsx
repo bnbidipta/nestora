@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import SmoothScrollProvider from '@/components/motion/SmoothScrollProvider';
-import LayeredCarousel3D from '@/components/landing/LayeredCarousel3D';
+import UnifiedHorizontalStack from '@/components/landing/UnifiedHorizontalStack';
 import { CompassRoseIcon, ArrowFolioRightIcon } from '@/components/landing/BespokeIcons';
 
 export default function LandingPage() {
@@ -82,9 +82,9 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* 3D LAYERED CAROUSEL STACK (SCROLL-WORLD ENGINE) */}
+        {/* 3D UNIFIED HORIZONTAL STACK (HERO TO 5-STAGE PROGRESSION) */}
         <main className="w-full">
-          <LayeredCarousel3D />
+          <UnifiedHorizontalStack />
         </main>
 
         {/* Technical Footer */}
