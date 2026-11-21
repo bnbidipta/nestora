@@ -21,3 +21,18 @@ For each template, and its plot bucket:
 
 ## Done when
 All 12 templates have a verdict backed by the numbers.
+
+---
+
+## Status: Done + Caveats (Antigravity Audit)
+- **Delivered files:**
+  - `docs/template-feasibility.md`
+- **Validation:** Full numeric audit performed across all 12 templates against DCPR 2034 and NBC 2016 parameters from `backend/app/data/packs/mumbai.draft.json` for a 9.0 m road.
+  - Setbacks evaluated: Row 1 (plots $\le 100\text{ m}^2$) gives $23.12\text{ m}^2$ footprint; Row 2 (plots $\le 250\text{ m}^2$) gives $47.26\text{ m}^2$ (30×40), $65.99\text{ m}^2$ (30×50), and $126.74\text{ m}^2$ (40×60).
+  - All 12 templates have an explicit verdict backed by exact numerical calculations for footprint, FSI, room dimensions, stairs, and parking.
+  - Verdict summary: 1 `fits` (`t_30x50_g1_3bhk_courtyard`), 4 `fits_with_premium_fsi` (`t_30x50_g2_independent_floors`, `t_40x60_g1_4bhk_luxury`, `t_40x60_g1_courtyard_vaastu`, `t_40x60_g2_5bhk_multigen_lift`), and 7 `does_not_fit` (due to statutory room carpet area violations or setback stair/parking deficits).
+- **Key Caveats for Layout Solver Engineer & Reviewing Architect:**
+  1. **20×30 Plot Limitation:** Standard detached setbacks leave only $23.12\text{ m}^2$, making detached 1BHKs physically impossible under statutory room minimums ($27.10\text{ m}^2$ room carpet required). Both 20×30 templates should be dropped unless zero-setback gaothan/row-house rules apply.
+  2. **Car Porch Deficit:** On 30 ft frontage plots, 3.0 m front setbacks cannot fit a standard 5.0 m car without recessing an open portico $2.5\text{ m}$ into the building footprint.
+  3. **Non-FSI Deductions:** Ground stilt parking, central open courtyards, and open terrace gardens are non-chargeable under DCPR 2034 Reg. 31(1) and must be factored into solver FSI budgeting.
+  4. All findings are unverified (`"verified": false`) pending review by a licensed architect registered with COA and MCGM.
