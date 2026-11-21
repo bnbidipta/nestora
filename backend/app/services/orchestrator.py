@@ -269,12 +269,20 @@ def run_benchmark_20_briefs():
 
     scorecard_lines = [
         "# NESTORA Scorecard - 20 Test Briefs Benchmark",
+        "> **What this measures:** whether the Judge catches faults injected *after* generation. It does NOT measure generation quality; the generator is still a fixed template (see plan Phase C).",
         "**Pilot Target:** Mumbai 30x40 G+1 (MCGM DCR 2034 + IS 456 + IS 1742)",
         "**Target Pass Rate:** >= 18/20 (90%)",
         "",
         "| # | Brief Name | Expected | Actual | Judge Verdict | Details |",
         "|---|---|---|---|---|---|"
     ]
+
+    # Benchmark houses go to backend/eval/out, never to real-user storage.
+    from backend.app.services import repository
+    eval_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "eval", "out")
+    os.makedirs(eval_dir, exist_ok=True)
+    repository.STORAGE_DIR = eval_dir
+    repository._CACHE.clear()
 
     total_correct = 0
 

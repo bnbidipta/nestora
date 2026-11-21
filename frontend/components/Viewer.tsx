@@ -19,7 +19,7 @@ import {
   ShieldCheck,
   ChevronRight
 } from 'lucide-react';
-import { HouseTwin } from '@/lib/twin';
+import { HouseTwin, getJudge, builtUpSqft } from '@/lib/twin';
 
 interface ViewerProps {
   twin: HouseTwin;
@@ -36,9 +36,20 @@ export default function Viewer({ twin }: ViewerProps) {
   const scale = 14.0;
   const plotWidth = twin.plot.plot_width_ft * scale;
   const plotDepth = twin.plot.plot_depth_ft * scale;
-  const sbFront = 9.84 * scale;
-  const sbRear = 9.84 * scale;
-  const sbSide = 4.92 * scale;
+  // Setbacks come from the pipeline (metres); fall back to 0 so nothing is invented.
+  const M_TO_FT = 3.28084;
+  const setbackM = {
+    front: Number(twin.metadata?.setback_front_m ?? 0),
+    rear: Number(twin.metadata?.setback_rear_m ?? 0),
+    side: Number(twin.metadata?.setback_side_m ?? 0),
+  };
+  const sbFront = setbackM.front * M_TO_FT * scale;
+  const sbRear = setbackM.rear * M_TO_FT * scale;
+  const sbSide = setbackM.side * M_TO_FT * scale;
+
+  const judge = getJudge(twin);
+  const builtUp = builtUpSqft(twin);
+  const fsi = twin.plot.plot_area_sqft > 0 ? builtUp / twin.plot.plot_area_sqft : 0;
 
   const floor0 = twin.floors && twin.floors.length > 0 ? twin.floors[0] : null;
 
@@ -229,10 +240,14 @@ export default function Viewer({ twin }: ViewerProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-emerald-400 flex items-center gap-1">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              <span>Judge: PASSED</span>
-            </span>
+            {judge ? (
+              <span className={`font-mono text-xs flex items-center gap-1 ${judge.pass ? 'text-emerald-400' : 'text-red-400'}`}>
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+                <span>{judge.pass ? 'Automated checks passed' : `${judge.failures.length} check(s) failed`}</span>
+              </span>
+            ) : (
+              <span className="font-mono text-xs text-slate-500">Not checked yet</span>
+            )}
           </div>
         </div>
 
@@ -257,20 +272,18 @@ export default function Viewer({ twin }: ViewerProps) {
                   strokeDasharray="6 4"
                 />
                 <text x="70" y="80" fill="#64748B" fontSize="10" fontFamily="monospace">
-                  Plot Boundary 30ft x 40ft (1,200 sqft)
+                  Plot {twin.plot.plot_width_ft}ft x {twin.plot.plot_depth_ft}ft ({twin.plot.plot_area_sqft.toLocaleString('en-IN')} sqft)
                 </text>
 
-                {/* Setbacks Lines */}
-                {/* Front Yard 3m */}
+                {/* Setback lines (values from the pipeline) */}
                 <line x1="60" y1={60 + sbFront} x2={60 + plotWidth} y2={60 + sbFront} stroke="#1E293B" strokeWidth="1" strokeDasharray="3 3" />
                 <text x={70} y={60 + (sbFront / 2)} fill="#F59E0B" fontSize="9" fontFamily="monospace">
-                  Front Setback 3.0m (MCGM DCR)
+                  Front setback {setbackM.front} m
                 </text>
 
-                {/* Rear Yard 3m */}
                 <line x1="60" y1={60 + plotDepth - sbRear} x2={60 + plotWidth} y2={60 + plotDepth - sbRear} stroke="#1E293B" strokeWidth="1" strokeDasharray="3 3" />
                 <text x={70} y={60 + plotDepth - (sbRear / 2)} fill="#F59E0B" fontSize="9" fontFamily="monospace">
-                  Rear Setback 3.0m
+                  Rear setback {setbackM.rear} m
                 </text>
 
                 {/* Buildable Footprint & Rooms */}
@@ -454,31 +467,37 @@ export default function Viewer({ twin }: ViewerProps) {
           <div className="mt-4 space-y-3 font-mono text-xs">
             <div className="flex justify-between py-1.5 border-b border-slate-800/80">
               <span className="text-slate-400">Plot Dimensions:</span>
-              <span className="text-white font-bold">30ft x 40ft (1,200 sqft)</span>
+              <span className="text-white font-bold">
+                {twin.plot.plot_width_ft}ft x {twin.plot.plot_depth_ft}ft ({twin.plot.plot_area_sqft.toLocaleString('en-IN')} sqft)
+              </span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-800/80">
               <span className="text-slate-400">Total Built-up:</span>
-              <span className="text-white font-bold">1,500 sqft (G+1)</span>
+              <span className="text-white font-bold">
+                {builtUp.toLocaleString('en-IN')} sqft ({twin.floors.length <= 1 ? 'G' : `G+${twin.floors.length - 1}`})
+              </span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-800/80">
-              <span className="text-slate-400">Mumbai FSI Used:</span>
-              <span className="text-emerald-400 font-bold">1.25 / 1.50</span>
+              <span className="text-slate-400">FSI Used:</span>
+              <span className="text-white font-bold">{fsi.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-800/80">
               <span className="text-slate-400">Safety Factor:</span>
-              <span className="text-white font-bold">1.50 (IS 456 Limit State)</span>
+              <span className="text-white font-bold">{twin.structure.safety_factor.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-800/80">
               <span className="text-slate-400">Foundation:</span>
-              <span className="text-white font-bold">4.5ft Raft (Black Cotton)</span>
+              <span className="text-white font-bold capitalize">
+                {twin.structure.foundation.depth_ft}ft {twin.structure.foundation.type.replace(/_/g, ' ')}
+              </span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-slate-800/80">
               <span className="text-slate-400">Drainage Slope:</span>
-              <span className="text-white font-bold">1:60 (IS 1742)</span>
+              <span className="text-white font-bold">{twin.mep.waste_pipes[0]?.slope ?? '—'}</span>
             </div>
 
-            <p className="mt-4 text-[11px] text-slate-500 leading-normal">
-              Click on any room or column in the Blueprint or 3D view to inspect its engineering numbers and codes.
+            <p className="mt-4 text-xs text-slate-500 leading-normal">
+              Click a room or column in the Blueprint view to see its numbers.
             </p>
           </div>
         )}
@@ -489,7 +508,7 @@ export default function Viewer({ twin }: ViewerProps) {
             href={`/house/${twin.house_id}/boq`}
             className="flex items-center justify-between rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-blue-500"
           >
-            <span>View Mumbai BOQ & Cost</span>
+            <span>View cost estimate</span>
             <ChevronRight className="h-4 w-4" />
           </a>
         </div>

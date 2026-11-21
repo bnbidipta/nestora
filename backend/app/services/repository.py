@@ -10,7 +10,11 @@ from typing import Optional, Dict, List
 from threading import Lock
 from backend.app.models.twin import HouseTwin
 
-STORAGE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "storage", "houses")
+# NESTORA_STORAGE_DIR lets tests and the benchmark write somewhere other than real-user storage.
+STORAGE_DIR = os.environ.get(
+    "NESTORA_STORAGE_DIR",
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "storage", "houses"),
+)
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
 # Thread-safe lock for atomic file operations

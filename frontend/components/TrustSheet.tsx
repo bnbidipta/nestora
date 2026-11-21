@@ -1,136 +1,121 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  ShieldCheck, 
-  CheckCircle2, 
-  Award, 
-  FileText, 
-  Sparkles, 
-  Download, 
-  CreditCard,
-  Loader2
-} from 'lucide-react';
+import { useState } from 'react';
+import { CheckCircle2, XCircle, AlertTriangle, Loader2, Send } from 'lucide-react';
 import { requestReview } from '@/lib/api';
-import { HouseTwin } from '@/lib/twin';
+import { HouseTwin, JUDGE_CATEGORIES, getJudge } from '@/lib/twin';
 
-interface TrustSheetProps {
-  twin: HouseTwin;
-}
+export default function TrustSheet({ twin }: { twin: HouseTwin }) {
+  const [requested, setRequested] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const judge = getJudge(twin);
 
-export default function TrustSheet({ twin }: TrustSheetProps) {
-  const [reviewOrdered, setReviewOrdered] = useState(false);
-  const [isOrdering, setIsOrdering] = useState(false);
-  const [orderDetails, setOrderDetails] = useState<any>(null);
-
-  const handleOrderReview = async () => {
+  const handleRequest = async () => {
+    setSending(true);
+    setError(null);
     try {
-      setIsOrdering(true);
       const res = await requestReview(twin.house_id);
-      if (res.success) {
-        setReviewOrdered(true);
-        setOrderDetails(res.data);
-      }
-    } catch (err: any) {
-      alert(`Order error: ${err.message}`);
+      if (res?.success) setRequested(true);
+      else setError('Could not send the request. Please try again.');
+    } catch {
+      setError('Could not send the request. Please try again.');
     } finally {
-      setIsOrdering(false);
+      setSending(false);
     }
   };
 
-  const auditChecks = [
-    { title: "MCGM DCR 2034 Setback Compliance", result: "PASS", details: "Front 3.0m, Sides 1.5m, Rear 3.0m verified for 30x40 plot." },
-    { title: "Floor Space Index (FSI) Limit", result: "PASS", details: "Built-up 1,500 sqft / Plot 1,200 sqft = 1.25 FSI (Below 1.50 cap)." },
-    { title: "Room Minimum Dimensions (NBC 2016)", result: "PASS", details: "Living 192 sqft (min 150), Bedrooms 132/168 sqft (min 100), Kitchen 80 sqft (min 60)." },
-    { title: "Elder Mobility Barrier-Free Clearances", result: "PASS", details: "Ground floor bedroom provided; 900mm clear door openings; zero step thresholds." },
-    { title: "IS 456:2000 Structural Column Sizing", result: "PASS", details: "230x230mm & 230x300mm columns sized for 12.0 to 15.6 ton axial loads." },
-    { title: "Deflection Control Beam Depths (IS 456)", result: "PASS", details: "Span/16 minimum depth thumb rule enforced across all spans (max 4.88m)." },
-    { title: "Black Cotton Soil Raft Foundation", result: "PASS", details: "4.5ft deep solid RCC raft configured for 120 kN/m2 bearing capacity." },
-    { title: "IS 1742 Drainage Hydraulic Gradient", result: "PASS", details: "110mm soil pipe configured with 1:60 self-cleansing slope." },
-    { title: "Electrical & Plumbing Separation", result: "PASS", details: "350mm physical clearance maintained (exceeds 300mm NBC requirement)." },
-    { title: "Submersible Pump Static & Friction Head", result: "PASS", details: "14.0m head rated to overcome 6.25m static building lift to overhead roof tank." }
-  ];
-
   return (
     <div className="space-y-8">
-      {/* Top Banner */}
-      <div className="rounded-3xl border border-blue-900/60 bg-gradient-to-r from-blue-950/40 via-[#131926] to-slate-900 p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-mono font-medium text-emerald-400">
-              <ShieldCheck className="h-4 w-4" />
-              <span>DETERMINISTIC VERIFICATION: 100% PASS</span>
-            </div>
-            <h2 className="mt-3 text-2xl font-bold font-mono text-white sm:text-3xl">
-              Architectural Trust Sheet
-            </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-xl">
-              Zero hallucinated numbers. Every dimension, structural load, and plumbing slope 
-              validated by the deterministic Pure Python Judge engine.
-            </p>
-          </div>
-
-          {/* ₹999 Architect Review Box */}
-          <div className="w-full sm:w-auto rounded-2xl border border-slate-700 bg-slate-900/90 p-5 text-center shadow-xl">
-            <span className="font-mono text-[10px] uppercase text-amber-400 font-bold tracking-wider">
-              Council of Architecture (CoA)
+      <div className="flex flex-col items-start justify-between gap-6 rounded-3xl border border-slate-800 bg-[#131926] p-6 sm:flex-row sm:items-center sm:p-8">
+        <div>
+          {judge ? (
+            <span
+              className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 font-mono text-xs ${
+                judge.pass
+                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                  : 'border-red-500/30 bg-red-500/10 text-red-300'
+              }`}
+            >
+              {judge.pass ? <CheckCircle2 className="h-4 w-4" aria-hidden /> : <XCircle className="h-4 w-4" aria-hidden />}
+              {judge.pass
+                ? 'All automated checks passed'
+                : `${judge.failures.length} automated check${judge.failures.length === 1 ? '' : 's'} failed`}
             </span>
-            <p className="mt-1 text-2xl font-bold font-mono text-white">
-              ₹ 999
+          ) : (
+            <span className="inline-flex rounded-full border border-slate-700 px-3.5 py-1 font-mono text-xs text-slate-400">
+              Not checked yet: generate the house first
+            </span>
+          )}
+          <h2 className="mt-3 font-mono text-2xl font-bold text-white sm:text-3xl">Automated checks</h2>
+          <p className="mt-2 max-w-xl text-sm text-slate-300">
+            A rules engine checks the design against a draft of Mumbai building rules and engineering thumb-rules.
+            Passing these checks is not an approval. Only a licensed architect can approve a design.
+          </p>
+        </div>
+
+        <div className="w-full rounded-2xl border border-slate-700 bg-slate-900/90 p-5 text-center sm:w-72">
+          <p className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">Architect review</p>
+          <p className="mt-2 text-sm text-slate-300">
+            We&apos;re onboarding licensed architects for the Mumbai pilot. Request a review and we&apos;ll contact you when one
+            is available. No payment is taken.
+          </p>
+          {requested ? (
+            <p role="status" className="mt-3 rounded-lg border border-emerald-700/50 bg-emerald-950/60 p-2 text-xs text-emerald-300">
+              Request received. We&apos;ll be in touch.
             </p>
-            <p className="text-[11px] text-slate-400">Physical Seal & Sanction Review</p>
-
-            {reviewOrdered ? (
-              <div className="mt-3 rounded-lg bg-emerald-950/60 border border-emerald-700/50 p-2 text-xs text-emerald-300 font-mono">
-                Order #{orderDetails?.order_id}: Confirmed!
-              </div>
-            ) : (
-              <button
-                type="button"
-                disabled={isOrdering}
-                onClick={handleOrderReview}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-amber-500 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:opacity-90 transition disabled:opacity-50"
-              >
-                {isOrdering ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <>
-                    <CreditCard className="h-3.5 w-3.5" />
-                    <span>Order ₹999 Review</span>
-                  </>
-                )}
-              </button>
-            )}
-          </div>
+          ) : (
+            <button
+              type="button"
+              disabled={sending}
+              onClick={handleRequest}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500 disabled:opacity-50"
+            >
+              {sending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
+              Request a review
+            </button>
+          )}
+          {error && <p role="alert" className="mt-2 text-xs text-red-400">{error}</p>}
         </div>
       </div>
 
-      {/* 10 Detailed Code Verifications */}
-      <div className="rounded-2xl border border-slate-800 bg-[#131926] p-6">
-        <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-300 mb-6 flex items-center gap-2">
-          <Award className="h-4 w-4 text-amber-400" />
-          <span>Independent Code Audit Checklist (Mumbai Pilot)</span>
-        </h3>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {auditChecks.map((check, idx) => (
-            <div key={idx} className="flex items-start gap-3 rounded-xl border border-slate-800/80 bg-slate-900/40 p-4">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-              <div>
-                <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-white">{check.title}</h4>
-                  <span className="font-mono text-[10px] text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/50">
-                    {check.result}
-                  </span>
-                </div>
-                <p className="mt-1 text-xs text-slate-400 leading-relaxed font-mono">
-                  {check.details}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {judge && (
+        <section className="rounded-2xl border border-slate-800 bg-[#131926] p-6">
+          <h3 className="mb-6 font-mono text-sm font-bold uppercase tracking-wider text-slate-300">Results by category</h3>
+          <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {JUDGE_CATEGORIES.map(({ prefix, title }) => {
+              const fails = judge.failures.filter((f) => f.rule_id.startsWith(prefix));
+              const warns = judge.warnings.filter((w) => w.rule_id.startsWith(prefix));
+              return (
+                <li key={prefix} className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-sm font-bold text-white">{title}</h4>
+                    <span className={`rounded border px-1.5 py-0.5 font-mono text-xs ${fails.length ? 'border-red-800/50 bg-red-950/60 text-red-300' : 'border-emerald-800/50 bg-emerald-950/60 text-emerald-400'}`}>
+                      {fails.length ? 'FAIL' : 'PASS'}
+                    </span>
+                  </div>
+                  {[...fails, ...warns].length > 0 && (
+                    <ul className="mt-2 space-y-1.5">
+                      {fails.map((f, i) => (
+                        <li key={`f${i}`} className="flex gap-2 text-xs text-red-300">
+                          <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                          <span><span className="font-mono text-red-400">{f.rule_id}</span>: {f.message}</span>
+                        </li>
+                      ))}
+                      {warns.map((w, i) => (
+                        <li key={`w${i}`} className="flex gap-2 text-xs text-amber-300">
+                          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+                          <span><span className="font-mono">{w.rule_id}</span>: {w.message}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

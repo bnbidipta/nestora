@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Heart, 
@@ -18,7 +18,9 @@ import { getSwipeDecks, submitSwipe, generateHouse } from '@/lib/api';
 export default function SwipeDeck() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const houseId = searchParams.get('house_id') || 'nest_pilot_001';
+  const houseId = searchParams.get('house_id');
+  const [genResult, setGenResult] = useState<{ trace: string[]; failed: boolean; error: string | null } | null>(null);
+  const swipeBusy = useRef(false);
 
   const [cards, setCards] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,7 +51,8 @@ export default function SwipeDeck() {
   }, []);
 
   const handleSwipe = async (direction: 'right' | 'left') => {
-    if (currentIndex >= cards.length) return;
+    if (!houseId || currentIndex >= cards.length || swipeBusy.current) return;
+    swipeBusy.current = true;
 
     const currentCard = cards[currentIndex];
     const dwellMs = Date.now() - cardStartTime;
@@ -81,6 +84,7 @@ export default function SwipeDeck() {
       setCurrentIndex(nextIdx);
       setSwipeAnim('');
       setCardStartTime(Date.now());
+      swipeBusy.current = false;
 
       // If deck completed, trigger generation!
       if (nextIdx >= cards.length) {
@@ -90,50 +94,71 @@ export default function SwipeDeck() {
   };
 
   const triggerGeneration = async () => {
+    if (!houseId) return;
+    setIsGenerating(true);
+    setGenResult(null);
     try {
-      setIsGenerating(true);
       const res = await generateHouse(houseId);
-      if (res.success) {
+      if (res?.success) {
         router.push(`/house/${houseId}`);
-      } else {
-        router.push(`/house/${houseId}`);
+        return;
       }
-    } catch (err: any) {
-      console.error('Generation error', err);
-      router.push(`/house/${houseId}`);
+      // The house exists but failed checks, or the server errored: show what actually happened.
+      setGenResult({
+        trace: Array.isArray(res?.execution_trace) ? res.execution_trace : [],
+        failed: Boolean(res?.house_id),
+        error: res?.house_id ? null : (res?.detail ?? 'Generation failed on the server.'),
+      });
+    } catch {
+      setGenResult({ trace: [], failed: false, error: 'Could not reach the server. Check your connection and try again.' });
     }
+    setIsGenerating(false);
   };
 
   const currentCard = cards[currentIndex];
   const progressPct = cards.length ? Math.round((currentIndex / cards.length) * 100) : 0;
 
+  if (!houseId) {
+    return (
+      <div role="alert" className="py-16 text-center text-slate-300">
+        No house selected. <a href="/questionnaire" className="text-blue-400 underline">Start a new design</a>.
+      </div>
+    );
+  }
+
   if (isGenerating) {
     return (
-      <div className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center px-4 text-center">
-        <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-600/10 border border-blue-500/30">
-          <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
-          <Compass className="absolute h-5 w-5 text-amber-400" />
-        </div>
-        <h2 className="mt-6 font-mono text-2xl font-bold text-white">
-          Executing Orchestration DAG...
-        </h2>
-        <div className="mt-4 max-w-md space-y-2 text-left font-mono text-xs text-slate-400 border border-slate-800 bg-slate-900/60 p-4 rounded-xl">
-          <p className="flex items-center gap-2 text-emerald-400">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Plot & DCR Pack applied (FSI 1.5, Setbacks 3m/1.5m)</span>
-          </p>
-          <p className="flex items-center gap-2 text-emerald-400">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Layout & IS 456 Structure calculated</span>
-          </p>
-          <p className="flex items-center gap-2 text-emerald-400">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Stage Gate 1: Pure Python Judge Verified</span>
-          </p>
-          <p className="flex items-center gap-2 text-amber-400 animate-pulse">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            <span>Harmonizing MEP, 25 Materials & Mumbai BOQ...</span>
-          </p>
+      <div role="status" className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+        <Loader2 className="h-10 w-10 animate-spin text-blue-500" aria-hidden />
+        <h2 className="mt-6 font-mono text-2xl font-bold text-white">Designing your house…</h2>
+        <p className="mt-2 text-sm text-slate-400">Laying out rooms, structure, plumbing and costs, then running the automated checks.</p>
+      </div>
+    );
+  }
+
+  if (genResult) {
+    return (
+      <div className="mx-auto max-w-xl py-10">
+        <div role="alert" className="rounded-2xl border border-red-800/60 bg-[#131926] p-6">
+          <h2 className="text-lg font-bold text-white">
+            {genResult.failed ? 'Your house was generated, but some checks failed' : 'Generation did not finish'}
+          </h2>
+          {genResult.error && <p className="mt-2 text-sm text-red-300">{genResult.error}</p>}
+          {genResult.trace.length > 0 && (
+            <ol className="mt-4 space-y-1 rounded-xl border border-slate-800 bg-slate-900/60 p-4 font-mono text-xs text-slate-300">
+              {genResult.trace.map((t, i) => <li key={i}>{t}</li>)}
+            </ol>
+          )}
+          <div className="mt-6 flex gap-3">
+            <button type="button" onClick={triggerGeneration} className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm text-slate-200 hover:bg-slate-800">
+              Try again
+            </button>
+            {genResult.failed && (
+              <button type="button" onClick={() => router.push(`/house/${houseId}`)} className="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-500">
+                See the house and failed checks
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );

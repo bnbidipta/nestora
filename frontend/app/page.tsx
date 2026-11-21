@@ -95,7 +95,7 @@ export default function LandingPage() {
             <span>Phase 1 Mumbai Pilot</span>
           </div>
           <div className="text-[11px] font-mono">
-            <span>Deterministic Engineering • Verified RCC Framework • Turnkey BOQ</span>
+            <span>Concept Design • Automated Rule Checks • Itemized Estimate</span>
           </div>
         </footer>
       </div>

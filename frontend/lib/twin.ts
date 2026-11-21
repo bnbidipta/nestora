@@ -110,13 +110,19 @@ export interface PlotInfo {
   water_table_m: number;
 }
 
+export interface BudgetInfo {
+  total_budget_inr: number;
+  contingency_pct: number;
+  construction_cost_sqft_inr?: number;
+}
+
 export interface HouseTwin {
   house_id: string;
   version: string;
   status: string;
   plot: PlotInfo;
   family: any;
-  budget: any;
+  budget: BudgetInfo;
   floors: Floor[];
   structure: Structure;
   mep: MEP;
@@ -124,4 +130,38 @@ export interface HouseTwin {
   boq: BOQ;
   swipe_history: any[];
   metadata: Record<string, any>;
+}
+
+export interface JudgeIssue {
+  rule_id: string;
+  message: string;
+}
+
+/** Shape of twin.metadata.final_judge, written by backend JudgeResult.to_dict(). */
+export interface JudgeSummary {
+  pass: boolean;
+  failures: JudgeIssue[];
+  warnings: JudgeIssue[];
+}
+
+/** Judge check categories, keyed by rule_id prefix (backend/app/services/judge.py). */
+export const JUDGE_CATEGORIES: { prefix: string; title: string }[] = [
+  { prefix: 'A_', title: 'Area & dimension math' },
+  { prefix: 'B_', title: 'Building rules (setbacks, FSI, room sizes, doors)' },
+  { prefix: 'C_', title: 'Structure (columns, beams, safety factor)' },
+  { prefix: 'D_', title: 'Plumbing & electrical (slopes, separation, pump)' },
+  { prefix: 'E_', title: 'Ergonomics (circulation, kitchen work triangle)' },
+];
+
+export function getJudge(twin: HouseTwin): JudgeSummary | null {
+  const j = twin.metadata?.final_judge;
+  return j && typeof j.pass === 'boolean' ? (j as JudgeSummary) : null;
+}
+
+export function builtUpSqft(twin: HouseTwin): number {
+  return twin.floors.reduce((sum, f) => sum + f.area_sqft, 0);
+}
+
+export function formatINR(n: number): string {
+  return '₹' + Math.round(n).toLocaleString('en-IN');
 }

@@ -2,11 +2,15 @@
 Orchestrator API Router - Section 5 Public Contract.
 Runs the generation DAG pipeline for a House Twin.
 """
+import logging
+
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
 
 from backend.app.services.orchestrator import OrchestrationDAG
 from backend.app.services.repository import HouseTwinRepository
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["Orchestrator Pipeline"])
 
@@ -30,8 +34,9 @@ def generate_house(house_id: str):
             "execution_trace": result["execution_trace"],
             "judge_summary": result["judge_summary"]
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
+    except Exception:
+        logger.exception("Generation failed for house %s", house_id)
+        raise HTTPException(status_code=500, detail="Generation failed. Please try again.")
 
 
 @router.get("/orchestrator/health")

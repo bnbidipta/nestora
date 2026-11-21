@@ -86,7 +86,7 @@ def test_house_crud_and_generate_flow():
     # 7. Mock Review & Export
     res = client.post(f"/api/v1/house/{house_id}/review")
     assert res.status_code == 200
-    assert res.json()["data"]["amount_inr"] == 999
+    assert res.json()["data"]["status"] == "requested"
 
     res = client.post(f"/api/v1/house/{house_id}/export/dwg")
     assert res.status_code == 200

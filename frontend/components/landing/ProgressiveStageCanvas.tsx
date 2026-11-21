@@ -110,7 +110,7 @@ export default function ProgressiveStageCanvas({
 
               <div className="flex justify-between items-center text-[10px] text-stone-300 border-t border-champagne/30 pt-2">
                 <span>Max Beam Span: 4.88m • Raft Depth: 1.4m</span>
-                <span className="text-emerald-400 font-bold">100% LIMIT-STATE VERIFIED</span>
+                <span className="text-emerald-400 font-bold">ILLUSTRATIVE EXAMPLE</span>
               </div>
             </motion.div>
           )}
@@ -181,7 +181,7 @@ export default function ProgressiveStageCanvas({
 
           <div className="flex justify-between items-center text-[11px] text-sage-900 border-t border-stone-border pt-1.5">
             <span>GIS: 19.0760° N, 72.8777° E</span>
-            <span className="text-emerald-700 font-bold">100% BYLAW VERIFIED</span>
+            <span className="text-emerald-700 font-bold">ILLUSTRATIVE EXAMPLE</span>
           </div>
         </div>
       )}
@@ -230,7 +230,7 @@ export default function ProgressiveStageCanvas({
 
           <div className="flex justify-between items-center text-[11px] text-sage-900 border-t border-stone-border pt-1.5">
             <span>SCALE: 1:100 @ A3</span>
-            <span className="text-emerald-700 font-bold">100% PROGRAM SYNTHESIZED</span>
+            <span className="text-emerald-700 font-bold">ILLUSTRATIVE EXAMPLE</span>
           </div>
         </div>
       )}
@@ -287,8 +287,8 @@ export default function ProgressiveStageCanvas({
           </div>
 
           <div className="flex justify-between items-center text-[11px] text-stone-300 border-t border-champagne/30 pt-1.5">
-            <span>BEARING: 150 kN/m² VERIFIED</span>
-            <span className="text-emerald-400 font-bold">100% DETERMINISTIC CALCULATION</span>
+            <span>BEARING: ASSUMED, CONFIRM ON SITE</span>
+            <span className="text-emerald-400 font-bold">ILLUSTRATIVE EXAMPLE</span>
           </div>
         </div>
       )}
@@ -340,8 +340,8 @@ export default function ProgressiveStageCanvas({
           {/* Live BOQ Metric Strip */}
           <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-stone-border shadow-lg flex justify-between items-center text-xs font-mono">
             <div>
-              <span className="font-bold text-sage-900 block">ITEMIZED BOQ: ₹44.8L ESTIMATE</span>
-              <span className="text-[10px] text-stone-muted">410 Bags Ultratech • 3.4T TMT Steel • 5-Stage Escrow</span>
+              <span className="font-bold text-sage-900 block">ITEMIZED BOQ (EXAMPLE)</span>
+              <span className="text-[10px] text-stone-muted">Cement bags • TMT steel • stage-wise payments</span>
             </div>
             <span className="bg-sage-900 text-ivory-50 px-2.5 py-1 rounded-full text-[10px] font-bold">
               0% COST OVERRUNS

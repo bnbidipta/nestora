@@ -1,4 +1,7 @@
 """
+MOCK_SLM: keyword-based stand-in for the constraint extractor (brief line 239).
+Not a language model. Replaced by LLM extraction in Phase C; kept as the offline fallback.
+
 SLM Orchestrator Wrapper - Section 6 of Nestora Brief.
 LOCKED RULE:
 - Translates user natural language -> ConstraintGraph JSON.
@@ -8,6 +11,14 @@ LOCKED RULE:
 import re
 from typing import Dict, Any, List
 from backend.app.models.constraints import ConstraintGraph
+
+
+MOCK_SLM = True
+
+
+def _has(text: str, keywords: List[str]) -> bool:
+    """Whole-word match, so "dad" doesn't match "Dadar" and "raw" doesn't match "drawing"."""
+    return any(re.search(r"\b" + re.escape(kw) + r"s?\b", text) for kw in keywords)
 
 
 class SLMService:
@@ -21,8 +32,8 @@ class SLMService:
         constraints: List[str] = []
 
         # 1. Elder / Mobility Analysis
-        elder_present = any(kw in text for kw in ["elder", "grandma", "grandfather", "grandparents", "mom", "dad", "mother", "father", "old age", "senior"])
-        knee_pain = any(kw in text for kw in ["knee pain", "wheelchair", "arthritis", "walking difficulty", "knee"])
+        elder_present = _has(text, ["elder", "grandma", "grandmother", "grandfather", "grandparent", "granny", "mom", "dad", "mother", "father", "old age", "senior"])
+        knee_pain = _has(text, ["knee pain", "wheelchair", "arthritis", "walking difficulty", "knee"])
         
         ground_floor_bedroom = False
         min_door_width = 900
@@ -42,34 +53,34 @@ class SLMService:
                 constraints.append("grab_bars = true")
 
         # 2. Toddler / Child Safety
-        toddler_present = any(kw in text for kw in ["toddler", "baby", "infant", "child", "kids"])
+        toddler_present = _has(text, ["toddler", "baby", "infant", "child", "kids"])
         if toddler_present:
             constraints.append("balcony_safety_grill = true")
             constraints.append("anti_skid_flooring = true")
 
         # 3. Pets
-        pet_present = any(kw in text for kw in ["dog", "cat", "pet", "labrador", "golden retriever"])
+        pet_present = _has(text, ["dog", "cat", "pet", "labrador", "golden retriever"])
         if pet_present:
             constraints.append("scratch_resistant_flooring = true")
             constraints.append("no_toxic_plants = true")
 
         # 4. Work From Home
-        wfh_present = any(kw in text for kw in ["wfh", "work from home", "office", "study", "quiet workspace", "remote work"])
+        wfh_present = _has(text, ["wfh", "work from home", "office", "study", "quiet workspace", "remote work"])
         if wfh_present:
             constraints.append("acoustic_separation_study = true")
             constraints.append("dedicated_study_zone = true")
 
         # 5. Joint Family
-        joint_family = any(kw in text for kw in ["joint family", "large family", "extended family", "3 generations"])
+        joint_family = _has(text, ["joint family", "large family", "extended family", "3 generations"])
 
         # 6. Vaastu / Faith
         vaastu_mode = "soft"
-        if "vaastu strict" in text or "strict vaastu" in text or "100% vaastu" in text:
+        if _has(text, ["vaastu strict", "strict vaastu", "100% vaastu"]):
             vaastu_mode = "strict"
             constraints.append("puja_east = true")
             constraints.append("kitchen_southeast = true")
             constraints.append("no_toilet_puja_wall = true")
-        elif "no vaastu" in text or "vaastu off" in text or "modern layout" in text:
+        elif _has(text, ["no vaastu", "vaastu off", "modern layout"]):
             vaastu_mode = "off"
         else:
             vaastu_mode = "soft"
@@ -77,15 +88,15 @@ class SLMService:
 
         # 7. Style preferences
         preferred_styles: List[str] = []
-        if "japanese" in text or "zen" in text or "wabi sabi" in text:
+        if _has(text, ["japanese", "zen", "wabi sabi"]):
             preferred_styles.append("japanese")
-        if "forest" in text or "biophilic" in text or "plants" in text or "green" in text:
+        if _has(text, ["forest", "biophilic", "plants", "green"]):
             preferred_styles.append("forest")
-        if "brutalist" in text or "concrete" in text or "raw" in text:
+        if _has(text, ["brutalist", "concrete", "raw"]):
             preferred_styles.append("brutalist")
-        if "minimalist" in text or "clean" in text:
+        if _has(text, ["minimalist", "clean"]):
             preferred_styles.append("minimalist")
-        if "traditional" in text or "heritage" in text or "old is gold" in text:
+        if _has(text, ["traditional", "heritage", "old is gold"]):
             preferred_styles.append("old_is_gold")
             
         if not preferred_styles:

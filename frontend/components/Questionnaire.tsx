@@ -39,22 +39,12 @@ export default function Questionnaire() {
     preferred_styles: ["japanese", "forest"]
   });
 
-  const [activeConstraints, setActiveConstraints] = useState<string[]>([
-    "Ground Floor Bedroom Mandatory",
-    "Clear Door Width >= 900mm",
-    "Zero-Step Thresholds",
-    "Anti-Scratch Flooring"
-  ]);
+  // What the backend actually extracted, shown for confirmation before moving on.
+  const [extracted, setExtracted] = useState<{ houseId: string; constraints: string[] } | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const handleElderToggle = (val: boolean) => {
     setFormData(prev => ({ ...prev, elder_knee_pain: val }));
-    if (val) {
-      if (!activeConstraints.includes("Ground Floor Bedroom Mandatory")) {
-        setActiveConstraints(prev => [...prev, "Ground Floor Bedroom Mandatory", "Clear Door Width >= 900mm", "Zero-Step Thresholds"]);
-      }
-    } else {
-      setActiveConstraints(prev => prev.filter(c => !["Ground Floor Bedroom Mandatory", "Clear Door Width >= 900mm", "Zero-Step Thresholds"].includes(c)));
-    }
   };
 
   const handleStyleToggle = (style: string) => {
@@ -88,16 +78,49 @@ export default function Questionnaire() {
         }
       });
 
-      // 2. Submit questionnaire answers to SLM
-      await submitQuestionnaire(houseId, formData);
-
-      // 3. Route to Screen 3 Swipe Deck
-      router.push(`/swipe?house_id=${houseId}`);
-    } catch (err: any) {
-      alert(`Error submitting questionnaire: ${err.message}`);
+      // 2. Submit answers; the backend extracts the constraint graph
+      const res = await submitQuestionnaire(houseId, formData);
+      if (!res?.success) throw new Error('The server could not read your answers.');
+      setExtracted({ houseId, constraints: res.constraint_graph?.constraints ?? [] });
+    } catch (err: unknown) {
+      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (extracted) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+        <div className="rounded-2xl border border-slate-800 bg-[#131926] p-6 sm:p-8">
+          <h2 className="text-xl font-bold text-white">Here&apos;s what we understood</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            These requirements will shape your design. If something is wrong, go back and edit your answers.
+          </p>
+          {extracted.constraints.length > 0 ? (
+            <ul className="mt-4 space-y-2">
+              {extracted.constraints.map((c, i) => (
+                <li key={i} className="flex gap-2 text-sm text-slate-200">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" aria-hidden />
+                  {c}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-4 text-sm text-slate-300">No special requirements detected. We&apos;ll use standard room sizes.</p>
+          )}
+          <div className="mt-6 flex gap-3">
+            <button type="button" onClick={() => setExtracted(null)} className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm text-slate-200 hover:bg-slate-800">
+              Edit answers
+            </button>
+            <button type="button" onClick={() => router.push(`/swipe?house_id=${extracted.houseId}`)} className="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-500">
+              Looks right, continue
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -131,22 +154,10 @@ export default function Questionnaire() {
         </div>
       </div>
 
-      {/* Dynamic Constraint Badge Bar */}
-      {activeConstraints.length > 0 && (
-        <div className="mb-6 rounded-xl border border-blue-900/60 bg-blue-950/30 p-3.5 backdrop-blur-sm">
-          <div className="flex items-center gap-2 font-mono text-[11px] font-semibold text-blue-300">
-            <Sparkles className="h-3.5 w-3.5 text-blue-400" />
-            <span>ACTIVE ARCHITECTURAL CONSTRAINTS EXTRACTED:</span>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {activeConstraints.map((c, i) => (
-              <span key={i} className="inline-flex items-center gap-1 rounded bg-blue-900/40 px-2 py-0.5 font-mono text-[10px] text-blue-200 border border-blue-700/50">
-                <Check className="h-2.5 w-2.5 text-emerald-400" />
-                {c}
-              </span>
-            ))}
-          </div>
-        </div>
+      {submitError && (
+        <p role="alert" className="mb-6 rounded-xl border border-red-800/60 bg-red-950/40 p-3 text-sm text-red-300">
+          {submitError}
+        </p>
       )}
 
       {/* Stage Container */}

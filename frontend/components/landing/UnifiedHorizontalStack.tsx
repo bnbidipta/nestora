@@ -13,7 +13,7 @@ const STAGES_DATA: StageData[] = [
     stageNum: 'OVERVIEW',
     stageTag: 'PLATFORM ARCHITECTURE',
     h2Title: 'The Architect In Your Pocket: From Bare Plot to Keys in Hand',
-    seoSubtitle: 'Generate complete 30×40 G+1 residential house plans with full structural physics, municipal clearance, and itemized BOQ in 60 seconds.',
+    seoSubtitle: 'Generate complete 30×40 G+1 residential house plans with a structural concept, automated rule checks and an itemized cost estimate in minutes, ready to take to a licensed architect.',
     oldWayTitle: '6-Month Traditional Architectural Delays',
     oldWayPoints: [
       '6 to 9 months of drafting meetings and slow revisions.',
@@ -21,11 +21,11 @@ const STAGES_DATA: StageData[] = [
     ],
     nestoraTitle: 'Autonomous Multi-Model Synthesis',
     nestoraPoints: [
-      'Complete House Twin (2D CAD, 3D Structure, MEP) in 60 seconds.',
-      '14 deterministic task models execute in parallel with zero approval friction.'
+      'A concept House Twin (2D plan, 3D structure, MEP) in minutes.',
+      'Deterministic rule-based models compute every number; a licensed architect reviews before you build.'
     ],
-    primaryMetric: '60s Synthesis',
-    metricLabel: 'Validated Plot-to-Keys Synthesis',
+    primaryMetric: 'Minutes, not months',
+    metricLabel: 'Concept design from plot to estimate',
     ctaText: 'Start Questionnaire',
     ctaLink: '/questionnaire'
   },
@@ -42,10 +42,10 @@ const STAGES_DATA: StageData[] = [
     ],
     nestoraTitle: 'Algorithmic Envelope Verification',
     nestoraPoints: [
-      'Instant calculation of front (3m), rear (2m), and side setbacks for 30×40 plots.',
-      'Sun-path, wind direction, and soil bearing capacity verified prior to drafting.'
+      'Instant setback and buildable-area calculation for your plot size.',
+      'Sun-path, wind direction and soil assumptions stated up front, before drafting.'
     ],
-    primaryMetric: '100% Bylaw Verified',
+    primaryMetric: 'Rules checked automatically',
     metricLabel: 'Municipal Setback & Envelope Math',
     ctaText: 'Verify Your Plot',
     ctaLink: '/questionnaire'
@@ -54,7 +54,7 @@ const STAGES_DATA: StageData[] = [
     id: 'blueprint',
     stageNum: 'STAGE 02',
     stageTag: '2D CAD BLUEPRINT',
-    h2Title: '100% Bespoke Family Floor Plans vs. Recycled Catalog Templates',
+    h2Title: 'Floor Plans Fitted to Your Family vs. Recycled Catalog Templates',
     seoSubtitle: 'No cookie-cutter templates. Dynamic constraint graphs synthesize sunlight, family mobility, and daily routines.',
     oldWayTitle: 'Recycled Template Catalogs',
     oldWayPoints: [
@@ -67,7 +67,7 @@ const STAGES_DATA: StageData[] = [
       'Ground-floor accessible master suites with zero-step transitions for senior parents.'
     ],
     primaryMetric: '0 Templates Used',
-    metricLabel: '100% Bespoke Constraint Geometry',
+    metricLabel: 'Fitted to your family and plot',
     ctaText: 'Explore Styles',
     ctaLink: '/swipe'
   },
@@ -85,10 +85,10 @@ const STAGES_DATA: StageData[] = [
     nestoraTitle: 'Deterministic Civil Engineering',
     nestoraPoints: [
       'Exact axial load and tributary area calculation based on standard limit-state engineering.',
-      'Soil bearing capacity verified at 150 kN/m² with optimized raft footings.'
+      'Foundation sized from a stated soil bearing assumption, for an engineer to confirm on site.'
     ],
-    primaryMetric: '100% Structural Math',
-    metricLabel: 'Zero Hallucination Structural Twin',
+    primaryMetric: 'Every number shown',
+    metricLabel: 'Rule-based structural concept',
     ctaText: 'View Sample Twin',
     ctaLink: '/house/nest_09935d4293'
   },
@@ -117,20 +117,20 @@ const STAGES_DATA: StageData[] = [
     id: 'finishes',
     stageNum: 'STAGE 05',
     stageTag: 'FINISHES & BOQ',
-    h2Title: 'Exact Itemized BOQ & Milestone Escrow vs. 40% Cost Overruns',
-    seoSubtitle: 'Bank-ready Bill of Quantities down to cement bags and steel tonnage, backed by 5-stage milestone escrow.',
+    h2Title: 'Itemized Cost Estimate vs. Vague Per-Sqft Quotes',
+    seoSubtitle: 'An itemized estimate down to cement bags and steel tonnage, with a typical stage-wise payment plan.',
     oldWayTitle: 'Uncontrolled Budget Creep',
     oldWayPoints: [
       'Vague square-foot contractor estimates that conceal finishing and electrical costs.',
       'Frequent 35%–50% project budget overruns forcing homeowners to halt construction.'
     ],
-    nestoraTitle: 'Guaranteed Bill of Quantities',
+    nestoraTitle: 'Itemized Bill of Quantities',
     nestoraPoints: [
       'Itemized Mumbai construction BOQ with exact material quantities and prevailing rates.',
-      '5-stage milestone release schedule protecting homeowners from contractor abandonment.'
+      'A typical stage-wise payment plan you can negotiate with your contractor.'
     ],
-    primaryMetric: '0% Hidden Costs',
-    metricLabel: 'Guaranteed Itemized BOQ & Milestone Escrow',
+    primaryMetric: 'Itemized, not lump-sum',
+    metricLabel: 'Estimate with quantities and rates',
     ctaText: 'Design Your Custom Home →',
     ctaLink: '/questionnaire'
   }

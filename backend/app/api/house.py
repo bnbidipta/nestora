@@ -4,6 +4,7 @@ House Twin Public API Router - Section 5 public contracts.
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any, Optional
 import uuid
+from datetime import datetime, timezone
 
 from backend.app.models.twin import HouseTwin, PlotInfo, FamilyInfo, BudgetInfo
 from backend.app.services.repository import HouseTwinRepository
@@ -66,22 +67,26 @@ def delete_house(house_id: str):
 @router.post("/{house_id}/review", response_model=Dict[str, Any])
 def request_architect_review(house_id: str):
     """
-    Mock ₹999 Architect Review Booking.
+    Records a request for a licensed-architect review (lead capture).
+    No payment is taken and no architect is assigned yet: the pilot has no partners onboarded.
     """
     twin = HouseTwinRepository.get(house_id)
     if not twin:
         raise HTTPException(status_code=404, detail=f"House '{house_id}' not found.")
-        
-    order_id = f"rev_{uuid.uuid4().hex[:8]}"
+
+    request_id = f"rev_{uuid.uuid4().hex[:8]}"
+    twin.metadata.setdefault("review_requests", []).append(
+        {"request_id": request_id, "requested_at": datetime.now(timezone.utc).isoformat()}
+    )
+    HouseTwinRepository.save(twin)
     return {
         "success": True,
         "data": {
-            "order_id": order_id,
+            "request_id": request_id,
             "house_id": house_id,
-            "amount_inr": 999,
-            "status": "confirmed_mock",
-            "message": "Architect Review Order placed. Licensed architect will review within 24 hours."
-        }
+            "status": "requested",
+            "message": "Review request recorded. We'll contact you when a licensed architect is available.",
+        },
     }
 
 

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'NESTORA — Global Autonomous Architecture Studio',
-  description: 'AI Architectural Intelligence Platform. Mumbai 30x40 G+1 Pilot. Bespoke structural engineering, municipal compliance, and real-time House Twins.',
+  title: 'Nestora: concept house design and cost estimates',
+  description: 'Turn your plot, family and budget into a concept house design with automated rule checks and an itemized cost estimate, ready for a licensed architect to review. Mumbai pilot.',
 };
 
 export default function RootLayout({

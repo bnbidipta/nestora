@@ -38,3 +38,4 @@ inspect_new_page.js
 
 # graphify knowledge graph (local)
 graphify-out/
+*.tsbuildinfo
