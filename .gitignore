@@ -35,3 +35,6 @@ frontend/.vercel/
 scratch/
 check_pinterest.js
 inspect_new_page.js
+
+# graphify knowledge graph (local)
+graphify-out/
