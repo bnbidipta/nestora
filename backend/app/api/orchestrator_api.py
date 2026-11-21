@@ -7,6 +7,9 @@ import logging
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
 
+from typing import Optional
+from fastapi import Depends
+from backend.app.services.access import require_edit
 from backend.app.services.orchestrator import OrchestrationDAG
 from backend.app.services.repository import HouseTwinRepository
 
@@ -16,7 +19,7 @@ router = APIRouter(prefix="/api/v1", tags=["Orchestrator Pipeline"])
 
 
 @router.post("/house/{house_id}/generate", response_model=Dict[str, Any])
-def generate_house(house_id: str):
+def generate_house(house_id: str, _user: Optional[str] = Depends(require_edit)):
     """
     Triggers end-to-end DAG generation:
     Plot -> Layout + Structure -> Judge Stage Gate -> MEP -> Finishes -> Budget.

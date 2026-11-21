@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import SmoothScrollProvider from '@/components/motion/SmoothScrollProvider';
 import UnifiedHorizontalStack from '@/components/landing/UnifiedHorizontalStack';
 import { CompassRoseIcon, ArrowFolioRightIcon } from '@/components/landing/BespokeIcons';
+import MobileLanding from '@/components/landing/mobile/MobileLanding';
+import { warmUpApi } from '@/lib/api';
 
-export default function LandingPage() {
+function DesktopLanding() {
   // Structured JSON-LD Schema for Google Search, GEO, and AI Engine Optimization
   const jsonLd = {
     "@context": "https://schema.org",
@@ -101,4 +103,21 @@ export default function LandingPage() {
       </div>
     </SmoothScrollProvider>
   );
+}
+
+// The 3D scroll-world is too heavy for budget phones and ignores reduced-motion users,
+// so render the light static page first and upgrade only where it fits.
+const DESKTOP_QUERY = '(min-width: 1024px) and (prefers-reduced-motion: no-preference)';
+
+export default function LandingPage() {
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    warmUpApi();
+    const mq = window.matchMedia(DESKTOP_QUERY);
+    const update = () => setDesktop(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return desktop ? <DesktopLanding /> : <MobileLanding />;
 }

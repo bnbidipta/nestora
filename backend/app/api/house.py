@@ -3,9 +3,12 @@ House Twin Public API Router - Section 5 public contracts.
 """
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any, Optional
+import secrets
 import uuid
 from datetime import datetime, timezone
 
+from fastapi import Depends
+from backend.app.services.access import require_edit
 from backend.app.models.twin import HouseTwin, PlotInfo, FamilyInfo, BudgetInfo
 from backend.app.services.repository import HouseTwinRepository
 
@@ -38,8 +41,10 @@ def create_house(initial_data: Optional[Dict[str, Any]] = None):
         family=family,
         budget=budget
     )
-    HouseTwinRepository.save(twin)
-    return {"success": True, "house_id": house_id, "data": twin.model_dump()}
+    # The edit token is shown once; the browser keeps it so the anonymous creator can keep editing.
+    edit_token = secrets.token_urlsafe(24)
+    HouseTwinRepository.create(twin, edit_token=edit_token)
+    return {"success": True, "house_id": house_id, "edit_token": edit_token, "data": twin.model_dump()}
 
 
 @router.get("/{house_id}", response_model=Dict[str, Any])
@@ -54,7 +59,7 @@ def get_house(house_id: str):
 
 
 @router.delete("/{house_id}", response_model=Dict[str, Any])
-def delete_house(house_id: str):
+def delete_house(house_id: str, _user: Optional[str] = Depends(require_edit)):
     """
     Deletes a House Twin (Data Privacy Purge).
     """
@@ -65,7 +70,7 @@ def delete_house(house_id: str):
 
 
 @router.post("/{house_id}/review", response_model=Dict[str, Any])
-def request_architect_review(house_id: str):
+def request_architect_review(house_id: str, user_id: Optional[str] = Depends(require_edit)):
     """
     Records a request for a licensed-architect review (lead capture).
     No payment is taken and no architect is assigned yet: the pilot has no partners onboarded.
@@ -79,6 +84,7 @@ def request_architect_review(house_id: str):
         {"request_id": request_id, "requested_at": datetime.now(timezone.utc).isoformat()}
     )
     HouseTwinRepository.save(twin)
+    HouseTwinRepository.add_waitlist("architect_review", house_id=house_id, user_id=user_id)
     return {
         "success": True,
         "data": {
@@ -88,6 +94,15 @@ def request_architect_review(house_id: str):
             "message": "Review request recorded. We'll contact you when a licensed architect is available.",
         },
     }
+
+
+@router.post("/{house_id}/claim", response_model=Dict[str, Any])
+def claim_house(house_id: str, user_id: Optional[str] = Depends(require_edit)):
+    """Saves an anonymous house to the signed-in user's account (it stops expiring)."""
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Sign in to save this house.")
+    HouseTwinRepository.claim(house_id, user_id)
+    return {"success": True, "house_id": house_id}
 
 
 @router.post("/{house_id}/export/dwg", response_model=Dict[str, Any])

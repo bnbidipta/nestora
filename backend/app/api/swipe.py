@@ -7,6 +7,9 @@ from pydantic import BaseModel, Field
 from typing import Dict, Any, List
 import numpy as np
 
+from typing import Optional
+from fastapi import Depends
+from backend.app.services.access import require_edit
 from backend.app.services.repository import HouseTwinRepository
 from backend.app.models.twin import SwipeRecord
 
@@ -74,7 +77,7 @@ def get_swipe_decks():
 
 
 @router.post("/house/{house_id}/swipe", response_model=Dict[str, Any])
-def register_swipe(house_id: str, swipe: SwipeInput):
+def register_swipe(house_id: str, swipe: SwipeInput, _user: Optional[str] = Depends(require_edit)):
     twin = HouseTwinRepository.get(house_id)
     if not twin:
         raise HTTPException(status_code=404, detail=f"House '{house_id}' not found.")

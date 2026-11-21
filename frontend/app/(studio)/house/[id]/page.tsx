@@ -8,6 +8,7 @@ import Viewer from '@/components/Viewer';
 import TwinStatus from '@/components/ui/TwinStatus';
 import StatusBadge from '@/components/ui/StatusBadge';
 import Disclaimer from '@/components/ui/Disclaimer';
+import SaveHouseButton from '@/components/ui/SaveHouseButton';
 
 export default function HouseViewerPage() {
   const houseId = useParams().id as string;
@@ -39,6 +40,7 @@ export default function HouseViewerPage() {
           </div>
         </div>
         <div className="flex items-center gap-2.5">
+          <SaveHouseButton houseId={twin.house_id} />
           <Link
             href={`/house/${twin.house_id}/boq`}
             className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5 font-mono text-xs text-slate-200 transition hover:bg-slate-700"

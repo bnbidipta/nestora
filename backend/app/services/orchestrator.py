@@ -282,6 +282,7 @@ def run_benchmark_20_briefs():
     eval_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "eval", "out")
     os.makedirs(eval_dir, exist_ok=True)
     repository.STORAGE_DIR = eval_dir
+    repository.USE_SUPABASE = False
     repository._CACHE.clear()
 
     total_correct = 0

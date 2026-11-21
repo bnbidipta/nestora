@@ -1,0 +1,113 @@
+{
+  "house_id": "nest_e4e4aab72c",
+  "version": "1.0",
+  "status": "draft",
+  "created_at": null,
+  "plot": {
+    "address": "Mumbai, 19.07, 72.87",
+    "plot_width_ft": 30.0,
+    "plot_depth_ft": 40.0,
+    "plot_area_sqft": 1200.0,
+    "orientation": "East",
+    "road_width_ft": 30.0,
+    "soil_type": "black_cotton",
+    "water_table_m": 4.5
+  },
+  "family": {
+    "adults": 3,
+    "elders": 1,
+    "toddlers": 1,
+    "pets": [
+      {
+        "type": "dog",
+        "breed": "Labrador"
+      }
+    ],
+    "wfh_members": 1,
+    "joint_family": true,
+    "disabilities": [
+      "elder_knee_pain"
+    ],
+    "faith": "vaastu_soft"
+  },
+  "budget": {
+    "total_budget_inr": 2000000.0,
+    "contingency_pct": 10.0,
+    "construction_cost_sqft_inr": 1800.0
+  },
+  "floors": [],
+  "structure": {
+    "columns": [],
+    "beams": [],
+    "foundation": {
+      "type": "raft",
+      "depth_ft": 4.5,
+      "bearing_capacity_kn_m2": 120.0,
+      "reason": "Black cotton expansive soil requires 4.5ft deep raft foundation"
+    },
+    "safety_factor": 1.5,
+    "wall_load_bearing_mm": 230,
+    "wall_partition_mm": 115
+  },
+  "mep": {
+    "electrical_points": 45,
+    "waste_pipes": [
+      {
+        "type": "soil",
+        "dia_mm": 110,
+        "slope": "1:60"
+      }
+    ],
+    "pump_head_m": 12.0,
+    "electrical_water_separation_mm": 350,
+    "ac_units": []
+  },
+  "style": {
+    "primary_style": "japanese",
+    "secondary_style": "forest",
+    "mix_pct": "70/30",
+    "taste_vector": [
+      0.12,
+      -0.03
+    ]
+  },
+  "boq": {
+    "cement_bags": 720,
+    "steel_kg": 6300,
+    "sand_tons": 45.0,
+    "aggregate_tons": 60.0,
+    "bricks_count": 18000,
+    "cost_breakdown": {
+      "foundation": 400000.0,
+      "structure": 700000.0,
+      "mep": 250000.0,
+      "finishing": 650000.0
+    },
+    "total_cost_inr": 2000000.0,
+    "monthly_emi_inr": 17500.0
+  },
+  "swipe_history": [],
+  "metadata": {
+    "constraint_graph": {
+      "elder_present": false,
+      "toddler_present": false,
+      "pet_present": false,
+      "wfh_present": false,
+      "joint_family": false,
+      "vaastu_mode": "soft",
+      "ground_floor_bedroom_required": false,
+      "min_door_width_mm": 900,
+      "no_steps": false,
+      "grab_bars": false,
+      "kitchen_orientation": "SouthEast",
+      "puja_orientation": "East",
+      "preferred_styles": [
+        "japanese",
+        "forest"
+      ],
+      "constraints": [
+        "puja_east = true"
+      ]
+    }
+  }
+}

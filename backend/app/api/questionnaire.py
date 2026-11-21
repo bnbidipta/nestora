@@ -6,6 +6,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List, Optional
 
+from typing import Optional
+from fastapi import Depends
+from backend.app.services.access import require_edit
 from backend.app.services.repository import HouseTwinRepository
 from backend.app.services.slm import SLMService
 from backend.app.models.constraints import ConstraintGraph
@@ -31,7 +34,7 @@ class StageAnswers(BaseModel):
 
 
 @router.post("/{house_id}/questionnaire", response_model=Dict[str, Any])
-def submit_questionnaire(house_id: str, answers: StageAnswers):
+def submit_questionnaire(house_id: str, answers: StageAnswers, _user: Optional[str] = Depends(require_edit)):
     twin = HouseTwinRepository.get(house_id)
     if not twin:
         raise HTTPException(status_code=404, detail=f"House '{house_id}' not found.")
