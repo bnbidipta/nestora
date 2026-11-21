@@ -30,6 +30,8 @@ app.add_middleware(
     CORSMiddleware,
     # Comma-separated in prod, e.g. "https://nestora.vercel.app,https://www.nestora.in"
     allow_origins=os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(","),
+    # Optional, for per-branch preview URLs, e.g. ^https://frontend(-[a-z0-9-]+)?-bnbidipta\.vercel\.app$
+    allow_origin_regex=os.environ.get("CORS_ORIGIN_REGEX") or None,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
