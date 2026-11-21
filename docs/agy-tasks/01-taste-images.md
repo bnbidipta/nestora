@@ -36,3 +36,17 @@ Nestora learns a user's home-style taste by having them keep or discard image ca
 - The JSON parses and the number of entries equals the number of image files.
 - Every style has ≥ 6 cards.
 - Every attribute value is within -1..1.
+
+---
+
+## Status: Done + Caveats (Antigravity Audit)
+- **Delivered files:**
+  - `docs/taste-taxonomy.md`: Defines 5 core styles + 3 recommended global additions (`scandinavian`, `mediterranean`, `industrial`), 9 continuous attribute axes, mathematical centroids, and the 12-card optimal opening set.
+  - `frontend/public/swipe/`: 54 curated 1200×900 WebP images, all verified < 200 KB.
+  - `backend/app/data/swipe_cards.json`: 54 entries with complete metadata (`id`, `file`, `deck`, `style`, `attributes`, `source`, `licence`, `author`, `url`, `alt`).
+- **Validation:** Automated test script confirmed:
+  - 54 WebP files match 54 JSON entries.
+  - Every style has $\ge 6$ cards (6 cards for each of the 8 styles + 6 tie-breakers).
+  - All attribute values strictly within `[-1.0, 1.0]`.
+  - Image dimensions are all exactly 1200×900.
+

@@ -47,3 +47,19 @@ The layout generator fits **templates** to each user's buildable area with a con
 - 12 files parse.
 - The `rel_area` sums are valid.
 - Every adjacency references an existing room id.
+
+---
+
+## Status: Done + Caveats (Antigravity Audit)
+- **Delivered files:**
+  - 12 JSON templates in `backend/app/data/templates/draft/`
+  - `docs/templates-research.md`
+- **Validation:** Automated test script confirmed 0 errors:
+  - All 12 templates parse cleanly.
+  - Every floor has `rel_area` sum $\le 0.90$ (leaving 10–17% for walls and circulation).
+  - All adjacencies, `must_not_touch`, and `wet_core_stack` references resolve to existing room IDs.
+  - Variety requirements fulfilled: 5 elder ground bedrooms ($\ge 2$), 8 internal stairs ($\ge 2$), 2 external stairs ($\ge 1$), 9 car parking configurations ($\ge 2$), and 2 central courtyards ($\ge 1$).
+- **Caveats for Solver Engineer:**
+  - Middle-zone bathrooms require the solver to allocate a mechanical shaft / vertical duct to the roof terrace.
+  - All templates tagged `"verified": false` pending licensed architect review.
+

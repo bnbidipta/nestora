@@ -17,4 +17,9 @@ Paste one task file at a time into agy. Rules that apply to **every** task:
 | 05 | [Mobile static landing page](05-mobile-landing.md) | Phase E (wk 9) |
 | 06 | [Starter plan templates](06-plan-templates.md) | Phase C (wk 4) |
 
-Suggested order: **03 → 06 → 01 → 02 → 04 → 05**. 03 and 06 block the generator.
+| 07 | [Refresh rates to 2026](07-rates-refresh.md) | Phase C (wk 5) |
+| 08 | [500 test briefs](08-test-briefs.md) | Phase D (wk 7) |
+| 09 | [Questionnaire v2 design](09-questionnaire-v2.md) | Phase C (wk 3) |
+| 10 | [Privacy policy & terms drafts](10-legal-drafts.md) | Phase B (before sign-in goes live) |
+
+Batch 1 (01-06) is done. Batch 2 order: **09 → 07 → 10 → 08**.

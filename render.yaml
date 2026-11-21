@@ -1,0 +1,23 @@
+# Render Blueprint: Nestora backend (FastAPI). Deploy: Render dashboard → New → Blueprint → pick this repo.
+services:
+  - type: web
+    name: nestora-api
+    runtime: python
+    plan: free
+    region: singapore # closest Render region to Mumbai
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: CORS_ORIGINS
+        sync: false # set to the Vercel URL(s)
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

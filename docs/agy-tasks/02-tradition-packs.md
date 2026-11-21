@@ -52,3 +52,16 @@ For each tradition:
 - All 7 files validate against the schema.
 - Every rule has `source` and `confidence`.
 - No clause or page numbers are invented.
+
+---
+
+## Status: Done + Caveats (Antigravity Audit)
+- **Delivered files:**
+  - 7 JSON files in `backend/app/data/traditions/`: `vaastu.json`, `sthapatya_veda.json`, `mayamatam.json`, `feng_shui.json`, `islamic.json`, `jain.json`, `biophilic.json`.
+  - `docs/traditions-research.md`: Summaries, code/small-plot conflict resolutions, and academic/classical source citations.
+- **Validation:** Automated test script verified:
+  - All 7 files validate against the schema.
+  - Every rule contains `id`, `applies_to`, `kind`, `value`, `strength`, `rationale`, `source`, and `confidence`.
+  - Cardinal directions use standard 8 compass zones + `CENTRE`.
+  - Building codes explicitly override tradition rules. All tagged `"verified": false` pending licensed professional verification.
+

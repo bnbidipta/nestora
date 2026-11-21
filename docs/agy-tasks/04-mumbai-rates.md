@@ -40,3 +40,18 @@ The cost estimate (BOQ) shows Economy / Standard / Premium tiers as low/expected
 - The JSON parses.
 - `low ≤ expected ≤ high` for every item.
 - Every item has a `source` and a `date`.
+
+---
+
+## Status: Done + Caveats (Antigravity Audit)
+- **Delivered file:** `backend/app/data/packs/mumbai.rates.draft.json`
+- **Validation:** Automated test script confirmed:
+  - Valid JSON parsing.
+  - `low <= expected <= high` strictly holds across all materials, labour, finishes (economy/standard/premium), and MEP tiers.
+  - Every price item has an authoritative `source` (Maharashtra PWD SSR 2024-25, CPWD DSR 2023 with Mumbai Cost Index, or BAI Mumbai dealer surveys) and `date: "2024-11"`.
+  - Consumption thumb rules per sqft built-up area cited against CPWD PAR 2020 and IS 456/SP 16.
+- **Caveats for Cost Estimator:**
+  - South Mumbai (Island City) incurs a 10–15% vehicle logistics premium due to daytime truck bans.
+  - Monsoon sand bans (June–Sept) cause temporary 15–25% aggregate/sand spot price surges.
+  - All rates are tagged `"verified": false` pending sign-off by a quantity surveyor.
+

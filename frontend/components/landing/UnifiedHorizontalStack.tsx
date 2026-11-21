@@ -7,7 +7,7 @@ import ProgressiveStageCanvas from './ProgressiveStageCanvas';
 import StageComparisonCard, { StageData } from './StageComparisonCard';
 import { CompassRoseIcon, ArrowFolioLeftIcon, ArrowFolioRightIcon } from './BespokeIcons';
 
-const STAGES_DATA: StageData[] = [
+export const STAGES_DATA: StageData[] = [
   {
     id: 'overview',
     stageNum: 'OVERVIEW',

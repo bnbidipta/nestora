@@ -6,6 +6,7 @@ Day-1 Security: CORS protection, Pydantic validation, safe error masking.
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+import os
 import logging
 
 from backend.app.api import (
@@ -27,7 +28,8 @@ app = FastAPI(
 # Day-1 Security: CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    # Comma-separated in prod, e.g. "https://nestora.vercel.app,https://www.nestora.in"
+    allow_origins=os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(","),
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],

@@ -52,3 +52,16 @@ The file must contain:
 - The JSON parses.
 - Every numeric value has a `source` (or `null` + `confidence: low`).
 - `open_questions` is honest.
+
+---
+
+## Status: Done + Caveats (Antigravity Audit)
+- **Delivered files:**
+  - `backend/app/data/packs/mumbai.draft.json`
+  - `docs/mumbai-code-research.md`
+- **Validation:** JSON verified valid. Every numeric and dimensional property follows the object schema with `value`, `unit`, specific legal citation `source`, `verified: false`, `confidence`, and explanatory `notes`.
+- **Key Caveats for Reviewing Architect:**
+  1. Base FSI in Mumbai suburbs is 1.00; values up to 2.00 depend entirely on access road width ($\ge 9\text{m}$) and premium payment.
+  2. Rear setback for low-rise residential on plots $\le 250\text{ m}^2$ is 1.5m under DCPR Table 15 (the old 3.0m in `mumbai.json` unnecessarily choked buildable depth).
+  3. All rules are tagged `"verified": false` per instructions, pending formal review by a licensed architect registered with the Council of Architecture and MCGM.
+

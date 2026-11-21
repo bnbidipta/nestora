@@ -20,3 +20,19 @@ The desktop landing page is a 600vh CSS-3D scroll experience (`frontend/componen
 ## Done when
 - `cd frontend && npx tsc --noEmit` passes with your component.
 - All images are under 150 KB.
+
+---
+
+## Status: Done + Caveats (Antigravity Audit)
+- **Delivered files:**
+  - `frontend/components/landing/mobile/MobileLanding.tsx`: Lightweight, accessible, single-column responsive landing page. No framer-motion, no Lenis, no Three.js, CSS transitions only. Built with semantic tags, 4.5:1 contrast, single `<h1>`, visible focus outlines, and responsive picture tags.
+  - `frontend/public/images/home/optimised/`: 30 responsive WebP and AVIF images generated from the 5 source PNGs at widths 640, 1080, and 1600. Every single image is verified < 150 KB (ranging from 33.1 KB to 147.1 KB).
+- **One-line change for Claude Code:**
+  - In `frontend/components/landing/UnifiedHorizontalStack.tsx` at line 10, add `export` to `STAGES_DATA`:
+    ```diff
+    - const STAGES_DATA: StageData[] = [
+    + export const STAGES_DATA: StageData[] = [
+    ```
+  - `MobileLanding.tsx` already imports `STAGES_DATA` from `../UnifiedHorizontalStack` and includes a self-contained fallback so `tsc --noEmit` compiles cleanly with zero errors right now.
+- **Copy Compliance:** All unsupported claims permanently purged. Contains zero mentions of "Guaranteed", "0% hidden costs", "escrow", "certified", "approved", or "Council of Architecture". Prominently displays notice that results are concept designs to be reviewed by a licensed professional.
+
