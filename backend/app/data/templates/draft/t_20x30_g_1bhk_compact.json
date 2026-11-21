@@ -1,0 +1,74 @@
+{
+  "id": "t_20x30_g_1bhk_compact",
+  "plot_bucket_ft": [20, 30],
+  "floors": 1,
+  "bhk": 1,
+  "verified": false,
+  "tags": ["compact", "starter_home", "narrow_lot"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "entrance_verandah",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.08,
+      "min_aspect": 0.4,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.28,
+      "min_aspect": 0.65,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "kitchen",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.16,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.24,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.10,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["entrance_verandah", "living"],
+    ["living", "kitchen"],
+    ["living", "bedroom"],
+    ["bedroom", "toilet"]
+  ],
+  "must_not_touch": [
+    ["kitchen", "toilet"]
+  ],
+  "wet_core_stack": ["toilet"],
+  "stair": null,
+  "notes": "Linear single-floor layout tailored for narrow 20ft road frontage. Places bedroom in rear quiet zone with ventilation shaft/setback.",
+  "source": "Council of Architecture (India) / HUDCO low-cost urban housing design compendium"
+}

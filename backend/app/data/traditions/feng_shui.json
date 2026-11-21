@@ -1,0 +1,134 @@
+{
+  "tradition": "feng_shui",
+  "display_name": "Feng Shui (Form & Compass Schools)",
+  "description": "Traditional Chinese spatial art balancing Qi (life energy), Yin and Yang, and the Five Elements (Wood, Fire, Earth, Metal, Water) to foster harmony, health, and prosperity.",
+  "verified": false,
+  "schools_note": "Combines Luan Tou (Form School: landforms, sightlines, armchair site backing) with Ba Zhai (Eight Mansions: personal Kua number cardinal alignments).",
+  "rules": [
+    {
+      "id": "feng_shui.command_position.bed",
+      "applies_to": "bedroom_master",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["headboard_against_solid_wall"],
+        "avoid": ["bed_in_line_with_door", "headboard_under_window", "beam_over_bed"]
+      },
+      "strength": "core",
+      "rationale": "Command Position: occupant must see the doorway without being in direct line of rush of Qi (coffin position).",
+      "source": "Kearney, L. 'The Complete Idiot's Guide to Feng Shui', Ch. 7 & Form School Classical Principles",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.kitchen_stove.fire_water",
+      "applies_to": "kitchen",
+      "kind": "avoid_adjacency",
+      "value": {
+        "avoid": ["toilet", "sink_opposite_stove"]
+      },
+      "strength": "core",
+      "rationale": "Clash of Fire and Water elements; stove directly opposite or next to sink/refrigerator creates energetic discord.",
+      "source": "Too, Lillian. 'The Illustrated Encyclopedia of Feng Shui', p. 112",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.entrance.front_to_back",
+      "applies_to": "entrance",
+      "kind": "avoid_adjacency",
+      "value": {
+        "avoid": ["back_door_in_direct_line", "staircase_facing_front_door"]
+      },
+      "strength": "core",
+      "rationale": "Front door directly aligned with back door or stairs causes incoming auspicious Qi to flush straight out without nourishing the home.",
+      "source": "Skinner, Stephen. 'The Living Earth Manual of Feng-Shui' (1982), pp. 78-83",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.centre.tai_chi",
+      "applies_to": "living",
+      "kind": "centre_open",
+      "value": {
+        "preferred": ["CENTRE"],
+        "avoid": ["toilet", "kitchen", "staircase", "clutter"]
+      },
+      "strength": "core",
+      "rationale": "Tai Chi (heart of home, Earth element) distributes Qi to all eight Bagua sectors; bathroom in center radiates Sha Qi throughout.",
+      "source": "Too, Lillian. 'Feng Shui Fundamentals: Center', p. 34",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.toilet.placement",
+      "applies_to": "toilet",
+      "kind": "avoid_zone",
+      "value": {
+        "avoid": ["CENTRE", "above_entrance", "above_kitchen_stove", "next_to_altar"]
+      },
+      "strength": "core",
+      "rationale": "Water drainage in toilet drains wealth and health if placed above main entrance, bedroom, or stove.",
+      "source": "Lip, Evelyn. 'Feng Shui for the Home' (1986), pp. 58-61",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.kitchen.northwest_avoid",
+      "applies_to": "kitchen",
+      "kind": "avoid_zone",
+      "value": {
+        "avoid": ["NW"]
+      },
+      "strength": "common",
+      "rationale": "'Fire at Heaven's Gate': NW represents Qian trigram (father/provider, Metal element); kitchen fire in NW damages patriarch's health/wealth.",
+      "source": "Eight Mansions (Ba Zhai) Traditional Compass Formulas",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.study.wen_chang",
+      "applies_to": "study",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE", "SE", "N"],
+        "avoid": ["under_beams", "facing_toilet"]
+      },
+      "strength": "common",
+      "rationale": "Wen Chang (Scholastic Star) promotes intellectual output and academic success when positioned in active wood/water quadrants.",
+      "source": "Hale, Gill. 'The Practical Encyclopedia of Feng Shui', p. 145",
+      "confidence": "medium"
+    },
+    {
+      "id": "feng_shui.entryway.ming_tang",
+      "applies_to": "entrance",
+      "kind": "zone",
+      "value": {
+        "preferred": ["front"],
+        "avoid": ["narrow_dark_choked_hallway"]
+      },
+      "strength": "common",
+      "rationale": "Bright Hall (Ming Tang): The space immediately outside and inside the main threshold must be spacious and well-lit to collect Qi.",
+      "source": "Bruun, Ole. 'An Introduction to Feng Shui' (Cambridge University Press, 2008)",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.staircase.spiral_avoid",
+      "applies_to": "staircase",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["straight", "dog_leg"],
+        "avoid": ["tight_spiral_corkscrew"]
+      },
+      "strength": "common",
+      "rationale": "Spiral stairs act like a drill boring through the energetic floorplate, destabilizing the occupants below.",
+      "source": "Too, Lillian. '168 Feng Shui Ways to Energize Your Home', tip 52",
+      "confidence": "high"
+    },
+    {
+      "id": "feng_shui.bedroom.beams_avoid",
+      "applies_to": "bedroom",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "avoid": ["exposed_overhead_structural_beam"]
+      },
+      "strength": "core",
+      "rationale": "Exposed overhead beams exert oppressive downward cutting pressure on the sleeping body, causing chronic pain.",
+      "source": "Kearney, L. 'The Complete Idiot's Guide to Feng Shui', p. 98",
+      "confidence": "high"
+    }
+  ]
+}

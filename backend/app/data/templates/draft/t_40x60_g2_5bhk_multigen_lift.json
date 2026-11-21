@@ -1,0 +1,220 @@
+{
+  "id": "t_40x60_g2_5bhk_multigen_lift",
+  "plot_bucket_ft": [40, 60],
+  "floors": 3,
+  "bhk": 5,
+  "verified": false,
+  "tags": ["elder_ground_bedroom", "internal_stair", "car_parking", "terrace_garden"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "car_porch",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.16,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "entrance_foyer",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.08,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.22,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "dining",
+      "type": "dining",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.12,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "puja",
+      "type": "puja",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_elder",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.10,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_elder",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "family_lounge_1",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.65,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_master",
+      "type": "bedroom_master",
+      "floor": 1,
+      "rel_area": 0.24,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_kids_1",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_kids_2",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.16,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_master",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_kids_shared",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.05,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "guest_suite",
+      "type": "bedroom",
+      "floor": 2,
+      "rel_area": 0.24,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "multipurpose_lounge",
+      "type": "living",
+      "floor": 2,
+      "rel_area": 0.22,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "toilet_guest_suite",
+      "type": "toilet",
+      "floor": 2,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "open_terrace_garden",
+      "type": "balcony",
+      "floor": 2,
+      "rel_area": 0.35,
+      "min_aspect": 0.8,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["car_porch", "entrance_foyer"],
+    ["entrance_foyer", "living"],
+    ["living", "dining"],
+    ["dining", "kitchen"],
+    ["dining", "puja"],
+    ["dining", "bedroom_elder"],
+    ["bedroom_elder", "toilet_elder"],
+    ["family_lounge_1", "bedroom_master"],
+    ["family_lounge_1", "bedroom_kids_1"],
+    ["family_lounge_1", "bedroom_kids_2"],
+    ["bedroom_master", "toilet_master"],
+    ["bedroom_kids_1", "toilet_kids_shared"],
+    ["multipurpose_lounge", "guest_suite"],
+    ["guest_suite", "toilet_guest_suite"],
+    ["multipurpose_lounge", "open_terrace_garden"]
+  ],
+  "must_not_touch": [
+    ["kitchen", "toilet_elder"],
+    ["puja", "toilet_elder"]
+  ],
+  "wet_core_stack": ["toilet_elder", "toilet_master", "toilet_guest_suite"],
+  "stair": {
+    "type": "internal",
+    "zone": "middle",
+    "side": "right"
+  },
+  "notes": "Three-floor substantial residence designed for three generations living under one roof. The top floor acts as a pent-suite and private rooftop entertainment garden.",
+  "source": "Council of Architecture (India) Urban Multi-Generational Housing guidelines"
+}

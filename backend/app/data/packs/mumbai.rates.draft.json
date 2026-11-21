@@ -1,0 +1,267 @@
+{
+  "city": "Mumbai",
+  "currency": "INR",
+  "rates_as_of": "2026-02",
+  "verified": false,
+  "changelog": [
+    "Refreshed all base rates from 2024-11 baseline to 2026-02 current pricing.",
+    "Applied cumulative 6.5% to 8.5% materials escalation derived from CPWD Cost Index (CI Mumbai 2025-2026) and Maharashtra PWD SSR 2025-26 revision.",
+    "Escalated skilled & semi-skilled construction labour by ~8.8% following the Maharashtra Minimum Wages Revision (Basic + VDA) and Builders Association of India (BAI) Mumbai advisory.",
+    "Updated retail market cement prices from ₹415 to ₹440/bag (OPC 53) reflecting limestone mining royalties and diesel freight adjustments.",
+    "Updated primary TMT rebar (Fe500D) from ₹72 to ₹77/kg.",
+    "Added 'escalated_from' and 'escalation_pct' attributes to maintain provenance traceability."
+  ],
+  "materials": {
+    "cement_opc53_bag_50kg": {
+      "low": 385,
+      "expected": 440,
+      "high": 495,
+      "unit": "bag",
+      "source": "Maharashtra PWD SSR (2025-26 update) Item 24.01 & Mumbai Retail Dealer Price Index (ACC/UltraTech/Ambuja)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 6.0
+    },
+    "steel_fe500d_kg": {
+      "low": 67,
+      "expected": 77,
+      "high": 89,
+      "unit": "kg",
+      "source": "Maharashtra PWD SSR 2025-26, Item 26.04 (Fe500D TMT Rebar primary producers Tata Tiscon/JSW Neosteel/SAIL)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 6.9
+    },
+    "m_sand_ton": {
+      "low": 1780,
+      "expected": 2260,
+      "high": 2800,
+      "unit": "ton",
+      "source": "Maharashtra Quarry Owners Association Mumbai Circle & PWD SSR 2025-26 Item 22.02",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 7.6
+    },
+    "aggregate_20mm_ton": {
+      "low": 1350,
+      "expected": 1670,
+      "high": 2050,
+      "unit": "ton",
+      "source": "Maharashtra PWD SSR 2025-26, Item 22.15 (Crushed basalt stone aggregate Turbhe/Navi Mumbai quarries)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 7.7
+    },
+    "red_brick_each": {
+      "low": 9.2,
+      "expected": 11.5,
+      "high": 14.2,
+      "unit": "each",
+      "source": "CPWD DSR with Mumbai Cost Index 2025-26 Item 06.01 & Kalyan-Bhiwandi Clay Kiln Association",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 9.5
+    },
+    "aac_block_m3": {
+      "low": 2980,
+      "expected": 3620,
+      "high": 4350,
+      "unit": "m3",
+      "source": "Maharashtra PWD SSR 2025-26, Item 07.12 (Autoclaved Aerated Concrete Blocks 600x200x150mm)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 6.5
+    },
+    "rmc_m25_m3": {
+      "low": 4500,
+      "expected": 5250,
+      "high": 6000,
+      "unit": "m3",
+      "source": "Ready Mixed Concrete Manufacturers Association (RMCMA) Mumbai Region Index",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 7.1
+    }
+  },
+  "labour": {
+    "rcc_frame_per_sqft_builtup": {
+      "low": 305,
+      "expected": 370,
+      "high": 455,
+      "unit": "sqft",
+      "source": "Builders Association of India (BAI) Mumbai Centre Labour Advisory & Maharashtra PWD SSR 2025-26 Item 25.10",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 8.8
+    },
+    "masonry_per_sqft": {
+      "low": 49,
+      "expected": 65,
+      "high": 85,
+      "unit": "sqft",
+      "source": "Maharashtra PWD SSR 2025-26, Item 06.22 (Brick/block work labour rate)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 8.3
+    },
+    "plaster_per_sqft": {
+      "low": 38,
+      "expected": 52,
+      "high": 71,
+      "unit": "sqft",
+      "source": "Maharashtra PWD SSR 2025-26, Item 12.04 (Internal cement plaster 12mm & external sand-face plaster 20mm)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 8.3
+    }
+  },
+  "finishes_per_sqft": {
+    "economy": {
+      "flooring": {
+        "low": 60,
+        "expected": 82,
+        "high": 115,
+        "unit": "sqft",
+        "source": "Ceramic and standard 600x600mm vitrified tiles (CPWD DSR Item 11.38 with Mumbai Index)",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 9.3
+      },
+      "paint": {
+        "low": 20,
+        "expected": 27,
+        "high": 38,
+        "unit": "sqft",
+        "source": "Acrylic distemper / primer + 2 coats basic emulsion (Maharashtra PWD SSR 2025-26 Item 13.10)",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 8.0
+      },
+      "doors_windows_lumpsum_per_sqft": {
+        "low": 76,
+        "expected": 104,
+        "high": 142,
+        "unit": "sqft",
+        "source": "Commercial flush doors with pressed steel frames + 2-track sliding aluminium windows",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 9.5
+      }
+    },
+    "standard": {
+      "flooring": {
+        "low": 120,
+        "expected": 180,
+        "high": 250,
+        "unit": "sqft",
+        "source": "Glazed vitrified tiles (GVT / PGVT 1200x600mm) + anti-skid bathroom tiles (Maharashtra PWD SSR Item 11.45)",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 9.1
+      },
+      "paint": {
+        "low": 35,
+        "expected": 52,
+        "high": 71,
+        "unit": "sqft",
+        "source": "Premium washable interior acrylic emulsion + Apex exterior weatherproof silicone paint",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 8.3
+      },
+      "doors_windows_lumpsum_per_sqft": {
+        "low": 152,
+        "expected": 212,
+        "high": 288,
+        "unit": "sqft",
+        "source": "Flush doors with laminate veneer + UPVC or heavy anodized 3-track sliding windows with mosquito mesh",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 8.7
+      }
+    },
+    "premium": {
+      "flooring": {
+        "low": 285,
+        "expected": 490,
+        "high": 815,
+        "unit": "sqft",
+        "source": "Imported Italian Botticino/Dyna marble or engineered hardwood flooring with epoxy grout",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 8.9
+      },
+      "paint": {
+        "low": 71,
+        "expected": 120,
+        "high": 195,
+        "unit": "sqft",
+        "source": "Luxury velvet/silk emulsion, PU polish on woodwork, and Italian lime-stucco feature walls",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 9.1
+      },
+      "doors_windows_lumpsum_per_sqft": {
+        "low": 348,
+        "expected": 520,
+        "high": 815,
+        "unit": "sqft",
+        "source": "Solid seasoned Burma teak wood main doors + acoustic double-glazed thermally broken aluminium systems",
+        "date": "2026-02",
+        "escalated_from": "2024-11",
+        "escalation_pct": 8.3
+      }
+    }
+  },
+  "mep_per_sqft": {
+    "electrical": {
+      "low": 92,
+      "expected": 136,
+      "high": 195,
+      "unit": "sqft",
+      "source": "Maharashtra PWD Electrical SSR 2025-26 (Concealed FRLS copper wiring, modular switchboards, distribution board)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 8.8
+    },
+    "plumbing": {
+      "low": 82,
+      "expected": 125,
+      "high": 185,
+      "unit": "sqft",
+      "source": "Maharashtra PWD Public Health Engineering SSR 2025-26 (CPVC supply pipes, SWR drainage lines, sanitary fixtures)",
+      "date": "2026-02",
+      "escalated_from": "2024-11",
+      "escalation_pct": 8.7
+    }
+  },
+  "consumption_thumb_rules_per_sqft": {
+    "cement_bags": {
+      "value": 0.4,
+      "source": "CPWD Plinth Area Specifications (PAR 2020) & National Building Code (NBC 2016 Part 7) standard residential coefficient"
+    },
+    "steel_kg": {
+      "value": 4.0,
+      "source": "IS 456:2000 & SP 16 design charts for typical G+1 / G+2 ductile reinforced concrete residential framing in Seismic Zone III"
+    },
+    "sand_cft": {
+      "value": 2.0,
+      "source": "Standard Indian engineering estimation practice (2.0 cft crushed sand per sqft built-up area)"
+    },
+    "aggregate_cft": {
+      "value": 1.45,
+      "source": "Standard engineering estimation practice (1.45 cft coarse aggregate per sqft built-up area for RCC slab, beams, and columns)"
+    },
+    "bricks": {
+      "value": 13.5,
+      "source": "Standard Indian masonry consumption (13.5 standard modular red clay bricks per sqft built-up area for 230mm external and 115mm internal walls)"
+    }
+  },
+  "gst_note": "Material basic rates are exclusive of 18% GST for cement, steel, RMC, and MEP items, and 12% for bricks and stone. Works contract composite labour and material services attract 18% GST under SAC 9954.",
+  "notes": [
+    "Rates vary across Greater Mumbai wards: Island City (South Mumbai) incurs 10-15% logistical premium due to daytime heavy vehicle entry restrictions (no-entry zone 8AM-8PM).",
+    "Suburban locations (Andheri, Borivali, Ghatkopar, Mulund) align with expected rates, while peripheral areas (Vasai-Virar, Thane, Navi Mumbai) benefit from 5-8% transport discounts near stone quarries.",
+    "Monsoon season (June to September) causes 15-25% price inflation in river/manufactured sand due to sand mining bans, and slows down concreting work.",
+    "Ready Reckoner Rate (RRR) does not govern material supply, but impacts municipal development charges and premium FSI scrutiny fees paid to MCGM."
+  ]
+}

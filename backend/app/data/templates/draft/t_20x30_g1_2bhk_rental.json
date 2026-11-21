@@ -1,0 +1,111 @@
+{
+  "id": "t_20x30_g1_2bhk_rental",
+  "plot_bucket_ft": [20, 30],
+  "floors": 2,
+  "bhk": 2,
+  "verified": false,
+  "tags": ["external_stair", "rental_income", "narrow_lot"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "living_g",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.28,
+      "min_aspect": 0.65,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "kitchen_g",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.16,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_g",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.26,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_g",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.10,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living_1",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.28,
+      "min_aspect": 0.65,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "kitchen_1",
+      "type": "kitchen",
+      "floor": 1,
+      "rel_area": 0.16,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_1",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.26,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_1",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.10,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["living_g", "kitchen_g"],
+    ["living_g", "bedroom_g"],
+    ["bedroom_g", "toilet_g"],
+    ["living_1", "kitchen_1"],
+    ["living_1", "bedroom_1"],
+    ["bedroom_1", "toilet_1"]
+  ],
+  "must_not_touch": [
+    ["kitchen_g", "toilet_g"],
+    ["kitchen_1", "toilet_1"]
+  ],
+  "wet_core_stack": ["toilet_g", "toilet_1"],
+  "stair": {
+    "type": "external",
+    "zone": "front",
+    "side": "right"
+  },
+  "notes": "Stacked dual-unit typology popular in Maharashtra for rental income; external staircase allows tenant independent access without entering owner's ground floor.",
+  "source": "Maharashtra Housing and Area Development Authority (MHADA) standard urban plot layout"
+}

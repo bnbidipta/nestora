@@ -1,0 +1,199 @@
+{
+  "id": "t_40x60_g1_courtyard_vaastu",
+  "plot_bucket_ft": [40, 60],
+  "floors": 2,
+  "bhk": 4,
+  "verified": false,
+  "tags": ["central_courtyard", "vaastu_compliant", "internal_stair", "car_parking"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "car_porch",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.12,
+      "min_aspect": 0.5,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "verandah_entrance",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.06,
+      "min_aspect": 0.4,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living_ne",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "central_courtyard",
+      "type": "courtyard",
+      "floor": 0,
+      "rel_area": 0.10,
+      "min_aspect": 0.85,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "dining",
+      "type": "dining",
+      "floor": 0,
+      "rel_area": 0.11,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen_se",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.11,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "puja_ne",
+      "type": "puja",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_sw",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.11,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_g",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "centre",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "upper_courtyard_void",
+      "type": "courtyard",
+      "floor": 1,
+      "rel_area": 0.10,
+      "min_aspect": 0.85,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_master_sw",
+      "type": "bedroom_master",
+      "floor": 1,
+      "rel_area": 0.21,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_2",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.17,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_3",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.15,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_master",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_shared",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.05,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "front_terrace",
+      "type": "balcony",
+      "floor": 1,
+      "rel_area": 0.09,
+      "min_aspect": 0.4,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["car_porch", "verandah_entrance"],
+    ["verandah_entrance", "living_ne"],
+    ["living_ne", "central_courtyard"],
+    ["central_courtyard", "dining"],
+    ["dining", "kitchen_se"],
+    ["living_ne", "puja_ne"],
+    ["central_courtyard", "bedroom_sw"],
+    ["bedroom_sw", "toilet_g"],
+    ["upper_courtyard_void", "bedroom_master_sw"],
+    ["upper_courtyard_void", "bedroom_2"],
+    ["upper_courtyard_void", "bedroom_3"],
+    ["bedroom_master_sw", "toilet_master"],
+    ["bedroom_2", "front_terrace"]
+  ],
+  "must_not_touch": [
+    ["kitchen_se", "toilet_g"],
+    ["puja_ne", "toilet_g"],
+    ["central_courtyard", "toilet_g"]
+  ],
+  "wet_core_stack": ["toilet_g", "toilet_master"],
+  "stair": {
+    "type": "internal",
+    "zone": "middle",
+    "side": "left"
+  },
+  "notes": "Contemporary interpretation of the traditional Indian courtyard haveli / wada typology aligned strictly with Vaastu Shastra (Brahma-sthana open, Agni/SE kitchen, Nairutya/SW master bedroom, Ishanya/NE puja).",
+  "source": "Traditional Indian Domestic Architecture (V.S. Pramar) & Contemporary Indian courtyard studies"
+}

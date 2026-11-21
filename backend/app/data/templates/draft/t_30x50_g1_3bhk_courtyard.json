@@ -1,0 +1,188 @@
+{
+  "id": "t_30x50_g1_3bhk_courtyard",
+  "plot_bucket_ft": [30, 50],
+  "floors": 2,
+  "bhk": 3,
+  "verified": false,
+  "tags": ["central_courtyard", "biophilic", "internal_stair", "elder_ground_bedroom", "car_parking"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "car_porch",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.10,
+      "min_aspect": 0.5,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "central_courtyard",
+      "type": "courtyard",
+      "floor": 0,
+      "rel_area": 0.10,
+      "min_aspect": 0.8,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "dining",
+      "type": "dining",
+      "floor": 0,
+      "rel_area": 0.12,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.11,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "puja",
+      "type": "puja",
+      "floor": 0,
+      "rel_area": 0.03,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_elder",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_elder",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.05,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "centre",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "courtyard_cutout_void",
+      "type": "courtyard",
+      "floor": 1,
+      "rel_area": 0.10,
+      "min_aspect": 0.8,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "family_lounge",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.65,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_master",
+      "type": "bedroom_master",
+      "floor": 1,
+      "rel_area": 0.22,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_kids",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_master",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_kids",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.05,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "balcony_front",
+      "type": "balcony",
+      "floor": 1,
+      "rel_area": 0.08,
+      "min_aspect": 0.4,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["car_porch", "living"],
+    ["living", "central_courtyard"],
+    ["central_courtyard", "dining"],
+    ["dining", "kitchen"],
+    ["central_courtyard", "puja"],
+    ["central_courtyard", "bedroom_elder"],
+    ["bedroom_elder", "toilet_elder"],
+    ["family_lounge", "courtyard_cutout_void"],
+    ["courtyard_cutout_void", "bedroom_master"],
+    ["courtyard_cutout_void", "bedroom_kids"],
+    ["bedroom_master", "toilet_master"],
+    ["bedroom_kids", "toilet_kids"],
+    ["family_lounge", "balcony_front"]
+  ],
+  "must_not_touch": [
+    ["kitchen", "toilet_elder"],
+    ["puja", "toilet_elder"]
+  ],
+  "wet_core_stack": ["toilet_elder", "toilet_master"],
+  "stair": {
+    "type": "internal",
+    "zone": "middle",
+    "side": "right"
+  },
+  "notes": "Biophilic central light well typology suited for 50ft deep plots where middle zones lack exterior window access. Induces stack-effect passive cooling.",
+  "source": "Charles Correa residential courtyard climate typology / CEPT University archives"
+}

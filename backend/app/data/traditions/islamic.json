@@ -1,0 +1,112 @@
+{
+  "tradition": "islamic",
+  "display_name": "Islamic Domestic Architecture Principles",
+  "description": "Spatial planning principles rooted in Islamic ethics, privacy (hijab/sitrah), modesty (haya), gender zoning (mahram vs non-mahram), and precise directional hygiene relative to the Qibla.",
+  "verified": false,
+  "schools_note": "Unanimous across all four Sunni madhhabs (Hanafi, Shafi'i, Maliki, Hanbali) and Ja'fari jurisprudence regarding toilet orientation prohibitions relative to Qibla. Residential courtyard layouts reflect historical vernacular traditions across the Middle East and South Asia.",
+  "rules": [
+    {
+      "id": "islamic.toilet.qibla_orientation",
+      "applies_to": "toilet",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["axis_north_south"],
+        "avoid": ["facing_qibla_west", "back_to_qibla_east"]
+      },
+      "strength": "core",
+      "rationale": "Water closet pan must not face directly towards the Qibla (Kaaba) nor have one's back turned towards it during urination or defecation. In Mumbai (Qibla is ~275° WNW), toilets must be aligned strictly North-South.",
+      "source": "Sahih al-Bukhari 394; Sahih Muslim 264 (Hadith of Abu Ayyub al-Ansari)",
+      "confidence": "high"
+    },
+    {
+      "id": "islamic.entrance.visual_privacy_barrier",
+      "applies_to": "entrance",
+      "kind": "entrance",
+      "value": {
+        "preferred": ["bent_entrance", "lobby_vestibule", "courtyard_screen"],
+        "avoid": ["direct_sightline_street_to_living", "direct_sightline_door_to_kitchen"]
+      },
+      "strength": "core",
+      "rationale": "Majaz / Bent Entrance: Prevents casual passers-by or male visitors from catching sight of female household members inside private quarters when the main door opens.",
+      "source": "Fethi, H. 'The Islamic City' & Mortada, H. 'Traditional Islamic Principles of Built Environment' (2003), pp. 88-92",
+      "confidence": "high"
+    },
+    {
+      "id": "islamic.zoning.public_vs_private",
+      "applies_to": "living",
+      "kind": "adjacency",
+      "value": {
+        "preferred": ["majlis_near_entrance"],
+        "avoid": ["guests_crossing_private_family_quarters"]
+      },
+      "strength": "core",
+      "rationale": "Separation of reception (Majlis / guest room) from domestic family life (Harim), ensuring family members can circulate freely without encountering non-mahram guests.",
+      "source": "Hakim, Besim S. 'Arabic-Islamic Cities: Building and Planning Principles' (Kegan Paul, 1986), pp. 95-103",
+      "confidence": "high"
+    },
+    {
+      "id": "islamic.courtyard.inward_orientation",
+      "applies_to": "living",
+      "kind": "centre_open",
+      "value": {
+        "preferred": ["central_courtyard", "fenestration_facing_interior"],
+        "avoid": ["large_low_sill_windows_overlooking_neighbor_courtyard"]
+      },
+      "strength": "common",
+      "rationale": "Dharar (Harm Prevention): Windows must not overlook neighbours' private women's courtyards or terraces, fostering inward-looking domestic tranquility.",
+      "source": "Al-Bahrani, Ibn al-Rami. 'Kitab al-I'lan bi Ahkam al-Bunyan' (14th c. treatise on building laws)",
+      "confidence": "high"
+    },
+    {
+      "id": "islamic.ablution.clean_separation",
+      "applies_to": "toilet",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["separate_wudu_ablution_from_wc", "dry_sitting_area"],
+        "avoid": ["prayer_space_sharing_unclean_drainage_wall"]
+      },
+      "strength": "common",
+      "rationale": "Taharah (Ritual Purity): Physical separation between ritual water washing (ablution) and raw sewage / blackwater elimination fixtures.",
+      "source": "Reliance of the Traveller (Umdat al-Salik), Book E (Purity)",
+      "confidence": "high"
+    },
+    {
+      "id": "islamic.prayer_space.qibla_alignment",
+      "applies_to": "living",
+      "kind": "facing",
+      "value": {
+        "preferred": ["unobstructed_wall_facing_qibla_west"],
+        "avoid": ["shoes_toilet_directly_in_line_of_prayer"]
+      },
+      "strength": "common",
+      "rationale": "Clear rectangular area oriented towards Mecca allowing uninterrupted individual and congregational family Salah.",
+      "source": "Traditional domestic practice across South Asian and Arab Muslim communities",
+      "confidence": "high"
+    },
+    {
+      "id": "islamic.kitchen.sheltered_service",
+      "applies_to": "kitchen",
+      "kind": "avoid_adjacency",
+      "value": {
+        "avoid": ["direct_view_from_guest_majlis"]
+      },
+      "strength": "common",
+      "rationale": "Cooking and food preparation must remain secluded from outside guest observation.",
+      "source": "Mortada, H. 'Traditional Islamic Principles of Built Environment', p. 115",
+      "confidence": "high"
+    },
+    {
+      "id": "islamic.staircase.private_circulation",
+      "applies_to": "staircase",
+      "kind": "zone",
+      "value": {
+        "preferred": ["middle", "rear"],
+        "avoid": ["stair_base_facing_open_street_door"]
+      },
+      "strength": "minor",
+      "rationale": "Staircase to family bedrooms should be shielded from reception entryways.",
+      "source": "Hakim, Besim S. 'Arabic-Islamic Cities', p. 108",
+      "confidence": "medium"
+    }
+  ]
+}

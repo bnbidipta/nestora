@@ -1,0 +1,113 @@
+{
+  "tradition": "biophilic",
+  "display_name": "Biophilic Architecture & Environmental Well-being",
+  "description": "Evidence-based spatial design framework connecting human biology and psychology to nature, daylight, circadian rhythms, thermal variations, and living ecological systems.",
+  "verified": false,
+  "schools_note": "Grounds design decisions in empirical environmental psychology, cognitive neuroscience, and building physics rather than spiritual dogma.",
+  "rules": [
+    {
+      "id": "biophilic.visual_connection.nature",
+      "applies_to": "living",
+      "kind": "facing",
+      "value": {
+        "preferred": ["window_view_to_greenery_or_sky"],
+        "notes": "Occupants must have an unobstructed sightline to living plants, courtyard greenery, or open sky within 6.0 meters."
+      },
+      "strength": "core",
+      "rationale": "Visual connection to living natural systems reduces blood pressure, cortisol levels, and mental fatigue within 3 to 5 minutes.",
+      "source": "Browning, W.D. et al., '14 Patterns of Biophilic Design' (Terrapin Bright Green, 2014), Pattern 1, pp. 22-25",
+      "confidence": "high"
+    },
+    {
+      "id": "biophilic.dynamic_daylight.circadian",
+      "applies_to": "bedroom",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["dual_aspect_windows", "morning_east_solar_access"],
+        "notes": "Minimum Daylight Factor >= 2.0% in primary habitable rooms."
+      },
+      "strength": "core",
+      "rationale": "Exposure to dynamic morning daylight spectrum suppresses melatonin, stabilizes human circadian rhythms, and improves sleep quality.",
+      "source": "WELL Building Standard v2, Feature L01 (Light Exposure) & Terrapin Pattern 6, pp. 38-41",
+      "confidence": "high"
+    },
+    {
+      "id": "biophilic.cross_ventilation.airflow",
+      "applies_to": "living",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["opposing_wall_openings", "central_stack_atrium"],
+        "notes": "Air velocity variability between 0.3 m/s and 0.8 m/s."
+      },
+      "strength": "core",
+      "rationale": "Non-rhythmic sensory stimuli and natural thermal variations keep human alertness high and reduce Sick Building Syndrome (SBS).",
+      "source": "Terrapin Bright Green Pattern 3 (Thermal & Airflow Variability), pp. 30-33 & NBC 2016 Part 8",
+      "confidence": "high"
+    },
+    {
+      "id": "biophilic.water_feature.auditory",
+      "applies_to": "courtyard",
+      "kind": "zone",
+      "value": {
+        "preferred": ["CENTRE", "front"],
+        "acceptable": ["entrance"]
+      },
+      "strength": "common",
+      "rationale": "Gentle, non-rhythmic acoustic murmur of trickling water masks harsh urban traffic noise and induces autonomic parasympathetic relaxation.",
+      "source": "Terrapin Bright Green Pattern 5 (Presence of Water), pp. 34-37 & Ulrich, R.S. Psycho-evolutionary Theory (1991)",
+      "confidence": "high"
+    },
+    {
+      "id": "biophilic.materials.natural_textures",
+      "applies_to": "living",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["unlacquered_wood", "honed_limestone", "terracotta", "linen"],
+        "avoid": ["high_gloss_plastic", "petrochemical_synthetic_surfaces"]
+      },
+      "strength": "common",
+      "rationale": "Haptic and visual resonance with natural grain, geological striations, and patinating surfaces reduces sympathetic stress arousal.",
+      "source": "Kellert, S.R. & Calabrese, E.F., 'The Practice of Biophilic Design' (2015), Ch. 2",
+      "confidence": "high"
+    },
+    {
+      "id": "biophilic.prospect_and_refuge.zoning",
+      "applies_to": "bedroom_master",
+      "kind": "zone",
+      "value": {
+        "preferred": ["rear_corner_refuge_with_long_view"],
+        "notes": "Enclosed back and overhead plane while overlooking open courtyard or garden."
+      },
+      "strength": "common",
+      "rationale": "Prospect & Refuge: Evolutionary preference for sheltered, protected resting spots (refuge) providing a broad view of the surrounding terrain (prospect).",
+      "source": "Appleton, Jay. 'The Experience of Landscape' (1975) & Terrapin Patterns 11 & 12, pp. 54-61",
+      "confidence": "high"
+    },
+    {
+      "id": "biophilic.courtyard.microclimate_buffer",
+      "applies_to": "courtyard",
+      "kind": "centre_open",
+      "value": {
+        "preferred": ["CENTRE"],
+        "notes": "Shaded vegetation and open sky inducing convective chimney cooling."
+      },
+      "strength": "core",
+      "rationale": "Central courtyard lowers peak interior summer ambient temperature by 3°C to 5°C through evapotranspiration and nighttime radiative cooling.",
+      "source": "Givoni, B., 'Man, Climate and Architecture' & CEPT University Passive Solar Housing Compendium",
+      "confidence": "high"
+    },
+    {
+      "id": "biophilic.plants.indoor_air_purification",
+      "applies_to": "living",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["living_wall", "clustered_indoor_planters"],
+        "notes": "Target: 1 medium-sized plant per 9 square meters of floor area."
+      },
+      "strength": "common",
+      "rationale": "Phytoremediation: Plant-soil root microbiomes absorb airborne VOCs (benzene, formaldehyde, trichloroethylene) and replenish indoor oxygen levels.",
+      "source": "Wolverton, B.C., NASA Clean Air Study (1989) & Terrapin Pattern 2, pp. 26-29",
+      "confidence": "high"
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "id": "t_30x40_g2_4bhk_stilt",
+  "plot_bucket_ft": [30, 40],
+  "floors": 3,
+  "bhk": 4,
+  "verified": false,
+  "tags": ["stilt_parking", "multi_gen", "internal_stair", "car_parking"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "stilt_car_parking",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.50,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "foyer_stilt",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.12,
+      "min_aspect": 0.5,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "home_office",
+      "type": "study",
+      "floor": 0,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_stilt",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.05,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.28,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "dining",
+      "type": "dining",
+      "floor": 1,
+      "rel_area": 0.14,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen",
+      "type": "kitchen",
+      "floor": 1,
+      "rel_area": 0.14,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "puja",
+      "type": "puja",
+      "floor": 1,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_elder",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_elder",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_master",
+      "type": "bedroom_master",
+      "floor": 2,
+      "rel_area": 0.26,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_kids",
+      "type": "bedroom",
+      "floor": 2,
+      "rel_area": 0.20,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_guest_2",
+      "type": "bedroom",
+      "floor": 2,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_master_2",
+      "type": "toilet",
+      "floor": 2,
+      "rel_area": 0.07,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_shared_2",
+      "type": "toilet",
+      "floor": 2,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "balcony_terrace",
+      "type": "balcony",
+      "floor": 2,
+      "rel_area": 0.09,
+      "min_aspect": 0.4,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["stilt_car_parking", "foyer_stilt"],
+    ["foyer_stilt", "home_office"],
+    ["home_office", "toilet_stilt"],
+    ["living", "dining"],
+    ["dining", "kitchen"],
+    ["dining", "puja"],
+    ["dining", "bedroom_elder"],
+    ["bedroom_elder", "toilet_elder"],
+    ["bedroom_master", "toilet_master_2"],
+    ["bedroom_kids", "toilet_shared_2"],
+    ["bedroom_guest_2", "toilet_shared_2"],
+    ["bedroom_master", "balcony_terrace"]
+  ],
+  "must_not_touch": [
+    ["kitchen", "toilet_elder"],
+    ["puja", "toilet_elder"]
+  ],
+  "wet_core_stack": ["toilet_stilt", "toilet_elder", "toilet_shared_2"],
+  "stair": {
+    "type": "internal",
+    "zone": "middle",
+    "side": "right"
+  },
+  "notes": "G+2 stilt parking typology for dense Mumbai suburban wards where on-street parking is prohibited. Ground level accommodates 2 cars and home clinic/office.",
+  "source": "Brihanmumbai Municipal Corporation (BMC) typical row house development pattern"
+}

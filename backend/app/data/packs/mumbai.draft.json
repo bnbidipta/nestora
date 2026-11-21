@@ -1,0 +1,362 @@
+{
+  "city": "Mumbai",
+  "authority": "MCGM",
+  "pack_version": "0.2-draft",
+  "verified": false,
+  "units": "metric",
+  "fsi": {
+    "base_by_road_width": [
+      {
+        "road_width_max_m": 9.0,
+        "fsi": {
+          "value": 1.0,
+          "unit": "ratio",
+          "source": "DCPR 2034, Reg. 30(1), Table 12 (Suburbs / Extended Suburbs base Zonal FSI)",
+          "verified": false,
+          "confidence": "high",
+          "notes": "On roads < 9m in suburbs, only base Zonal FSI is permitted; no additional premium FSI or TDR is granted."
+        }
+      },
+      {
+        "road_width_max_m": 12.0,
+        "fsi": {
+          "value": 2.0,
+          "unit": "ratio",
+          "source": "DCPR 2034, Reg. 30(2) & Reg. 32, Table 12",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Base FSI 1.0 + max 0.50 Premium FSI + max 0.50 TDR on roads >= 9m and < 12m."
+        }
+      },
+      {
+        "road_width_max_m": 18.0,
+        "fsi": {
+          "value": 2.2,
+          "unit": "ratio",
+          "source": "DCPR 2034, Reg. 30(2) & Reg. 32, Table 12",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Base FSI 1.0 + max 0.50 Premium FSI + max 0.70 TDR on roads >= 12m and < 18m."
+        }
+      }
+    ],
+    "island_city_base_fsi": {
+      "value": 1.33,
+      "unit": "ratio",
+      "source": "DCPR 2034, Reg. 30(1), Table 12",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Base Zonal FSI for Island City is 1.33; most self-build independent plots are in Suburban Mumbai."
+    },
+    "premium_fsi_note": "Premium FSI is subject to payment of premium at 50% of Ready Reckoner Rate (RRR) per DCPR 2034 Reg 30(2). TDR utilization must adhere to Regulation 32."
+  },
+  "setbacks": {
+    "by_plot_and_road": [
+      {
+        "plot_area_max_m2": 100.0,
+        "road_width_max_m": 9.0,
+        "front": {
+          "value": 2.0,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(4), Table 15 (Small Plots <= 100 sqm)",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Relaxed front marginal space for congested / small residential layouts where road width < 9m."
+        },
+        "side": {
+          "value": 1.0,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(4), Table 15 & Clause 41(5)",
+          "verified": false,
+          "confidence": "medium",
+          "notes": "May be built up to boundary with dead wall on one side subject to neighbour consent / CFO norms."
+        },
+        "rear": {
+          "value": 1.5,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(4), Table 15",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Minimum rear open space for low-rise structures up to 10m height."
+        }
+      },
+      {
+        "plot_area_max_m2": 250.0,
+        "road_width_max_m": 9.0,
+        "front": {
+          "value": 3.0,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(1), Table 15 & Reg. 41(4)",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Standard 3.0m front marginal distance from access street boundary."
+        },
+        "side": {
+          "value": 1.5,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(1), Table 15 (Building height <= 10m)",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Side open space for residential buildings up to 10m height (G+2)."
+        },
+        "rear": {
+          "value": 1.5,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(1), Table 15 (Building height <= 10m)",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Rear open space for residential buildings up to 10m height on plots <= 250 sqm."
+        }
+      },
+      {
+        "plot_area_max_m2": 500.0,
+        "road_width_max_m": 12.0,
+        "front": {
+          "value": 4.5,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(1), Table 15",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Front marginal space on roads >= 9m to 12m for plots > 250 sqm."
+        },
+        "side": {
+          "value": 2.25,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(1), Table 15",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Side open space for low-rise residential on plots > 250 sqm."
+        },
+        "rear": {
+          "value": 2.25,
+          "unit": "m",
+          "source": "DCPR 2034, Reg. 41(1), Table 15",
+          "verified": false,
+          "confidence": "high",
+          "notes": "Rear open space for low-rise residential on plots > 250 sqm."
+        }
+      }
+    ]
+  },
+  "max_height": {
+    "value": 10.0,
+    "unit": "m",
+    "source": "DCPR 2034, Reg. 43(1) & Table 17",
+    "verified": false,
+    "confidence": "high",
+    "notes": "Permissible height for G+2 residential without requiring mid-rise fire installations or high-rise CFO approvals (cap <= 10m on road < 9m)."
+  },
+  "max_floors_note": "Typically Ground + 2 upper floors (G+2) or Stilt + 2 floors within 10m total building height for single-family residential.",
+  "ground_coverage": {
+    "value": 0.55,
+    "unit": "ratio",
+    "source": "DCPR 2034, Reg. 41 & Reg. 42 (Derived effective coverage after mandatory marginal open spaces)",
+    "verified": false,
+    "confidence": "medium",
+    "notes": "DCPR 2034 does not prescribe a flat percentage for small plots; coverage is governed by setbacks, resulting in ~50-60% buildable footprint."
+  },
+  "min_room": {
+    "habitable_area_m2": {
+      "value": 9.5,
+      "unit": "m2",
+      "source": "DCPR 2034, Reg. 37(1)(a) & NBC 2016 Part 3 Clause 4.5.1",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum carpet area for any habitable room (approx 102.25 sqft)."
+    },
+    "habitable_min_width_m": {
+      "value": 2.4,
+      "unit": "m",
+      "source": "DCPR 2034, Reg. 37(1)(b) & NBC 2016 Part 3 Clause 4.5.2",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum clear width of habitable room (approx 7 ft 10 in)."
+    },
+    "kitchen_area_m2": {
+      "value": 5.5,
+      "unit": "m2",
+      "source": "DCPR 2034, Reg. 37(2)(a) & NBC 2016 Part 3 Clause 4.6.1",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum kitchen area where separate dining is provided (approx 59.2 sqft). Minimum width 1.8m."
+    },
+    "toilet_area_m2": {
+      "value": 2.6,
+      "unit": "m2",
+      "source": "DCPR 2034, Reg. 37(3)(a) & NBC 2016 Part 3 Clause 4.8.1",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum combined bath and WC area (approx 28.0 sqft). For independent WC: 1.1 sqm; independent bath: 1.5 sqm."
+    },
+    "ceiling_height_m": {
+      "value": 2.75,
+      "unit": "m",
+      "source": "DCPR 2034, Reg. 37(1)(c) & NBC 2016 Part 3 Clause 4.5.3",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum clear height from finished floor to ceiling soffit in habitable rooms. For bath/WC: minimum 2.2m."
+    }
+  },
+  "ventilation": {
+    "window_to_floor_ratio": {
+      "value": 0.1,
+      "unit": "ratio",
+      "source": "DCPR 2034, Reg. 37(19) & NBC 2016 Part 8 Clause 4",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Total unobstructed window/ventilator area opening directly to open air must be >= 10% of floor area, with at least 50% openable."
+    }
+  },
+  "doors_mm": {
+    "main": {
+      "value": 1000,
+      "unit": "mm",
+      "source": "NBC 2016 Part 4 / Part 3 Clause 4.12 & DCPR 2034 Reg. 37(18)",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum clear doorway opening width for main entrance door. Height >= 2000 mm."
+    },
+    "habitable": {
+      "value": 900,
+      "unit": "mm",
+      "source": "NBC 2016 Part 3 Clause 4.12.1",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum clear width for internal habitable bedroom doors. Height >= 2000 mm."
+    },
+    "toilet": {
+      "value": 750,
+      "unit": "mm",
+      "source": "NBC 2016 Part 3 Clause 4.12.1",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum clear width for bathroom and water closet doors. Height >= 2000 mm."
+    }
+  },
+  "stair": {
+    "min_width_m": {
+      "value": 0.9,
+      "unit": "m",
+      "source": "DCPR 2034, Reg. 37(18)(b) & NBC 2016 Part 4 Table 7",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum width of interior staircase for single-family residential low-rise."
+    },
+    "max_riser_mm": {
+      "value": 175,
+      "unit": "mm",
+      "source": "DCPR 2034, Reg. 37(18)(c) & NBC 2016 Part 4 Clause 4.4.2.4.3",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Maximum riser height for residential stairs."
+    },
+    "min_tread_mm": {
+      "value": 250,
+      "unit": "mm",
+      "source": "DCPR 2034, Reg. 37(18)(d) & NBC 2016 Part 4 Clause 4.4.2.4.4",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum tread width without nosing for residential stairs."
+    }
+  },
+  "parking": {
+    "car_spaces_per_tenement": {
+      "value": 1.0,
+      "unit": "spaces",
+      "source": "DCPR 2034, Reg. 44, Table 21 (Residential tenement > 100 sqm carpet area)",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Tenements <= 100 sqm require 1 scooter/two-wheeler space; tenements > 100 sqm require 1 car parking space (2.5m x 5.0m)."
+    },
+    "car_stall_size_m": {
+      "value": [2.5, 5.0],
+      "unit": "m",
+      "source": "DCPR 2034, Reg. 44(1)",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum clear dimensions of car parking bay."
+    }
+  },
+  "structural": {
+    "min_column_mm": {
+      "value": 230,
+      "unit": "mm",
+      "source": "IS 456:2000, Cl. 26.5.3.1 & IS 13920:2016, Cl. 7.1.1",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Minimum lateral dimension of reinforced concrete column for earthquake-resistant framing in Seismic Zone III."
+    },
+    "span_depth_ratio": {
+      "value": 16.0,
+      "unit": "ratio",
+      "source": "IS 456:2000, Cl. 23.2.1 (Basic ratio is 20 for simply supported; 16 provides conservative deflection control)",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Effective span-to-depth thumb rule for deflection limit states under residential live loading."
+    },
+    "seismic_zone_factor": {
+      "value": 0.16,
+      "unit": "factor",
+      "source": "IS 1893 (Part 1):2016, Table 3 & Annex E (Mumbai is Zone III)",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Zone III seismic peak ground acceleration factor Z = 0.16."
+    },
+    "basic_wind_speed_ms": {
+      "value": 44.0,
+      "unit": "m/s",
+      "source": "IS 875 (Part 3):2015, Appendix A (Basic wind speed Vb for Mumbai)",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Design peak gust wind speed for 50-year return period."
+    },
+    "drainage_slope": {
+      "value": "1:60 to 1:100",
+      "unit": "gradient",
+      "source": "IS 1742:1992, Cl. 4.3 (Code of practice for building drainage)",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Self-cleansing velocity gradient for 100mm underground soil/waste pipes."
+    }
+  },
+  "site_defaults": {
+    "soil_bearing_kn_m2": {
+      "value": 120.0,
+      "unit": "kN/m2",
+      "source": "Conservative presumptive safe bearing capacity for shallow foundations in Mumbai weathered basalt / clay strata (IS 1904:1986 Table 1)",
+      "verified": false,
+      "confidence": "medium",
+      "notes": "Varies drastically across Mumbai: hard basalt in eastern suburbs reaches 250+ kN/m2; reclaimed coastal mud requires pile foundations."
+    },
+    "annual_rainfall_mm": {
+      "value": 2422.0,
+      "unit": "mm",
+      "source": "India Meteorological Department (IMD) / MCGM Disaster Management Cell normal annual rainfall for Santacruz / Colaba",
+      "verified": false,
+      "confidence": "high",
+      "notes": "Intense tropical monsoon rainfall occurs predominantly between June and September."
+    }
+  },
+  "crz_and_special_zones_note": "If a plot falls within CRZ-II (Coastal Regulation Zone, within 500m of HTL on landward side of existing road/structure), construction is governed by MoEFCC CRZ Notification 2011/2019 and MCZMA approval is mandatory, with FSI capped to pre-2011 norms. Plots near defense installations, civil aerodromes (AAI CCZM height restrictions around CSMIA and Juhu), or Grade I/II/III Heritage precincts (DCPR Reg. 52) require separate NOCs.",
+  "approval_checklist": [
+    "Property Card (PR Card) / CTS extract from Superintendent of Land Records (dated within 3 months)",
+    "DP Remark (Development Plan 2034 zoning certificate from MCGM Chief Engineer DP)",
+    "City Survey demarcation map / CTSO boundary demarcation certificate",
+    "Advocate 30-year Search Report and Clear Title Certificate",
+    "AutoDCR / BPAMS digital architectural submission by an MCGM-registered Licensed Surveyor / Architect (CoA registered)",
+    "Structural Stability Certificate and design drawings by an MCGM-registered Structural Engineer",
+    "Geotechnical Soil Investigation Report from an accredited materials testing laboratory",
+    "Drainage and Water Supply remarks from MCGM Hydraulic Engineer and Sewerage Department",
+    "Tree Authority NOC (or Tree Officer tree preservation/transplantation undertaking)",
+    "CFO (Chief Fire Officer) Self-Declaration / NOC for residential building <= 15m height",
+    "Receipt of Scrutiny Fees, Development Charges, and Labour Cess payments",
+    "Intimation of Disapproval (IOD) issuance and compliance with 40+ standard pre-construction conditions",
+    "Commencement Certificate (CC) issued by MCGM Executive Engineer (BP) prior to any ground excavation"
+  ],
+  "open_questions": [
+    "Can small plots (< 100 sqm) in congested gaothans or suburban layouts utilize zero-setback dead walls on the rear or side without a formal concession under DCPR 2034 Reg 6(b)?",
+    "Does MCGM currently permit Fungible Compensatory Area (FCA) of 35% on residential independent houses on payment of premium, and is it viable on narrow access roads (< 9m)?",
+    "What is the exact boundary line setback requirement when a plot abuts a DP-designated proposed road widening reservation (Road Line under MMC Act Section 297)?",
+    "Does the local ward require a rainwater harvesting completion certificate as a mandatory precondition for water connection on plots <= 250 sqm?"
+  ]
+}

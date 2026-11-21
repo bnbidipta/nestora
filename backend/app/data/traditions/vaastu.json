@@ -1,0 +1,173 @@
+{
+  "tradition": "vaastu",
+  "display_name": "Vaastu Shastra",
+  "description": "Ancient Indian spatial design and orientation tradition balancing the five cosmic elements (Pancha Bhoota: Earth, Water, Fire, Air, Space) across the cardinal grid of the Vastu Purusha Mandala.",
+  "verified": false,
+  "schools_note": "Classical texts (Brihat Samhita, Manasara, Samarangana Sutradhara) agree on core cardinal deities, but modern commercial practitioners debate secondary placements such as north-west kitchen options.",
+  "rules": [
+    {
+      "id": "vaastu.kitchen.zone",
+      "applies_to": "kitchen",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SE"],
+        "acceptable": ["NW"],
+        "avoid": ["NE", "SW", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "Governed by Agni (Fire deity); placing fire in water (NE) causes family conflict, while in earth (SW) causes instability.",
+      "source": "Brihat Samhita, Ch. 53 (Vastu-vidya), Verse 70 & Manasara, Ch. 9",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.bedroom_master.zone",
+      "applies_to": "bedroom_master",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SW"],
+        "acceptable": ["S", "W"],
+        "avoid": ["NE", "SE", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "Governed by Nairutya (Earth/Stability); grounds the primary decision-maker and family head.",
+      "source": "Samarangana Sutradhara of King Bhoja, Ch. 34, Verse 22",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.puja.zone",
+      "applies_to": "puja",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE"],
+        "acceptable": ["E", "N"],
+        "avoid": ["S", "SW", "SE"]
+      },
+      "strength": "core",
+      "rationale": "Governed by Ishanya (Water/Ether/Divine consciousness); receives positive morning solar infrared radiation.",
+      "source": "Brihat Samhita, Ch. 53, Verse 72",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.centre.brahmasthana",
+      "applies_to": "living",
+      "kind": "centre_open",
+      "value": {
+        "preferred": ["CENTRE"],
+        "avoid": ["toilet", "kitchen", "staircase", "heavy_column"]
+      },
+      "strength": "core",
+      "rationale": "Brahmasthana (central 1/9th of mandala) must remain open, unweighted, and unpunctured to allow cosmic energy circulation.",
+      "source": "Samarangana Sutradhara, Ch. 12 (Brahmasthana-nirnaya)",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.toilet.zone",
+      "applies_to": "toilet",
+      "kind": "avoid_zone",
+      "value": {
+        "preferred": ["NW", "W", "S"],
+        "acceptable": ["SE"],
+        "avoid": ["NE", "SW", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "Eliminative functions in NE corrupt divine energy; in SW drain health and financial grounding.",
+      "source": "Vastu Vidya of Vishvakarma, Shloka 45",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.entrance.main",
+      "applies_to": "entrance",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE", "N", "E"],
+        "acceptable": ["NW", "SE"],
+        "avoid": ["SW"]
+      },
+      "strength": "core",
+      "rationale": "Auspicous padas (Indra, Jayanta, Mukhya) channel vital prana and early morning sunlight.",
+      "source": "Manasara, Ch. 36 (Dwara-lakshanam)",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.water_underground.zone",
+      "applies_to": "water_tank_underground",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE"],
+        "acceptable": ["N", "E"],
+        "avoid": ["SW", "SE", "S"]
+      },
+      "strength": "common",
+      "rationale": "Depressions and subterranean water in Ishanya enhance prosperity; in fire or earth sectors cause fire or structural distress.",
+      "source": "Brihat Samhita, Ch. 53, Verse 75",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.water_overhead.zone",
+      "applies_to": "water_tank_overhead",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SW", "W"],
+        "acceptable": ["S"],
+        "avoid": ["NE", "CENTRE"]
+      },
+      "strength": "common",
+      "rationale": "Heavy overhead mass should ballast the highest, heaviest southwest sector, never the light northeast.",
+      "source": "Samarangana Sutradhara, Ch. 35",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.staircase.zone",
+      "applies_to": "staircase",
+      "kind": "zone",
+      "value": {
+        "preferred": ["S", "SW", "W"],
+        "acceptable": ["NW", "SE"],
+        "avoid": ["NE", "CENTRE"]
+      },
+      "strength": "common",
+      "rationale": "Stairs constitute heavy structural loading that must anchor the southern/western quadrant.",
+      "source": "Manasara, Ch. 30 (Sopana-vidhana)",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.staircase.ascent",
+      "applies_to": "staircase",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["clockwise"],
+        "avoid": ["counter_clockwise"]
+      },
+      "strength": "common",
+      "rationale": "Ascent in clockwise pradakshina movement aligns with earth's rotational spin.",
+      "source": "Vishvakarma Prakasha, Ch. 7, Verse 32",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.avoid_kitchen_toilet_adj",
+      "applies_to": "kitchen",
+      "kind": "avoid_adjacency",
+      "value": {
+        "avoid": ["toilet"]
+      },
+      "strength": "core",
+      "rationale": "Kitchen prep must never share common walls, doors, or drainage stacks with waste facilities.",
+      "source": "Common modern consensus derived from Manasara purity ordinances",
+      "confidence": "high"
+    },
+    {
+      "id": "vaastu.septic.zone",
+      "applies_to": "septic",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NW", "W"],
+        "acceptable": ["N"],
+        "avoid": ["NE", "SW", "SE", "CENTRE"]
+      },
+      "strength": "common",
+      "rationale": "Decomposition gas discharge is channeled through Vayu (wind) corner away from living core.",
+      "source": "Vishvakarma Prakasha, Ch. 8",
+      "confidence": "medium"
+    }
+  ]
+}

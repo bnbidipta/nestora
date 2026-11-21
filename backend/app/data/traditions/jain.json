@@ -1,0 +1,112 @@
+{
+  "tradition": "jain",
+  "display_name": "Jain Domestic Planning & Purity Principles",
+  "description": "Domestic architectural guidelines rooted in the principle of Ahimsa (non-violence to all life forms), strict kitchen hygiene, daytime illumination (Chauvihar), and ritual domestic purity.",
+  "verified": false,
+  "schools_note": "Practiced across both Digambara and Shvetambara Jain households. Highly prioritized in western India (Gujarat, Rajasthan, and Maharashtra).",
+  "rules": [
+    {
+      "id": "jain.kitchen.sunlight_chauvihar",
+      "applies_to": "kitchen",
+      "kind": "zone",
+      "value": {
+        "preferred": ["E", "SE"],
+        "avoid": ["dark_basement", "windowless_interior", "SW"]
+      },
+      "strength": "core",
+      "rationale": "Ahimsa and Chauvihar: Preparation and consumption of food must occur during daylight hours; abundant natural sunlight prevents microscopic insects and mold from contaminating meals.",
+      "source": "Acharya Hemachandra, 'Yoga Shastra', Ch. 3 (Ahimsa and Shravaka Dharma)",
+      "confidence": "high"
+    },
+    {
+      "id": "jain.kitchen_toilet.strict_separation",
+      "applies_to": "kitchen",
+      "kind": "avoid_adjacency",
+      "value": {
+        "avoid": ["toilet", "septic", "shoe_rack"]
+      },
+      "strength": "core",
+      "rationale": "Shaucha (Absolute Purity): Kitchen and dining areas must never share a wall, door, or plumbing service shaft with a toilet or wastewater conduit.",
+      "source": "Jain Shravaka-Achara Codes of Conduct (Purity Ordinances)",
+      "confidence": "high"
+    },
+    {
+      "id": "jain.dining.east_facing",
+      "applies_to": "dining",
+      "kind": "facing",
+      "value": {
+        "preferred": ["E", "N"],
+        "avoid": ["S"]
+      },
+      "strength": "common",
+      "rationale": "Dining while facing East towards morning sunlight promotes pure digestion and mindful eating (Sattvic lifestyle).",
+      "source": "Traditional Jain Shravaka household guidance compendium",
+      "confidence": "high"
+    },
+    {
+      "id": "jain.water_storage.boiling_filtration",
+      "applies_to": "water_tank_underground",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE", "N"],
+        "avoid": ["SW", "adjacent_to_septic"]
+      },
+      "strength": "core",
+      "rationale": "Jal-Shuddhi: Underground and overhead potable water storage must be sealed, accessible for routine cleaning, completely sun-shielded to avoid algae/larvae, and distanced from sewage lines.",
+      "source": "Jain Dharma Prakasha (Water Purity and An-Chhana Pani prohibitions)",
+      "confidence": "high"
+    },
+    {
+      "id": "jain.grain_store.moisture_free",
+      "applies_to": "store",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NW", "N"],
+        "avoid": ["damp_subterranean_corners", "SE"]
+      },
+      "strength": "common",
+      "rationale": "Grain, pulse, and dry grocery store (Bhandar) must remain elevated, well-ventilated, and completely moisture-free to prevent weevil/insect emergence.",
+      "source": "Traditional Shravaka household kitchen and storage management manuals",
+      "confidence": "high"
+    },
+    {
+      "id": "jain.puja_ghar.purity",
+      "applies_to": "puja",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE", "E"],
+        "avoid": ["adjacent_to_toilet", "under_staircase", "under_bathroom_slab"]
+      },
+      "strength": "core",
+      "rationale": "Derasar / home temple must be in the pristine Ishanya zone; placing an altar directly below a second-floor bathroom or wastewater pipe is strictly forbidden.",
+      "source": "Vastu Vidhan for Jinalayas and Griha-Chaityas",
+      "confidence": "high"
+    },
+    {
+      "id": "jain.ventilation.cross_breeze",
+      "applies_to": "living",
+      "kind": "zone",
+      "value": {
+        "preferred": ["N", "E"],
+        "avoid": ["damp_dark_cavities"]
+      },
+      "strength": "common",
+      "rationale": "Continuous airflow and daylight dispel darkness, dampness, and insect infestation throughout the domestic dwelling.",
+      "source": "Ratnakaranda Shravakachara (Moral living and residential purity)",
+      "confidence": "high"
+    },
+    {
+      "id": "jain.terrace.bird_grain_safety",
+      "applies_to": "balcony",
+      "kind": "orientation_of_fixture",
+      "value": {
+        "preferred": ["open_terrace_with_parapet"],
+        "avoid": ["water_logging"]
+      },
+      "strength": "minor",
+      "rationale": "Open roof terrace designed with rapid slope drainage to avoid water stagnancy (breeding ground for mosquitoes).",
+      "source": "Traditional sanitary guidelines for Jain urban dwellings",
+      "confidence": "medium"
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "id": "t_30x40_g1_3bhk_duplex_open",
+  "plot_bucket_ft": [30, 40],
+  "floors": 2,
+  "bhk": 3,
+  "verified": false,
+  "tags": ["internal_stair", "open_plan", "contemporary", "car_parking"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "car_porch",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.5,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living_dining_greatroom",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.34,
+      "min_aspect": 0.55,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "open_kitchen",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.7,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_guest",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_g",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "family_lounge_1",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.20,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_master",
+      "type": "bedroom_master",
+      "floor": 1,
+      "rel_area": 0.24,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_2",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_master",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.08,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_2",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "balcony_front",
+      "type": "balcony",
+      "floor": 1,
+      "rel_area": 0.10,
+      "min_aspect": 0.4,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["car_porch", "living_dining_greatroom"],
+    ["living_dining_greatroom", "open_kitchen"],
+    ["living_dining_greatroom", "bedroom_guest"],
+    ["bedroom_guest", "toilet_g"],
+    ["family_lounge_1", "bedroom_master"],
+    ["family_lounge_1", "bedroom_2"],
+    ["bedroom_master", "toilet_master"],
+    ["bedroom_2", "toilet_2"],
+    ["family_lounge_1", "balcony_front"]
+  ],
+  "must_not_touch": [
+    ["open_kitchen", "toilet_g"]
+  ],
+  "wet_core_stack": ["toilet_g", "toilet_2"],
+  "stair": {
+    "type": "internal",
+    "zone": "middle",
+    "side": "right"
+  },
+  "notes": "Contemporary open-plan duplex maximizing visual space on compact 30x40 plots by combining living, dining, and open kitchen into a continuous 34% footprint great room.",
+  "source": "Architectural Digest India modern urban townhouse showcase"
+}

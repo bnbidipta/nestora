@@ -1,0 +1,200 @@
+{
+  "id": "t_40x60_g1_4bhk_luxury",
+  "plot_bucket_ft": [40, 60],
+  "floors": 2,
+  "bhk": 4,
+  "verified": false,
+  "tags": ["car_parking", "internal_stair", "elder_ground_bedroom", "double_height_living"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "two_car_garage",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.16,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "formal_living",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.22,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "family_dining",
+      "type": "dining",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen_wet_dry",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "puja",
+      "type": "puja",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_elder",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_elder",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "powder_room_g",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.02,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "upper_family_lounge",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.65,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_master",
+      "type": "bedroom_master",
+      "floor": 1,
+      "rel_area": 0.22,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_kids_1",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.16,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_kids_2",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.14,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_master",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_kids_1",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_kids_2",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "terrace_deck",
+      "type": "balcony",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.4,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["two_car_garage", "formal_living"],
+    ["formal_living", "family_dining"],
+    ["family_dining", "kitchen_wet_dry"],
+    ["family_dining", "puja"],
+    ["family_dining", "bedroom_elder"],
+    ["bedroom_elder", "toilet_elder"],
+    ["formal_living", "powder_room_g"],
+    ["upper_family_lounge", "bedroom_master"],
+    ["upper_family_lounge", "bedroom_kids_1"],
+    ["upper_family_lounge", "bedroom_kids_2"],
+    ["bedroom_master", "toilet_master"],
+    ["bedroom_kids_1", "toilet_kids_1"],
+    ["bedroom_kids_2", "toilet_kids_2"],
+    ["upper_family_lounge", "terrace_deck"]
+  ],
+  "must_not_touch": [
+    ["kitchen_wet_dry", "toilet_elder"],
+    ["puja", "powder_room_g"],
+    ["puja", "toilet_elder"]
+  ],
+  "wet_core_stack": ["toilet_elder", "toilet_master"],
+  "stair": {
+    "type": "internal",
+    "zone": "middle",
+    "side": "right"
+  },
+  "notes": "Spacious luxury villa on 2,400 sqft plot featuring enclosed 2-car garage, separated wet/dry scullery, ensuite bedrooms, and a private master terrace deck.",
+  "source": "Contemporary Indian Luxury Villa Case Studies (Indian Institute of Architects Journal)"
+}

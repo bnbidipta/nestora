@@ -1,0 +1,140 @@
+{
+  "tradition": "sthapatya_veda",
+  "display_name": "Maharishi Sthapatya Veda",
+  "description": "Vedic architectural system emphasizing strict alignment to cosmic coordinates, exact mathematical proportions (Ayadi formulas), and the purifying influence of the rising sun.",
+  "verified": false,
+  "schools_note": "MSV is uncompromising regarding cardinal orientation; homes rotated even slightly off true north-south are considered non-compliant.",
+  "rules": [
+    {
+      "id": "msv.orientation.true_east",
+      "applies_to": "entrance",
+      "kind": "facing",
+      "value": {
+        "preferred": ["E"],
+        "acceptable": ["N"],
+        "avoid": ["S", "SW", "W", "NW", "SE"]
+      },
+      "strength": "core",
+      "rationale": "Sunrise in the exact East provides the foundational nourishing pranic energy; South entrances bring destructive cosmic influences.",
+      "source": "Maharishi Mahesh Yogi, 'Celebrating Perfection in Building' (1998), pp. 45-52",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.brahmastan.silent_core",
+      "applies_to": "living",
+      "kind": "centre_open",
+      "value": {
+        "preferred": ["CENTRE"],
+        "avoid": ["toilet", "kitchen", "staircase", "pillar", "bedroom"]
+      },
+      "strength": "core",
+      "rationale": "The Brahmastan is the holiest center of unbounded silence and consciousness, crowned by a natural roof lantern (Brahmasthan kalash).",
+      "source": "Maharishi Vastu Architecture Institute Design Manual, Sec. 3.2",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.kitchen.southeast",
+      "applies_to": "kitchen",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SE"],
+        "avoid": ["NE", "SW", "N", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "South-East is the Agni sector; cooking here promotes vitality and flawless digestion.",
+      "source": "Maharishi Sthapatya Veda Architecture Guidelines, Ch. 4",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.master_bedroom.southwest",
+      "applies_to": "bedroom_master",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SW"],
+        "avoid": ["NE", "SE", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "South-West coordinates provide profound deep sleep, emotional balance, and parental authority.",
+      "source": "Maharishi Sthapatya Veda Architecture Guidelines, Ch. 4",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.meditation_puja.northeast",
+      "applies_to": "puja",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE"],
+        "avoid": ["S", "SW", "SE"]
+      },
+      "strength": "core",
+      "rationale": "North-East is Ishanya; unobstructed early sunlight aids meditation, intellectual clarity, and spiritual progress.",
+      "source": "Maharishi Vastu Architecture Institute Design Manual, Sec. 5.1",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.dining.adjacent_kitchen",
+      "applies_to": "dining",
+      "kind": "adjacency",
+      "value": {
+        "preferred": ["S", "E"],
+        "must_touch": ["kitchen"]
+      },
+      "strength": "common",
+      "rationale": "Dining should be immediately adjacent to the kitchen, facing East while eating.",
+      "source": "Maharishi Vastu Architecture Institute Design Manual, Sec. 5.4",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.study.northeast",
+      "applies_to": "study",
+      "kind": "zone",
+      "value": {
+        "preferred": ["N", "NE"],
+        "avoid": ["S", "SW"]
+      },
+      "strength": "common",
+      "rationale": "North is ruled by Mercury/Buddha, facilitating analytical intellect, accounting, and scholarly focus.",
+      "source": "Maharishi Sthapatya Veda Architecture Guidelines, Ch. 5",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.bathroom.water_drainage",
+      "applies_to": "toilet",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NW", "W"],
+        "avoid": ["NE", "SW", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "Drainage must flow towards the North and East, with waste fixtures isolated in the Northwest.",
+      "source": "Maharishi Vastu Technical Notes on Drainage and Waste (2004)",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.staircase.placement",
+      "applies_to": "staircase",
+      "kind": "zone",
+      "value": {
+        "preferred": ["S", "W"],
+        "avoid": ["NE", "CENTRE"]
+      },
+      "strength": "common",
+      "rationale": "Staircases represent movement and mass, placed along perimeter walls to shield the south/west sun.",
+      "source": "Maharishi Sthapatya Veda Architecture Guidelines, Ch. 6",
+      "confidence": "high"
+    },
+    {
+      "id": "msv.water_tank_overhead.highest_sw",
+      "applies_to": "water_tank_overhead",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SW"],
+        "avoid": ["NE", "CENTRE"]
+      },
+      "strength": "common",
+      "rationale": "The highest architectural elevation and heaviest mass must occupy the South-West.",
+      "source": "Maharishi Vastu Technical Guidelines on Structural Massing",
+      "confidence": "high"
+    }
+  ]
+}

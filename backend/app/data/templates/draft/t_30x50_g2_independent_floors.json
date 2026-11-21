@@ -1,0 +1,210 @@
+{
+  "id": "t_30x50_g2_independent_floors",
+  "plot_bucket_ft": [30, 50],
+  "floors": 3,
+  "bhk": 5,
+  "verified": false,
+  "tags": ["external_stair", "multi_unit", "rental_income", "stilt_front"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "covered_parking_g",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.32,
+      "min_aspect": 0.6,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living_g",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.22,
+      "min_aspect": 0.7,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "kitchen_g",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.12,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_g",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.16,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_g",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living_1",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.24,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "dining_1",
+      "type": "dining",
+      "floor": 1,
+      "rel_area": 0.12,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen_1",
+      "type": "kitchen",
+      "floor": 1,
+      "rel_area": 0.12,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_1a",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_1b",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.14,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_1",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "centre",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living_2",
+      "type": "living",
+      "floor": 2,
+      "rel_area": 0.24,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "dining_2",
+      "type": "dining",
+      "floor": 2,
+      "rel_area": 0.12,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen_2",
+      "type": "kitchen",
+      "floor": 2,
+      "rel_area": 0.12,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_2a",
+      "type": "bedroom",
+      "floor": 2,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_2b",
+      "type": "bedroom",
+      "floor": 2,
+      "rel_area": 0.14,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_2",
+      "type": "toilet",
+      "floor": 2,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "centre",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["covered_parking_g", "living_g"],
+    ["living_g", "kitchen_g"],
+    ["living_g", "bedroom_g"],
+    ["bedroom_g", "toilet_g"],
+    ["living_1", "dining_1"],
+    ["dining_1", "kitchen_1"],
+    ["dining_1", "bedroom_1a"],
+    ["dining_1", "bedroom_1b"],
+    ["bedroom_1a", "toilet_1"],
+    ["living_2", "dining_2"],
+    ["dining_2", "kitchen_2"],
+    ["dining_2", "bedroom_2a"],
+    ["dining_2", "bedroom_2b"],
+    ["bedroom_2a", "toilet_2"]
+  ],
+  "must_not_touch": [
+    ["kitchen_g", "toilet_g"],
+    ["kitchen_1", "toilet_1"],
+    ["kitchen_2", "toilet_2"]
+  ],
+  "wet_core_stack": ["toilet_g", "toilet_1", "toilet_2"],
+  "stair": {
+    "type": "external",
+    "zone": "front",
+    "side": "right"
+  },
+  "notes": "Three self-contained flats with an external dog-leg staircase. Ground floor features parking + 1BHK, while First and Second floors provide independent 2BHK rental units.",
+  "source": "Suburban Mumbai builder floor development survey / Navi Mumbai CIDCO row housing plans"
+}

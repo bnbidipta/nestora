@@ -1,0 +1,143 @@
+{
+  "tradition": "mayamatam",
+  "display_name": "Mayamatam / Dravidian Vastu",
+  "description": "Classical South Indian Vastu text attributed to sage Maya, outlining the technical rules of site orientation, padavinyasa grid planning, and structural proportioning for residential temples and houses.",
+  "verified": false,
+  "schools_note": "Followed extensively in Tamil Nadu, Kerala, and parts of Karnataka and coastal Maharashtra. Emphasizes strict calculation of Ayadi Shadvarga (gain, loss, nakshatra, yoni).",
+  "rules": [
+    {
+      "id": "mayamatam.site_orientation.shanku",
+      "applies_to": "entrance",
+      "kind": "facing",
+      "value": {
+        "preferred": ["E", "N", "S", "W"],
+        "avoid": ["NE", "SE", "SW", "NW"]
+      },
+      "strength": "core",
+      "rationale": "Structures must strictly align to cardinal axes established by gnomon (shanku) shadow casting, avoiding skew/diagonal corner orientations.",
+      "source": "Mayamatam, Ch. 6 (Gnomon and Cardinal Orientation), Verses 1-15",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.kitchen.agneya",
+      "applies_to": "kitchen",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SE"],
+        "acceptable": ["NW"],
+        "avoid": ["NE", "SW", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "Agneya (South-East) is assigned to Agni; cooking hearth placed here preserves domestic peace and health.",
+      "source": "Mayamatam, Ch. 26 (Dwelling Houses), Verses 45-48",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.master_bed.nairutya",
+      "applies_to": "bedroom_master",
+      "kind": "zone",
+      "value": {
+        "preferred": ["SW"],
+        "acceptable": ["W"],
+        "avoid": ["NE", "SE", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "Nairutya (South-West) represents the Pitrus (ancestors) and steady earth; ensures uninterrupted leadership.",
+      "source": "Mayamatam, Ch. 26, Verse 50",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.water_storage.varuna",
+      "applies_to": "water_tank_underground",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE", "W"],
+        "acceptable": ["N"],
+        "avoid": ["SE", "SW"]
+      },
+      "strength": "common",
+      "rationale": "Varuna (West) and Ishana (North-East) govern bodies of water, well digging, and rainwater cisterns.",
+      "source": "Mayamatam, Ch. 25, Verses 12-14",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.grain_store.kubera",
+      "applies_to": "store",
+      "kind": "zone",
+      "value": {
+        "preferred": ["N", "NW"],
+        "avoid": ["SE", "SW"]
+      },
+      "strength": "common",
+      "rationale": "Kubera (North) governs wealth and grain reservoirs; dry storage in northern quadrants maintains longevity.",
+      "source": "Mayamatam, Ch. 26, Verse 52",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.brahmasthana.unobstructed",
+      "applies_to": "living",
+      "kind": "centre_open",
+      "value": {
+        "preferred": ["CENTRE"],
+        "avoid": ["toilet", "hearth", "staircase", "pillar"]
+      },
+      "strength": "core",
+      "rationale": "The central quadrant (Brahma) must be immaculate; columns intersecting the central marma points bring ruin.",
+      "source": "Mayamatam, Ch. 7 (Vastu Mandala), Verses 30-40",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.puja_devagriha.ishana",
+      "applies_to": "puja",
+      "kind": "zone",
+      "value": {
+        "preferred": ["NE"],
+        "acceptable": ["E"],
+        "avoid": ["SW", "S"]
+      },
+      "strength": "core",
+      "rationale": "Ishana corner is dedicated to Shiva/Supreme consciousness for ritual consecration.",
+      "source": "Mayamatam, Ch. 26, Verse 44",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.toilet.vayu",
+      "applies_to": "toilet",
+      "kind": "avoid_zone",
+      "value": {
+        "preferred": ["NW", "S"],
+        "avoid": ["NE", "SW", "CENTRE"]
+      },
+      "strength": "core",
+      "rationale": "Disposal of bodily refuse must be confined to the wind (Vayu) or Yama quadrants, never facing sunrise.",
+      "source": "Mayamatam, Ch. 26, Verse 55",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.verandah.purva",
+      "applies_to": "entrance",
+      "kind": "zone",
+      "value": {
+        "preferred": ["E", "N"],
+        "avoid": ["SW"]
+      },
+      "strength": "common",
+      "rationale": "Deep shaded verandah (alimpanam) along the east and north buffers tropical heat and welcomes guests.",
+      "source": "Mayamatam, Ch. 27 (Verandahs and Porticos)",
+      "confidence": "high"
+    },
+    {
+      "id": "mayamatam.staircase.dakshina",
+      "applies_to": "staircase",
+      "kind": "zone",
+      "value": {
+        "preferred": ["S", "SW", "W"],
+        "avoid": ["NE", "CENTRE"]
+      },
+      "strength": "common",
+      "rationale": "Flights of steps (sopana) must rise from West to East or South to North, occupying the dense southern flank.",
+      "source": "Mayamatam, Ch. 28, Verses 20-24",
+      "confidence": "high"
+    }
+  ]
+}

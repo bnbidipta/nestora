@@ -1,0 +1,422 @@
+{
+  "version": "2.0-draft",
+  "verified": false,
+  "target_completion_time_sec": 210,
+  "questions": [
+    {
+      "id": "build_type",
+      "step": 1,
+      "type": "single",
+      "label": "What are you planning to build?",
+      "help": "Nestora currently synthesizes complete plans for independent houses on private plots.",
+      "options": [
+        {
+          "value": "new_plot",
+          "label": "A new independent house on my private plot (Bungalow / Row House / Villa)"
+        },
+        {
+          "value": "renovation",
+          "label": "Structural extension or renovation of an existing house"
+        },
+        {
+          "value": "flat_interior",
+          "label": "Interior design or fit-out for an apartment / flat"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "pipeline_branch",
+        "waitlist_trigger",
+        "generator_mode"
+      ],
+      "clarify_if": "Selected 'renovation' or 'flat_interior' routes to priority waitlist for Phase 2."
+    },
+    {
+      "id": "location_and_access",
+      "step": 1,
+      "type": "map",
+      "label": "Where is your plot located and what is the street access?",
+      "help": "Street width determines your permissible floor area (FSI) under municipal bylaws.",
+      "options": [
+        {
+          "value": "road_under_9m",
+          "label": "Narrow lane or gaothan road (Less than 9 meters / under 30 ft)"
+        },
+        {
+          "value": "road_9m_to_12m",
+          "label": "Standard residential street (9 to 12 meters / 30 to 40 ft)"
+        },
+        {
+          "value": "road_over_12m",
+          "label": "Wide municipal avenue (Over 12 meters / 40+ ft)"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "permissible_fsi",
+        "setbacks",
+        "road_frontage_boundary",
+        "fire_tender_access_rules"
+      ],
+      "clarify_if": "Road width < 9m caps suburban Mumbai FSI to 1.00 base without premium."
+    },
+    {
+      "id": "plot_geometry",
+      "step": 1,
+      "type": "number",
+      "label": "What are your exact plot dimensions and orientation?",
+      "help": "Enter front road width in feet, plot depth in feet, and road facing direction.",
+      "options": [
+        {"value": "facing_north", "label": "North-facing plot"},
+        {"value": "facing_east", "label": "East-facing plot"},
+        {"value": "facing_south", "label": "South-facing plot"},
+        {"value": "facing_west", "label": "West-facing plot"}
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "buildable_envelope",
+        "aspect_ratio",
+        "template_selection",
+        "structural_bay_layout",
+        "main_gate_placement"
+      ],
+      "clarify_if": "Frontage width < 20 ft triggers narrow-lot linear template."
+    },
+    {
+      "id": "site_environmental_confirm",
+      "step": 1,
+      "type": "single",
+      "label": "Do you know your plot's soil and ground conditions?",
+      "help": "If you don't have a soil bore report yet, we will safely apply Mumbai municipal standard engineering defaults.",
+      "options": [
+        {
+          "value": "mumbai_default",
+          "label": "I don't know — use standard Mumbai municipal defaults (Basalt/Murrum strata, Zone III seismic, 44 m/s wind)"
+        },
+        {
+          "value": "black_cotton",
+          "label": "Expansive black cotton / soft clay soil (Requires raft or under-reamed pile foundation)"
+        },
+        {
+          "value": "hard_rock",
+          "label": "Solid rocky basalt ledge (Shallow isolated column footings)"
+        },
+        {
+          "value": "coastal_crz",
+          "label": "Near coastal high-tide line or creek buffer (CRZ setback zone)"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "foundation_depth",
+        "footing_type_raft_vs_isolated",
+        "excavation_boq",
+        "crz_clearance_flags"
+      ],
+      "clarify_if": "Selected 'coastal_crz' triggers MCZMA environmental buffer check."
+    },
+    {
+      "id": "floors_and_parking",
+      "step": 2,
+      "type": "single",
+      "label": "How many storeys do you want to build, and what parking is needed?",
+      "help": "Total building height for low-rise residential is typically capped at 10 meters (G+2).",
+      "options": [
+        {
+          "value": "g_only_porch",
+          "label": "Single floor (Ground only / Bungalow) with front car porch"
+        },
+        {
+          "value": "g1_duplex_porch",
+          "label": "Ground + 1 upper floor (Duplex) with 1 car porch"
+        },
+        {
+          "value": "g2_stilt_multigen",
+          "label": "Ground stilt covered parking (2 cars) + 2 upper residential floors"
+        },
+        {
+          "value": "g2_three_floors",
+          "label": "Ground + 2 full residential floors with open front parking"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "template_floors",
+        "ground_coverage",
+        "stilt_vs_porch_structure",
+        "structural_column_sizing",
+        "driveway_turning_radius"
+      ],
+      "clarify_if": "G+2 requires 230x380mm column sections instead of standard 230x230mm."
+    },
+    {
+      "id": "household_occupants",
+      "step": 2,
+      "type": "multi",
+      "label": "Who will be living in this home?",
+      "help": "Helps us size bedrooms, calculate bathroom counts, and plan daily living circulation.",
+      "options": [
+        {"value": "adults_1_2", "label": "1 or 2 Working Adults"},
+        {"value": "adults_3_plus", "label": "3+ Adults / Joint Family"},
+        {"value": "elders_present", "label": "Senior Citizens / Parents"},
+        {"value": "kids_present", "label": "Children (Toddlers or School-age)"},
+        {"value": "pets_present", "label": "Family Pets (Dogs / Cats)"}
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "bedroom_count",
+        "bathroom_count",
+        "dining_table_seats",
+        "water_tank_capacity_litres",
+        "balcony_parapet_safety_height"
+      ],
+      "clarify_if": "Kids present increases balcony and stair railing height from 1000mm to 1100mm with vertical balusters < 100mm gap."
+    },
+    {
+      "id": "elder_accessibility",
+      "step": 2,
+      "type": "single",
+      "label": "Do any family members have knee pain or mobility challenges?",
+      "help": "Ensures step-free circulation, wider doorways, and dedicated ground-floor suites.",
+      "options": [
+        {
+          "value": "knee_pain_mobility",
+          "label": "Yes — requires a ground-floor master suite, zero-step thresholds, and wider doors"
+        },
+        {
+          "value": "wheelchair_future",
+          "label": "Yes — planned for wheelchair accessibility and future elevator / lift shaft"
+        },
+        {
+          "value": "no_mobility_issues",
+          "label": "No mobility constraints — comfortable with regular multi-storey stairs"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "ground_floor_bedroom_mandatory",
+        "door_width_minimums_900mm",
+        "bathroom_grab_bar_blocking",
+        "anti_skid_flooring_spec",
+        "lift_shaft_core_void"
+      ],
+      "clarify_if": "Triggers 900mm clear door openings and eliminates sunken shower curbs."
+    },
+    {
+      "id": "work_from_home",
+      "step": 2,
+      "type": "single",
+      "label": "How much does your family work or study from home?",
+      "help": "Determines whether to allocate dedicated quiet study rooms or integrated workstations.",
+      "options": [
+        {
+          "value": "dedicated_home_office",
+          "label": "Daily intensive remote work — need a dedicated quiet office / study with video call acoustic privacy"
+        },
+        {
+          "value": "integrated_study_nook",
+          "label": "Moderate / student study — quiet desk nook inside bedrooms is sufficient"
+        },
+        {
+          "value": "no_wfh",
+          "label": "Minimal / rare — no specialized study room needed"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "dedicated_study_room",
+        "acoustic_wall_isolation",
+        "electrical_dedicated_inverter_circuit",
+        "fiber_optic_conduit_routing"
+      ],
+      "clarify_if": "Adds dedicated 100 sqft study room on quiet first floor."
+    },
+    {
+      "id": "kitchen_and_diet",
+      "step": 3,
+      "type": "single",
+      "label": "What are your culinary habits and kitchen prep preferences?",
+      "help": "Tailors ventilation exhaust, wet/dry utility separation, and sunlight orientation.",
+      "options": [
+        {
+          "value": "pure_veg_open",
+          "label": "Vegetarian household — open-concept modular kitchen connected to dining"
+        },
+        {
+          "value": "non_veg_separate_prep",
+          "label": "Non-vegetarian household — prefer an enclosed wet preparation utility / scullery"
+        },
+        {
+          "value": "jain_chauvihar",
+          "label": "Jain dietary household — strict Chauvihar daytime sunlight, direct morning sun, sealed dry store"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "kitchen_footprint",
+        "wet_dry_utility_separation",
+        "kitchen_daylight_window_ratio",
+        "exhaust_chimney_shaft_placement"
+      ],
+      "clarify_if": "Jain preference mandates window orientation in East or South-East."
+    },
+    {
+      "id": "sacred_space_and_hosting",
+      "step": 3,
+      "type": "multi",
+      "label": "What spiritual spaces and social hosting capacity do you need?",
+      "help": "Ensures appropriate temple/prayer room zoning and guest accommodation.",
+      "options": [
+        {
+          "value": "dedicated_puja_room",
+          "label": "Dedicated traditional Mandir / Puja room in auspicious quadrant"
+        },
+        {
+          "value": "compact_puja_nook",
+          "label": "Compact prayer alcove or wall mandir in living area"
+        },
+        {
+          "value": "qibla_aligned_prayer",
+          "label": "Clear prayer area oriented towards Qibla with dedicated ablution (wudu) zone"
+        },
+        {
+          "value": "frequent_large_gatherings",
+          "label": "Frequent festive hosting — need living/dining rooms that can open up into one grand space"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "puja_mandir_room_allocation",
+        "toilet_qibla_perpendicular_alignment",
+        "guest_powder_toilet_near_entrance",
+        "folding_partition_living_dining"
+      ],
+      "clarify_if": "Enforces mandatory separation between mandir walls and toilet plumbing."
+    },
+    {
+      "id": "traditions_strictness",
+      "step": 3,
+      "type": "single",
+      "label": "How strictly should traditional placement rules (Vaastu, Feng Shui, Islamic, Biophilic) be followed?",
+      "help": "Building codes and structural safety always override traditions. Choose your compliance tier.",
+      "options": [
+        {
+          "value": "strict_vaastu",
+          "label": "Strict Traditional Vaastu Shastra (No compromise on kitchen SE, master SW, puja NE, open center)"
+        },
+        {
+          "value": "balanced_practical",
+          "label": "Balanced & Practical (Follow core orientations where feasible, prioritize modern flow and sunlight)"
+        },
+        {
+          "value": "evidence_biophilic",
+          "label": "Modern Biophilic & Climatic (Prioritize daylight, cross-ventilation, and green views over cardinal dogma)"
+        },
+        {
+          "value": "none_modernist",
+          "label": "Neutral / Modernist (Pure functional architecture without traditional astrological rules)"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "solver_constraint_weight_traditions",
+        "brahmasthana_courtyard_enforcement",
+        "cardinal_room_swaps",
+        "staircase_spin_direction"
+      ],
+      "clarify_if": "Strict setting penalizes solutions deviating from canonical directional padas."
+    },
+    {
+      "id": "future_horizon_10yr",
+      "step": 4,
+      "type": "multi",
+      "label": "What are your 5-to-10 year future expansion plans?",
+      "help": "Structural columns, stairs, and slab cutouts can be pre-engineered today to save major reconstruction costs later.",
+      "options": [
+        {
+          "value": "future_rental_floor",
+          "label": "Planning to add a future upper floor for rental income (Needs external or semi-private staircase)"
+        },
+        {
+          "value": "future_lift_provision",
+          "label": "Planning a future elevator / pneumatic home lift for old age"
+        },
+        {
+          "value": "rooftop_solar_terrace",
+          "label": "Rooftop terrace garden or complete solar panel array"
+        },
+        {
+          "value": "no_future_expansion",
+          "label": "No future additions — final complete structure as built"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "external_vs_internal_staircase_typology",
+        "structural_column_stubbing_for_future_vertical_load",
+        "lift_shaft_core_cutout",
+        "terrace_waterproofing_specification"
+      ],
+      "clarify_if": "Future rental floor switches internal stair to external dog-leg stair."
+    },
+    {
+      "id": "budget_and_finance",
+      "step": 4,
+      "type": "single",
+      "label": "What is your target construction budget (excluding land)?",
+      "help": "Does not include plot purchase cost. Determines material finish grades and structural specification tiers.",
+      "options": [
+        {
+          "value": "economy_tier",
+          "label": "Economy / Value (₹18L to ₹28L / ₹1,600-₹1,900 per sqft) — Vitrified 2x2 tiles, basic paint, standard fittings"
+        },
+        {
+          "value": "standard_tier",
+          "label": "Standard Quality (₹30L to ₹48L / ₹2,100-₹2,600 per sqft) — Large format tiles, premium paint, UPVC windows"
+        },
+        {
+          "value": "premium_tier",
+          "label": "Premium Luxury (₹50L+ / ₹3,000-₹4,500+ per sqft) — Italian marble, teak joinery, acoustic glazing, VRV AC"
+        }
+      ],
+      "required": true,
+      "show_if": null,
+      "affects": [
+        "boq_material_tier",
+        "aac_block_vs_red_brick_selection",
+        "flooring_specifications",
+        "doors_windows_hardware_tier",
+        "overall_cost_estimate_range"
+      ],
+      "clarify_if": "Calculates realistic low/expected/high BOQ breakdown matching regional rates."
+    },
+    {
+      "id": "free_text_aspirations",
+      "step": 4,
+      "type": "text",
+      "label": "Tell us anything else in your own words (lifestyle habits, pet needs, aesthetic wishes, family rituals)",
+      "help": "Feel free to write in Hindi, Hinglish, or English. Our language parser extracts special lifestyle constraints.",
+      "options": [],
+      "required": false,
+      "show_if": null,
+      "affects": [
+        "slm_constraint_graph_extraction",
+        "architect_review_flags",
+        "lifestyle_special_accommodations"
+      ],
+      "clarify_if": "Mentions keywords like 'piano', 'puja bell', 'terrace garden', 'dog wash' to flag custom design touches."
+    }
+  ]
+}

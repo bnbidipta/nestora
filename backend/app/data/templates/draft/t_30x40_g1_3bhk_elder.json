@@ -1,0 +1,189 @@
+{
+  "id": "t_30x40_g1_3bhk_elder",
+  "plot_bucket_ft": [30, 40],
+  "floors": 2,
+  "bhk": 3,
+  "verified": false,
+  "tags": ["elder_ground_bedroom", "internal_stair", "car_parking", "family_core"],
+  "entrance_side": "front",
+  "rooms": [
+    {
+      "id": "car_porch",
+      "type": "entrance",
+      "floor": 0,
+      "rel_area": 0.14,
+      "min_aspect": 0.5,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "living",
+      "type": "living",
+      "floor": 0,
+      "rel_area": 0.22,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "dining",
+      "type": "dining",
+      "floor": 0,
+      "rel_area": 0.12,
+      "min_aspect": 0.65,
+      "zone": "middle",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "kitchen",
+      "type": "kitchen",
+      "floor": 0,
+      "rel_area": 0.12,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "puja",
+      "type": "puja",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "left",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_elder",
+      "type": "bedroom",
+      "floor": 0,
+      "rel_area": 0.16,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_elder",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.05,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_guest",
+      "type": "toilet",
+      "floor": 0,
+      "rel_area": 0.04,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "family_lounge_1",
+      "type": "living",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.65,
+      "zone": "front",
+      "side": "centre",
+      "needs_exterior_wall": false
+    },
+    {
+      "id": "bedroom_master",
+      "type": "bedroom_master",
+      "floor": 1,
+      "rel_area": 0.22,
+      "min_aspect": 0.7,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "bedroom_kids",
+      "type": "bedroom",
+      "floor": 1,
+      "rel_area": 0.18,
+      "min_aspect": 0.7,
+      "zone": "front",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "study",
+      "type": "study",
+      "floor": 1,
+      "rel_area": 0.10,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_master",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.06,
+      "min_aspect": 0.6,
+      "zone": "rear",
+      "side": "left",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "toilet_kids",
+      "type": "toilet",
+      "floor": 1,
+      "rel_area": 0.05,
+      "min_aspect": 0.6,
+      "zone": "middle",
+      "side": "right",
+      "needs_exterior_wall": true
+    },
+    {
+      "id": "balcony_1",
+      "type": "balcony",
+      "floor": 1,
+      "rel_area": 0.08,
+      "min_aspect": 0.35,
+      "zone": "front",
+      "side": "right",
+      "needs_exterior_wall": true
+    }
+  ],
+  "adjacency": [
+    ["car_porch", "living"],
+    ["living", "dining"],
+    ["dining", "kitchen"],
+    ["dining", "puja"],
+    ["dining", "bedroom_elder"],
+    ["bedroom_elder", "toilet_elder"],
+    ["dining", "toilet_guest"],
+    ["family_lounge_1", "bedroom_master"],
+    ["family_lounge_1", "bedroom_kids"],
+    ["family_lounge_1", "study"],
+    ["bedroom_master", "toilet_master"],
+    ["family_lounge_1", "toilet_kids"],
+    ["family_lounge_1", "balcony_1"]
+  ],
+  "must_not_touch": [
+    ["kitchen", "toilet_guest"],
+    ["puja", "toilet_guest"],
+    ["puja", "toilet_elder"]
+  ],
+  "wet_core_stack": ["toilet_elder", "toilet_master"],
+  "stair": {
+    "type": "internal",
+    "zone": "middle",
+    "side": "right"
+  },
+  "notes": "Classic Indian multi-generational G+1 configuration. Step-free ground bedroom for grandparents with ensuite, while young family occupies upper floor.",
+  "source": "Nestora Phase 1 Core Mumbai Pilot Benchmark Specification"
+}
