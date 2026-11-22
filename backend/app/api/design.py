@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 from backend.app.models.brief import Brief
 from backend.app.services import derive, generator, llm, orchestrator, pack, traditions
-from backend.app.services.access import require_edit
+from backend.app.services.access import rate_limit, require_edit
 from backend.app.services.judge import JudgeService
 from backend.app.services.repository import HouseTwinRepository
 
@@ -41,7 +41,7 @@ class ExtractIn(BaseModel):
     text: str = Field(max_length=2000)
 
 
-@router.post("/brief/extract")
+@router.post("/brief/extract", dependencies=[Depends(rate_limit("extract", 10))])
 def extract(body: ExtractIn):
     """Reads the family's own words; every returned field quotes the text it came from."""
     return llm.extract(body.text, list(derive.styles()))
@@ -111,13 +111,13 @@ class WaitlistIn(BaseModel):
     city: Optional[str] = Field(default=None, max_length=80)
 
 
-@router.post("/waitlist")
+@router.post("/waitlist", dependencies=[Depends(rate_limit("waitlist", 5))])
 def join_waitlist(body: WaitlistIn):
     HouseTwinRepository.add_waitlist(body.kind, email=body.email, city=body.city)
     return {"success": True}
 
 
-@router.post("/house/{house_id}/options")
+@router.post("/house/{house_id}/options", dependencies=[Depends(rate_limit("options", 20))])
 def start_options(house_id: str, _u: Optional[str] = Depends(require_edit)):
     _twin(house_id)
     return orchestrator.start_options(house_id)
@@ -128,7 +128,7 @@ class SelectIn(BaseModel):
     discard: List[str] = Field(default_factory=list, max_length=4)
 
 
-@router.post("/house/{house_id}/options/select")
+@router.post("/house/{house_id}/options/select", dependencies=[Depends(rate_limit("options", 20))])
 def select(house_id: str, body: SelectIn, _u: Optional[str] = Depends(require_edit)):
     _twin(house_id)
     return orchestrator.select(house_id, body.keep, body.discard)

@@ -16,6 +16,7 @@ OUT = os.path.join(HERE, "out", "review")
 
 def main(n: int = 50):
     os.environ["NESTORA_STORAGE_DIR"] = os.path.join(HERE, "out", "review_store")
+    os.environ["NESTORA_RATE_LIMIT"] = "off"
     os.makedirs(os.environ["NESTORA_STORAGE_DIR"], exist_ok=True)
     from backend.app.services import repository
     repository.STORAGE_DIR, repository.USE_SUPABASE = os.environ["NESTORA_STORAGE_DIR"], False

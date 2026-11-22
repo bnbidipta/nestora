@@ -3,3 +3,4 @@ import os
 import tempfile
 
 os.environ.setdefault("NESTORA_STORAGE_DIR", tempfile.mkdtemp(prefix="nestora_test_"))
+os.environ.setdefault("NESTORA_RATE_LIMIT", "off")

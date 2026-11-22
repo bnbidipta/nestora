@@ -4,18 +4,19 @@ POST /api/v1/stages/{stage} with a Brief returns that stage's output for the bes
 """
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from backend.app.models.brief import Brief
 from backend.app.models.twin import HouseTwin
 from backend.app.services import derive, orchestrator, pack, traditions
+from backend.app.services.access import rate_limit
 from backend.app.services.judge import JudgeService
 
 router = APIRouter(prefix="/api/v1/stages", tags=["Stages"])
 Stage = Literal["plot", "layout", "structure", "mep", "boq", "style", "traditions", "judge"]
 
 
-@router.post("/{stage}")
+@router.post("/{stage}", dependencies=[Depends(rate_limit("stages", 10))])
 def run_stage(stage: Stage, brief: Brief):
     W, D = brief.plot_width_ft * pack.FT, brief.plot_depth_ft * pack.FT
     rules = pack.rules(W, D, brief.road_width_m, brief.city)

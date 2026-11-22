@@ -8,14 +8,14 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import Depends
-from backend.app.services.access import require_edit
+from backend.app.services.access import rate_limit, require_edit
 from backend.app.models.twin import HouseTwin, PlotInfo, FamilyInfo, BudgetInfo
 from backend.app.services.repository import HouseTwinRepository
 
 router = APIRouter(prefix="/api/v1/house", tags=["House Twin"])
 
 
-@router.post("", response_model=Dict[str, Any])
+@router.post("", response_model=Dict[str, Any], dependencies=[Depends(rate_limit("create", 20))])
 def create_house(initial_data: Optional[Dict[str, Any]] = None):
     """
     Creates a new draft House Twin.

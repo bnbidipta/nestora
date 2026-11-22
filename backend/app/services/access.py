@@ -58,3 +58,28 @@ def require_edit(
     if token_hash and x_edit_token and hmac.compare_digest(hash_token(x_edit_token), token_hash):
         return user_id
     raise HTTPException(status_code=403, detail="You don't have permission to change this house.")
+
+
+# ponytail: in-memory per-IP sliding window, per process. Move to Redis/Upstash if we run several instances.
+_HITS: dict = {}
+
+
+def rate_limit(bucket: str, per_minute: int):
+    """FastAPI dependency factory: at most `per_minute` calls per client IP per bucket."""
+    import time
+    from fastapi import Request
+
+    def dep(request: Request) -> None:
+        if os.environ.get("NESTORA_RATE_LIMIT") == "off":  # tests and offline batch jobs
+            return
+        ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
+        now = time.time()
+        hits = [t for t in _HITS.get((bucket, ip), []) if now - t < 60]
+        if len(hits) >= per_minute:
+            raise HTTPException(status_code=429, detail="Too many requests. Please wait a minute.")
+        hits.append(now)
+        _HITS[(bucket, ip)] = hits
+        if len(_HITS) > 10000:
+            _HITS.clear()
+
+    return dep
