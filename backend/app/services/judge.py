@@ -244,6 +244,9 @@ class JudgeService:
         circ = twin.metadata.get("circulation_width_mm", min(widths) if widths else 1000)
         if circ < 900:
             result.add_failure("E_CIRCULATION_TOO_NARROW", f"Passage width {circ:.0f} mm is under 900 mm.")
+        for f in twin.floors:
+            if len(f.rooms) > 4 and not any(_kind(x.name, x.type) in ("passage", "living", "lounge", "dining") for x in f.rooms):
+                result.add_warning("E_NO_CIRCULATION", f"Floor {f.floor_no} has no passage or living space: rooms open off each other.")
         if twin.metadata.get("furniture_blocks_door", False):
             result.add_failure("E_FURNITURE_BLOCKS_DOOR", "Furniture blocks a door swing.")
         for f in twin.floors:
