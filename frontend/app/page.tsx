@@ -100,6 +100,10 @@ function DesktopLanding() {
           <div className="text-[11px] font-mono">
             <span>Concept Design • Automated Rule Checks • Itemized Estimate</span>
           </div>
+          <nav className="flex gap-4 text-[11px]" aria-label="Legal">
+            <a href="/privacy" className="underline hover:text-sage-900">Privacy</a>
+            <a href="/terms" className="underline hover:text-sage-900">Terms</a>
+          </nav>
         </footer>
       </div>
     </SmoothScrollProvider>
