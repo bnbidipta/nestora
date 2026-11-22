@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import ConsentBanner from '@/components/ConsentBanner';
 
 export const metadata: Metadata = {
   title: 'Nestora: concept house design and cost estimates',
@@ -15,6 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-[#F7F6F2] text-[#1A241E] font-sans antialiased selection:bg-[#26352C] selection:text-[#F7F6F2]">
         {children}
+        <ConsentBanner />
       </body>
     </html>
   );

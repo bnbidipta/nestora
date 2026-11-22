@@ -1,252 +1,2669 @@
 {
-  "verified": false,
-  "note": "Authored by Claude from general architectural knowledge; agy task 12 adds citations. Palettes: wall = main wall colour, accent = feature wall/trim, wood = joinery, floor = typical floor tone.",
-  "groups": ["Indian regional", "Asian", "Middle East & North Africa", "European", "Americas", "Modern movements"],
-  "styles": [
-    {"id": "indian_contemporary", "name": "Indian Contemporary", "group": "Indian regional", "climate": ["hot-humid", "monsoon", "hot-dry"],
-     "features": ["Flat roofs with deep chajjas", "Jaali screens", "Double-height living", "Stone + exposed concrete mix", "Courtyard or skylight core"],
-     "materials": {"floor": "kota_stone", "wall": "lime_plaster", "accent": "teak_wood"},
-     "palette": {"wall": "#F2EDE4", "accent": "#B5651D", "wood": "#7A4E2D", "floor": "#9C9A8E"}, "cost": "standard",
-     "mumbai": "Deep overhangs and jaalis suit monsoon rain and glare.", "compatible": ["tropical_modernism", "minimalist", "biophilic"]},
-    {"id": "kerala_nalukettu", "name": "Kerala Nalukettu", "group": "Indian regional", "climate": ["hot-humid", "monsoon"],
-     "features": ["Central open courtyard (nadumuttam)", "Steep tiled sloping roofs", "Wooden pillars and verandahs", "Laterite walls", "Low eaves"],
-     "materials": {"floor": "red_oxide", "wall": "laterite", "accent": "jackwood"},
-     "palette": {"wall": "#E9DCC3", "accent": "#8B3A1F", "wood": "#5C3A21", "floor": "#8E2F1F"}, "cost": "premium",
-     "mumbai": "Sloped tiled roofs shed heavy rain; timber needs termite treatment.", "compatible": ["konkan", "biophilic", "tropical_modernism"]},
-    {"id": "chettinad", "name": "Chettinad", "group": "Indian regional", "climate": ["hot-humid", "hot-dry"],
-     "features": ["Pillared central courtyards", "Athangudi handmade tiles", "Egg-plaster walls", "Ornate teak doors", "Long axial plan"],
-     "materials": {"floor": "athangudi_tiles", "wall": "lime_plaster", "accent": "burma_teak"},
-     "palette": {"wall": "#F4ECD8", "accent": "#C8A13A", "wood": "#4E2E1C", "floor": "#A23B2C"}, "cost": "premium",
-     "mumbai": "Athangudi tiles stay cool underfoot; lime plaster breathes in humidity.", "compatible": ["indian_contemporary", "old_world_heritage"]},
-    {"id": "rajasthani_haveli", "name": "Rajasthani Haveli", "group": "Indian regional", "climate": ["hot-dry"],
-     "features": ["Inward-facing courtyard", "Jharokha balconies", "Carved sandstone", "Thick walls for thermal mass", "Painted frescoes"],
-     "materials": {"floor": "sandstone", "wall": "lime_plaster", "accent": "carved_sandstone"},
-     "palette": {"wall": "#F1D9B5", "accent": "#C0532B", "wood": "#6B3E26", "floor": "#D8B98A"}, "cost": "premium",
-     "mumbai": "Thermal mass helps less in humid Mumbai; use for character, add cross-ventilation.", "compatible": ["mughal_indo_islamic", "old_world_heritage"]},
-    {"id": "goan_portuguese", "name": "Goan Portuguese", "group": "Indian regional", "climate": ["hot-humid", "monsoon"],
-     "features": ["Balcão front porch with seats", "Pastel lime-washed facades", "Oyster-shell windows", "Mangalore tile roofs", "White mouldings"],
-     "materials": {"floor": "terracotta", "wall": "lime_wash", "accent": "white_moulding"},
-     "palette": {"wall": "#F3C969", "accent": "#FFFFFF", "wood": "#7B4B2A", "floor": "#B5562F"}, "cost": "standard",
-     "mumbai": "Coastal style made for this climate; repaint lime wash every 3-4 years.", "compatible": ["konkan", "mediterranean"]},
-    {"id": "konkan", "name": "Konkan Coastal", "group": "Indian regional", "climate": ["hot-humid", "monsoon"],
-     "features": ["Laterite stone walls", "Mangalore tiled roof", "Front verandah (oti)", "Wooden rafters", "Courtyard with tulsi"],
-     "materials": {"floor": "red_oxide", "wall": "laterite", "accent": "teak_wood"},
-     "palette": {"wall": "#C2643C", "accent": "#EFE6D5", "wood": "#5A3A22", "floor": "#7E2F22"}, "cost": "standard",
-     "mumbai": "Local to the region: laterite and tile are available near Mumbai.", "compatible": ["kerala_nalukettu", "goan_portuguese", "biophilic"]},
-    {"id": "bengali_traditional", "name": "Bengali Traditional", "group": "Indian regional", "climate": ["hot-humid", "monsoon"],
-     "features": ["Red oxide floors", "Green louvered shutters", "Thakur dalan (prayer hall)", "Courtyard", "Cast-iron grilles"],
-     "materials": {"floor": "red_oxide", "wall": "lime_plaster", "accent": "louvered_shutters"},
-     "palette": {"wall": "#F5EBDD", "accent": "#2F6B4F", "wood": "#6A4429", "floor": "#9C2E22"}, "cost": "economy",
-     "mumbai": "Louvered shutters ventilate while blocking monsoon rain.", "compatible": ["old_world_heritage", "indian_contemporary"]},
-    {"id": "laurie_baker_vernacular", "name": "Laurie Baker Brick Vernacular", "group": "Indian regional", "climate": ["hot-humid", "monsoon", "hot-dry"],
-     "features": ["Rat-trap bond exposed brick", "Brick jaali walls", "Filler slabs", "Curved walls", "Low-cost local materials"],
-     "materials": {"floor": "red_oxide", "wall": "exposed_brick", "accent": "brick_jaali"},
-     "palette": {"wall": "#B5553A", "accent": "#E8DCC8", "wood": "#5B3B25", "floor": "#8C3A2A"}, "cost": "economy",
-     "mumbai": "Cuts cost and cement; exposed brick needs a water-repellent coat for monsoon.", "compatible": ["biophilic", "eco_passive", "indian_contemporary"]},
-    {"id": "tropical_modernism", "name": "Tropical Modernism", "group": "Indian regional", "climate": ["hot-humid", "monsoon"],
-     "features": ["Deep overhangs and brise-soleil", "Cross-ventilation", "Open-to-sky courts", "Raw concrete and brick", "Indoor-outdoor living"],
-     "materials": {"floor": "kota_stone", "wall": "exposed_concrete", "accent": "teak_wood"},
-     "palette": {"wall": "#D9D4CC", "accent": "#3D6B4F", "wood": "#7A5533", "floor": "#8F8A7E"}, "cost": "standard",
-     "mumbai": "Designed for monsoon cities: shade, airflow and rain protection first.", "compatible": ["indian_contemporary", "biophilic", "brutalist", "mid_century_modern"]},
-    {"id": "bombay_art_deco", "name": "Bombay Art Deco", "group": "Indian regional", "climate": ["hot-humid", "monsoon"],
-     "features": ["Streamlined curved balconies", "Eyebrow sunshades", "Geometric railings", "Terrazzo floors", "Pastel facades with bands"],
-     "materials": {"floor": "terrazzo", "wall": "smooth_plaster", "accent": "metal_railing"},
-     "palette": {"wall": "#F2E6CF", "accent": "#3E8A86", "wood": "#5E3C27", "floor": "#C9C1B2"}, "cost": "standard",
-     "mumbai": "Mumbai's own style (Marine Drive); eyebrow shades suit the climate.", "compatible": ["art_deco", "mid_century_modern"]},
-    {"id": "indo_saracenic", "name": "Indo-Saracenic", "group": "Indian regional", "climate": ["hot-humid", "hot-dry"],
-     "features": ["Pointed and cusped arches", "Domes and chhatris", "Stone facades", "Verandahs", "Ornamental brackets"],
-     "materials": {"floor": "marble", "wall": "stone_cladding", "accent": "carved_stone"},
-     "palette": {"wall": "#E8D3B0", "accent": "#7C2E2E", "wood": "#4F3122", "floor": "#E5DED2"}, "cost": "premium",
-     "mumbai": "Heritage look; use as arches and brackets rather than full stone.", "compatible": ["mughal_indo_islamic", "rajasthani_haveli"]},
-    {"id": "mughal_indo_islamic", "name": "Mughal / Indo-Islamic", "group": "Indian regional", "climate": ["hot-dry", "hot-humid"],
-     "features": ["Symmetrical char-bagh plan", "Arched openings", "Inlay (pietra dura) details", "Water features", "Jaali screens"],
-     "materials": {"floor": "marble", "wall": "lime_plaster", "accent": "marble_inlay"},
-     "palette": {"wall": "#F6F1E7", "accent": "#1F5E7A", "wood": "#4A2C1E", "floor": "#EDE8DF"}, "cost": "premium",
-     "mumbai": "Marble stays cool; keep water features shaded against mosquitoes.", "compatible": ["moroccan_riad", "persian", "rajasthani_haveli"]},
-    {"id": "kutchi_bhunga", "name": "Kutchi Bhunga", "group": "Indian regional", "climate": ["hot-dry"],
-     "features": ["Circular mud huts", "Conical thatch roofs", "Mirror and mud relief work (lippan)", "Thick earthen walls", "Earthquake-resilient form"],
-     "materials": {"floor": "mud_cow_dung", "wall": "mud_plaster", "accent": "lippan_mirror"},
-     "palette": {"wall": "#E3CBA4", "accent": "#FFFFFF", "wood": "#6E4A2C", "floor": "#A88560"}, "cost": "economy",
-     "mumbai": "Character for interiors only; mud and thatch don't survive Mumbai rain.", "compatible": ["bohemian", "eco_passive"]},
-    {"id": "japanese", "name": "Japanese Traditional", "group": "Asian", "climate": ["temperate", "hot-humid"],
-     "features": ["Modular tatami proportions", "Sliding shoji screens", "Engawa verandah", "Tokonoma alcove", "Garden views"],
-     "materials": {"floor": "wood_flooring", "wall": "plaster", "accent": "cedar"},
-     "palette": {"wall": "#F4F0E6", "accent": "#C9A27E", "wood": "#8A6A4A", "floor": "#B89B78"}, "cost": "premium",
-     "mumbai": "Paper screens won't last; use fluted glass and treated timber.", "compatible": ["japandi", "minimalist", "wabi_sabi"]},
-    {"id": "japandi", "name": "Japandi", "group": "Asian", "climate": ["temperate", "hot-humid", "cold"],
-     "features": ["Japanese calm + Scandinavian comfort", "Low furniture", "Muted natural tones", "Handmade ceramics", "Clutter-free storage"],
-     "materials": {"floor": "oak_flooring", "wall": "limewash", "accent": "oak"},
-     "palette": {"wall": "#EDE7DD", "accent": "#9C8B77", "wood": "#B08D67", "floor": "#C7B299"}, "cost": "standard",
-     "mumbai": "Use engineered or vinyl wood floors; solid oak swells in humidity.", "compatible": ["japanese", "scandinavian", "minimalist"]},
-    {"id": "balinese", "name": "Balinese / Tropical Resort", "group": "Asian", "climate": ["hot-humid", "monsoon"],
-     "features": ["Open pavilions", "Alang-alang thatch look", "Stone carvings", "Outdoor bathrooms", "Water gardens"],
-     "materials": {"floor": "natural_stone", "wall": "stone_cladding", "accent": "teak_wood"},
-     "palette": {"wall": "#D9CBB0", "accent": "#4E6B3A", "wood": "#5E4027", "floor": "#8A7F6C"}, "cost": "premium",
-     "mumbai": "Suits the climate; plan mosquito screening for open pavilions.", "compatible": ["biophilic", "tropical_modernism"]},
-    {"id": "chinese_courtyard", "name": "Chinese Courtyard (Siheyuan)", "group": "Asian", "climate": ["temperate", "cold", "hot-dry"],
-     "features": ["Rooms around a central courtyard", "Axial symmetry", "Moon gates", "Red lacquered columns", "Grey tile roofs"],
-     "materials": {"floor": "grey_brick_tile", "wall": "grey_brick", "accent": "lacquered_wood"},
-     "palette": {"wall": "#9A9A96", "accent": "#A6262A", "wood": "#5A2E1E", "floor": "#6F6E69"}, "cost": "premium",
-     "mumbai": "Courtyard idea works; drain the courtyard well for monsoon.", "compatible": ["feng_shui_modern", "japanese"]},
-    {"id": "korean_hanok", "name": "Korean Hanok", "group": "Asian", "climate": ["temperate", "cold"],
-     "features": ["Curved tile roofs", "Ondol heated floors", "Wooden frame and hanji paper", "Maru open wooden floor", "Courtyard (madang)"],
-     "materials": {"floor": "wood_flooring", "wall": "plaster", "accent": "pine"},
-     "palette": {"wall": "#F2EEE4", "accent": "#5C5A55", "wood": "#9C7550", "floor": "#B8916A"}, "cost": "premium",
-     "mumbai": "Floor heating is unnecessary; borrow the maru verandah idea.", "compatible": ["japanese", "minimalist"]},
-    {"id": "thai_traditional", "name": "Thai Traditional", "group": "Asian", "climate": ["hot-humid", "monsoon"],
-     "features": ["Raised on stilts", "Steep layered roofs", "Large shaded terraces", "Teak panels", "Open plan for airflow"],
-     "materials": {"floor": "teak_wood", "wall": "teak_panel", "accent": "gold_leaf_detail"},
-     "palette": {"wall": "#E6D5B8", "accent": "#B8860B", "wood": "#6B4226", "floor": "#7A5233"}, "cost": "premium",
-     "mumbai": "Raised floors help in flood-prone lanes.", "compatible": ["balinese", "tropical_modernism"]},
-    {"id": "moroccan_riad", "name": "Moroccan Riad", "group": "Middle East & North Africa", "climate": ["hot-dry"],
-     "features": ["Inward courtyard with fountain", "Zellige mosaic tiles", "Tadelakt polished plaster", "Horseshoe arches", "Carved cedar"],
-     "materials": {"floor": "encaustic_tiles", "wall": "tadelakt", "accent": "zellige"},
-     "palette": {"wall": "#E9D3B4", "accent": "#1C6E8C", "wood": "#5B3720", "floor": "#C46A3A"}, "cost": "premium",
-     "mumbai": "Tadelakt is water-resistant and good for baths.", "compatible": ["mughal_indo_islamic", "mediterranean", "bohemian"]},
-    {"id": "arabian_courtyard", "name": "Arabian / Gulf Courtyard", "group": "Middle East & North Africa", "climate": ["hot-dry"],
-     "features": ["Mashrabiya screens", "Wind towers (barjeel)", "Majlis guest hall", "Gender-separated zones", "Thick walls"],
-     "materials": {"floor": "limestone", "wall": "lime_plaster", "accent": "mashrabiya_wood"},
-     "palette": {"wall": "#E8DCC4", "accent": "#7A5C3A", "wood": "#4E3523", "floor": "#D9CBB0"}, "cost": "premium",
-     "mumbai": "Mashrabiya-style screens give privacy in dense lanes.", "compatible": ["moroccan_riad", "mughal_indo_islamic"]},
-    {"id": "persian", "name": "Persian", "group": "Middle East & North Africa", "climate": ["hot-dry"],
-     "features": ["Iwan vaulted halls", "Four-part garden (chahar bagh)", "Blue glazed tilework", "Muqarnas details", "Reflecting pools"],
-     "materials": {"floor": "marble", "wall": "glazed_tile", "accent": "turquoise_tile"},
-     "palette": {"wall": "#F1E7D6", "accent": "#1E7A8C", "wood": "#5A3A24", "floor": "#E2D8C6"}, "cost": "premium",
-     "mumbai": "Glazed tiles are easy to clean in humidity.", "compatible": ["mughal_indo_islamic", "moroccan_riad"]},
-    {"id": "mediterranean", "name": "Mediterranean", "group": "European", "climate": ["hot-dry", "temperate"],
-     "features": ["Stucco walls", "Terracotta roof tiles", "Arched windows", "Wrought-iron details", "Shaded loggias"],
-     "materials": {"floor": "terracotta", "wall": "stucco", "accent": "wrought_iron"},
-     "palette": {"wall": "#F2E3C9", "accent": "#2F5D8A", "wood": "#6A4528", "floor": "#B5603A"}, "cost": "standard",
-     "mumbai": "Works well; specify mould-resistant exterior paint.", "compatible": ["tuscan", "greek_cycladic", "spanish_colonial"]},
-    {"id": "tuscan", "name": "Tuscan", "group": "European", "climate": ["hot-dry", "temperate"],
-     "features": ["Rough stone and stucco", "Exposed wooden beams", "Warm earth colours", "Arched doorways", "Courtyard gardens"],
-     "materials": {"floor": "travertine", "wall": "textured_plaster", "accent": "rustic_wood_beams"},
-     "palette": {"wall": "#E6C79C", "accent": "#8A3B26", "wood": "#5C3B22", "floor": "#C8AE88"}, "cost": "premium",
-     "mumbai": "Seal travertine against monsoon damp.", "compatible": ["mediterranean", "french_provincial"]},
-    {"id": "greek_cycladic", "name": "Greek Cycladic", "group": "European", "climate": ["hot-dry"],
-     "features": ["Whitewashed cubic forms", "Blue doors and shutters", "Flat roofs and terraces", "Built-in plaster seating", "Small deep windows"],
-     "materials": {"floor": "white_microcement", "wall": "whitewash", "accent": "blue_paint"},
-     "palette": {"wall": "#FAFAF7", "accent": "#1F4E9C", "wood": "#8A6A4A", "floor": "#E9E6DF"}, "cost": "economy",
-     "mumbai": "White walls reflect heat but show monsoon stains; use elastomeric paint.", "compatible": ["mediterranean", "minimalist"]},
-    {"id": "scandinavian", "name": "Scandinavian", "group": "European", "climate": ["cold", "temperate"],
-     "features": ["Light, bright interiors", "Pale woods", "Simple functional furniture", "Large windows", "Cosy textiles (hygge)"],
-     "materials": {"floor": "light_wood_laminate", "wall": "matte_paint", "accent": "birch"},
-     "palette": {"wall": "#F7F6F2", "accent": "#7F9CA8", "wood": "#D2B48C", "floor": "#D9C9A8"}, "cost": "standard",
-     "mumbai": "Big windows need shading here; pick moisture-resistant laminate.", "compatible": ["japandi", "minimalist", "mid_century_modern"]},
-    {"id": "english_cottage", "name": "English Cottage", "group": "European", "climate": ["temperate", "cold"],
-     "features": ["Steep gabled roofs", "Small-paned windows", "Exposed beams", "Fireplace focus", "Cottage gardens"],
-     "materials": {"floor": "wood_flooring", "wall": "plaster", "accent": "stone"},
-     "palette": {"wall": "#F1EADB", "accent": "#5D7052", "wood": "#6B4A30", "floor": "#8C6B4C"}, "cost": "standard",
-     "mumbai": "Interior mood only; small windows trap heat here.", "compatible": ["farmhouse", "french_provincial"]},
-    {"id": "french_provincial", "name": "French Provincial", "group": "European", "climate": ["temperate"],
-     "features": ["Symmetrical facades", "Hipped roofs", "Tall shuttered windows", "Distressed painted furniture", "Stone floors"],
-     "materials": {"floor": "limestone", "wall": "plaster", "accent": "painted_wood"},
-     "palette": {"wall": "#EFE8DB", "accent": "#8DA3A6", "wood": "#9A7B5B", "floor": "#D8CDB8"}, "cost": "premium",
-     "mumbai": "Tall shuttered windows suit cross-ventilation.", "compatible": ["tuscan", "english_cottage"]},
-    {"id": "spanish_colonial", "name": "Spanish Colonial", "group": "European", "climate": ["hot-dry", "temperate"],
-     "features": ["Thick stucco walls", "Red clay roof tiles", "Interior courtyards", "Wooden balconies", "Decorative tiles"],
-     "materials": {"floor": "saltillo_terracotta", "wall": "stucco", "accent": "painted_tiles"},
-     "palette": {"wall": "#F3E6D0", "accent": "#A0442C", "wood": "#4E3220", "floor": "#B8653F"}, "cost": "standard",
-     "mumbai": "Close relative of Goan Portuguese; suits the climate.", "compatible": ["mediterranean", "goan_portuguese", "pueblo"]},
-    {"id": "bauhaus", "name": "Bauhaus", "group": "European", "climate": ["temperate", "cold"],
-     "features": ["Form follows function", "Flat roofs", "Ribbon windows", "Primary-colour accents", "Steel and glass"],
-     "materials": {"floor": "polished_concrete", "wall": "smooth_plaster", "accent": "steel"},
-     "palette": {"wall": "#F5F5F2", "accent": "#C8302A", "wood": "#3A3A3A", "floor": "#A9A9A6"}, "cost": "standard",
-     "mumbai": "Add sunshades to ribbon windows on west faces.", "compatible": ["minimalist", "mid_century_modern", "industrial"]},
-    {"id": "art_deco", "name": "Art Deco", "group": "European", "climate": ["temperate", "hot-humid"],
-     "features": ["Geometric patterns", "Stepped forms", "Polished metals", "Bold contrasting colours", "Luxurious materials"],
-     "materials": {"floor": "marble", "wall": "lacquer_paint", "accent": "brass"},
-     "palette": {"wall": "#EDE4D3", "accent": "#0F5257", "wood": "#2E1F18", "floor": "#F0EBE2"}, "cost": "premium",
-     "mumbai": "Brass tarnishes in sea air; use PVD-coated finishes.", "compatible": ["bombay_art_deco", "maximalist"]},
-    {"id": "victorian", "name": "Victorian", "group": "European", "climate": ["temperate", "cold"],
-     "features": ["Ornate mouldings", "Bay windows", "Patterned encaustic tiles", "Dark wood panelling", "Rich wallpapers"],
-     "materials": {"floor": "encaustic_tiles", "wall": "wallpaper", "accent": "mahogany"},
-     "palette": {"wall": "#D9C7B0", "accent": "#5B1F2A", "wood": "#3E2418", "floor": "#7A5B45"}, "cost": "premium",
-     "mumbai": "Wallpaper peels in humidity; use paint effects instead.", "compatible": ["old_world_heritage", "maximalist"]},
-    {"id": "georgian", "name": "Georgian / Colonial Classical", "group": "European", "climate": ["temperate"],
-     "features": ["Strict symmetry", "Sash windows in proportion", "Pediments and columns", "Central hall plan", "Panelled doors"],
-     "materials": {"floor": "wood_flooring", "wall": "smooth_plaster", "accent": "white_moulding"},
-     "palette": {"wall": "#EFEAE0", "accent": "#2E4057", "wood": "#5C4033", "floor": "#8B6B4F"}, "cost": "premium",
-     "mumbai": "Colonial bungalows across India used this with verandahs added.", "compatible": ["old_world_heritage", "french_provincial"]},
-    {"id": "mid_century_modern", "name": "Mid-century Modern", "group": "Americas", "climate": ["temperate", "hot-dry"],
-     "features": ["Low horizontal lines", "Floor-to-ceiling glass", "Organic curved furniture", "Teak and walnut", "Indoor-outdoor flow"],
-     "materials": {"floor": "terrazzo", "wall": "matte_paint", "accent": "walnut"},
-     "palette": {"wall": "#F2EBDD", "accent": "#D9822B", "wood": "#7A4E2D", "floor": "#C9BFAE"}, "cost": "standard",
-     "mumbai": "Shade the glass; terrazzo suits the climate.", "compatible": ["scandinavian", "bombay_art_deco", "tropical_modernism"]},
-    {"id": "craftsman", "name": "Craftsman", "group": "Americas", "climate": ["temperate"],
-     "features": ["Low-pitched gabled roofs", "Wide front porch", "Tapered columns", "Built-in cabinetry", "Exposed rafters"],
-     "materials": {"floor": "wood_flooring", "wall": "matte_paint", "accent": "oak"},
-     "palette": {"wall": "#E7DCC6", "accent": "#5E6B47", "wood": "#6E4B2F", "floor": "#8F6A47"}, "cost": "standard",
-     "mumbai": "The front porch idea suits Indian verandah living.", "compatible": ["farmhouse", "english_cottage"]},
-    {"id": "farmhouse", "name": "Modern Farmhouse", "group": "Americas", "climate": ["temperate", "hot-dry"],
-     "features": ["Board-and-batten cladding", "Gabled roofs", "Black window frames", "Shiplap interiors", "Big family kitchen"],
-     "materials": {"floor": "wood_look_tiles", "wall": "shiplap_paint", "accent": "black_metal"},
-     "palette": {"wall": "#F4F2EC", "accent": "#2B2B2B", "wood": "#A07B55", "floor": "#9E8466"}, "cost": "standard",
-     "mumbai": "Use wood-look tiles instead of real boards for humidity.", "compatible": ["craftsman", "scandinavian", "industrial"]},
-    {"id": "prairie", "name": "Prairie", "group": "Americas", "climate": ["temperate"],
-     "features": ["Strong horizontal lines", "Wide overhanging eaves", "Bands of windows", "Central hearth", "Natural materials"],
-     "materials": {"floor": "wood_flooring", "wall": "brick", "accent": "art_glass"},
-     "palette": {"wall": "#C9A27A", "accent": "#6B7B3A", "wood": "#5A3D25", "floor": "#7C5A3E"}, "cost": "premium",
-     "mumbai": "Wide eaves are useful in monsoon.", "compatible": ["mid_century_modern", "craftsman"]},
-    {"id": "pueblo", "name": "Pueblo / Adobe", "group": "Americas", "climate": ["hot-dry"],
-     "features": ["Rounded adobe walls", "Flat roofs with vigas", "Earth tones", "Small deep windows", "Kiva fireplaces"],
-     "materials": {"floor": "terracotta", "wall": "earth_plaster", "accent": "rough_timber"},
-     "palette": {"wall": "#D2A679", "accent": "#2F6E73", "wood": "#5E3F25", "floor": "#A8613D"}, "cost": "standard",
-     "mumbai": "Earth plaster needs protection from driving rain.", "compatible": ["spanish_colonial", "bohemian"]},
-    {"id": "brazilian_modernism", "name": "Brazilian Modernism", "group": "Americas", "climate": ["hot-humid", "monsoon"],
-     "features": ["Free-form concrete curves", "Pilotis (columns lifting the house)", "Cobogó breeze blocks", "Lush tropical gardens", "Open ground floor"],
-     "materials": {"floor": "polished_concrete", "wall": "exposed_concrete", "accent": "cobogo_blocks"},
-     "palette": {"wall": "#E3E0D8", "accent": "#2E7D5B", "wood": "#7A5230", "floor": "#9D9A92"}, "cost": "standard",
-     "mumbai": "Made for a similar climate; cobogó blocks ventilate like jaalis.", "compatible": ["tropical_modernism", "brutalist", "biophilic"]},
-    {"id": "minimalist", "name": "Minimalist", "group": "Modern movements", "climate": ["hot-humid", "hot-dry", "temperate", "cold"],
-     "features": ["Clean lines, no ornament", "Hidden storage", "Monochrome palette", "Light as the main material", "Few, essential pieces"],
-     "materials": {"floor": "large_format_vitrified", "wall": "smooth_plaster", "accent": "fluted_glass"},
-     "palette": {"wall": "#F7F7F5", "accent": "#BDBAB3", "wood": "#C2A988", "floor": "#E4E2DD"}, "cost": "standard",
-     "mumbai": "Easy to keep clean; pick off-white over pure white to hide stains.", "compatible": ["japandi", "scandinavian", "indian_contemporary"]},
-    {"id": "brutalist", "name": "Brutalist", "group": "Modern movements", "climate": ["temperate", "hot-dry", "hot-humid"],
-     "features": ["Raw board-formed concrete", "Massive sculptural volumes", "Deep-set windows", "Honest structure", "Monolithic forms"],
-     "materials": {"floor": "polished_concrete", "wall": "exposed_concrete", "accent": "black_granite"},
-     "palette": {"wall": "#A7A6A1", "accent": "#2B2B2B", "wood": "#6E5038", "floor": "#8C8B86"}, "cost": "standard",
-     "mumbai": "Exposed concrete stains black in monsoon; use anti-carbonation sealer.", "compatible": ["industrial", "tropical_modernism", "brazilian_modernism"]},
-    {"id": "industrial", "name": "Industrial", "group": "Modern movements", "climate": ["temperate", "hot-dry"],
-     "features": ["Exposed brick and ducts", "Steel-framed windows", "Concrete floors", "Open lofts", "Reclaimed wood"],
-     "materials": {"floor": "polished_concrete", "wall": "exposed_brick", "accent": "black_steel"},
-     "palette": {"wall": "#8E5B43", "accent": "#2A2A2A", "wood": "#6A4B32", "floor": "#7D7B76"}, "cost": "standard",
-     "mumbai": "Steel rusts in sea air; specify galvanised or powder-coated.", "compatible": ["brutalist", "farmhouse", "bauhaus"]},
-    {"id": "biophilic", "name": "Biophilic", "group": "Modern movements", "climate": ["hot-humid", "monsoon", "temperate", "hot-dry"],
-     "features": ["Plants and green walls indoors", "Daylight and views to nature", "Natural materials", "Courtyards and water", "Natural ventilation"],
-     "materials": {"floor": "natural_stone", "wall": "lime_plaster", "accent": "timber_battens"},
-     "palette": {"wall": "#EDE8DA", "accent": "#4A6B3F", "wood": "#7B5A3A", "floor": "#9A8F7A"}, "cost": "standard",
-     "mumbai": "Choose plants for shade and humidity; avoid stagnant water.", "compatible": ["tropical_modernism", "japandi", "kerala_nalukettu"]},
-    {"id": "wabi_sabi", "name": "Wabi-sabi", "group": "Modern movements", "climate": ["temperate", "hot-humid"],
-     "features": ["Beauty in imperfection", "Handmade textures", "Raw plaster walls", "Aged wood", "Muted earthy tones"],
-     "materials": {"floor": "microcement", "wall": "lime_plaster", "accent": "reclaimed_wood"},
-     "palette": {"wall": "#E5DDCF", "accent": "#8C7B66", "wood": "#7D6247", "floor": "#B9AD99"}, "cost": "standard",
-     "mumbai": "Lime plaster suits humidity; patina is part of the look.", "compatible": ["japandi", "japanese", "biophilic"]},
-    {"id": "maximalist", "name": "Maximalist", "group": "Modern movements", "climate": ["temperate", "hot-humid", "hot-dry"],
-     "features": ["Bold colour and pattern", "Layered collections", "Statement wallpapers", "Mixed periods", "Jewel tones"],
-     "materials": {"floor": "patterned_tiles", "wall": "bold_paint", "accent": "velvet_brass"},
-     "palette": {"wall": "#1F4E5F", "accent": "#D4A017", "wood": "#4A2C2A", "floor": "#8E3B46"}, "cost": "premium",
-     "mumbai": "Deep colours hide monsoon marks; ventilate fabrics against mould.", "compatible": ["art_deco", "bohemian", "victorian"]},
-    {"id": "bohemian", "name": "Bohemian", "group": "Modern movements", "climate": ["hot-humid", "hot-dry", "temperate"],
-     "features": ["Layered rugs and textiles", "Rattan and cane", "Plants everywhere", "Global collected decor", "Relaxed low seating"],
-     "materials": {"floor": "terracotta", "wall": "warm_paint", "accent": "rattan"},
-     "palette": {"wall": "#F0E3CE", "accent": "#C0603A", "wood": "#8A5A34", "floor": "#B26E45"}, "cost": "economy",
-     "mumbai": "Cane and rattan are local and affordable.", "compatible": ["moroccan_riad", "biophilic", "maximalist"]},
-    {"id": "eco_passive", "name": "Eco / Passive House", "group": "Modern movements", "climate": ["hot-humid", "hot-dry", "temperate", "cold"],
-     "features": ["Orientation for sun and wind", "Insulation and shading", "Rainwater harvesting", "Solar roof", "Low-embodied-carbon materials"],
-     "materials": {"floor": "kota_stone", "wall": "aac_block_plaster", "accent": "solar_shading"},
-     "palette": {"wall": "#EEEAE0", "accent": "#5B7F4A", "wood": "#8A6A48", "floor": "#9B978A"}, "cost": "standard",
-     "mumbai": "In Mumbai, shading and cross-ventilation matter more than airtightness.", "compatible": ["biophilic", "laurie_baker_vernacular", "tropical_modernism"]},
-    {"id": "old_world_heritage", "name": "Old-world Indian Heritage", "group": "Indian regional", "climate": ["hot-humid", "hot-dry"],
-     "features": ["Antique brass and rosewood", "Jhula swing", "Carved doors", "Red oxide or terrazzo floors", "Heirloom furniture"],
-     "materials": {"floor": "terrazzo", "wall": "lime_plaster", "accent": "rosewood"},
-     "palette": {"wall": "#F1E4C8", "accent": "#9C2F2F", "wood": "#4A2A1C", "floor": "#B08F6A"}, "cost": "standard",
-     "mumbai": "Polish brass seasonally against sea-air tarnish.", "compatible": ["chettinad", "bengali_traditional", "rajasthani_haveli"]},
-    {"id": "feng_shui_modern", "name": "Modern Feng Shui", "group": "Asian", "climate": ["hot-humid", "temperate"],
-     "features": ["Balanced five elements", "Clear entry (qi flow)", "Command position for bed and desk", "Rounded furniture edges", "Water and plants"],
-     "materials": {"floor": "wood_look_tiles", "wall": "matte_paint", "accent": "bamboo"},
-     "palette": {"wall": "#F3EEE3", "accent": "#7A1F1F", "wood": "#8A6A45", "floor": "#A88E6E"}, "cost": "standard",
-     "mumbai": "Pairs with the Feng Shui tradition pack for placement rules.", "compatible": ["chinese_courtyard", "minimalist", "biophilic"]}
-  ]
+ "verified": false,
+ "note": "Catalogue designed by Claude; sources, aliases and extra styles from agy task 12 research (docs/research/architectural-styles.md). Unverified.",
+ "groups": [
+  "Indian regional",
+  "Asian",
+  "Middle East & North Africa",
+  "European",
+  "Americas",
+  "Modern movements"
+ ],
+ "styles": [
+  {
+   "id": "indian_contemporary",
+   "name": "Indian Contemporary",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon",
+    "hot-dry"
+   ],
+   "features": [
+    "Flat roofs with deep chajjas",
+    "Jaali screens",
+    "Double-height living",
+    "Stone + exposed concrete mix",
+    "Courtyard or skylight core"
+   ],
+   "materials": {
+    "floor": "kota_stone",
+    "wall": "lime_plaster",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#F2EDE4",
+    "accent": "#B5651D",
+    "wood": "#7A4E2D",
+    "floor": "#9C9A8E"
+   },
+   "cost": "standard",
+   "mumbai": "Deep overhangs and jaalis suit monsoon rain and glare.",
+   "compatible": [
+    "tropical_modernism",
+    "minimalist",
+    "biophilic"
+   ],
+   "sources": [
+    "CEPT University Press, Contemporary Indian Residential Architecture Monograph (2018)",
+    "Indian Institute of Architects (IIA), National Awards for Excellence in Architecture: Residential Compendium (2022)",
+    "Rahul Mehrotra, Architecture in India since 1990 (2011)"
+   ],
+   "aliases": [
+    "Contemporary Desi",
+    "Modern Indian Architecture",
+    "New Indian Vernacular"
+   ],
+   "region": "Urban India (Mumbai, Bengaluru, Ahmedabad, New Delhi, Pune)",
+   "era": "2000s–Present",
+   "search_terms": [
+    "Indian contemporary residential house exposed brick concrete jaali",
+    "Modern indian home courtyard double height living room",
+    "Contemporary indian villa kota stone cantilever facade"
+   ]
+  },
+  {
+   "id": "kerala_nalukettu",
+   "name": "Kerala Nalukettu",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Central open courtyard (nadumuttam)",
+    "Steep tiled sloping roofs",
+    "Wooden pillars and verandahs",
+    "Laterite walls",
+    "Low eaves"
+   ],
+   "materials": {
+    "floor": "red_oxide",
+    "wall": "laterite",
+    "accent": "jackwood"
+   },
+   "palette": {
+    "wall": "#E9DCC3",
+    "accent": "#8B3A1F",
+    "wood": "#5C3A21",
+    "floor": "#8E2F1F"
+   },
+   "cost": "premium",
+   "mumbai": "Sloped tiled roofs shed heavy rain; timber needs termite treatment.",
+   "compatible": [
+    "konkan",
+    "biophilic",
+    "tropical_modernism"
+   ],
+   "sources": [
+    "Ashalatha Thampuran, Traditional Architectural Forms of Kerala (2001)",
+    "Kerala State Nirmithi Kendra, Building Design Manual for Tropical Monsoon Climates (1993)",
+    "Ronald M. Bernier, Temple Arts of Kerala: A South Indian Tradition (1982)"
+   ],
+   "aliases": [
+    "Chatussala",
+    "Kerala Vernacular",
+    "Nalukettu",
+    "Tharavadu"
+   ],
+   "region": "Kerala, South-West India",
+   "era": "14th–19th Century traditional; contemporary eco-residences",
+   "search_terms": [
+    "Kerala nalukettu courtyard nadumuttam traditional house",
+    "Kerala vernacular tharavadu wooden pillars red oxide",
+    "Traditional Kerala house mangalore tiles charupadi verandah"
+   ]
+  },
+  {
+   "id": "chettinad",
+   "name": "Chettinad",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "hot-dry"
+   ],
+   "features": [
+    "Pillared central courtyards",
+    "Athangudi handmade tiles",
+    "Egg-plaster walls",
+    "Ornate teak doors",
+    "Long axial plan"
+   ],
+   "materials": {
+    "floor": "athangudi_tiles",
+    "wall": "lime_plaster",
+    "accent": "burma_teak"
+   },
+   "palette": {
+    "wall": "#F4ECD8",
+    "accent": "#C8A13A",
+    "wood": "#4E2E1C",
+    "floor": "#A23B2C"
+   },
+   "cost": "premium",
+   "mumbai": "Athangudi tiles stay cool underfoot; lime plaster breathes in humidity.",
+   "compatible": [
+    "indian_contemporary",
+    "old_world_heritage"
+   ],
+   "sources": [
+    "S. Muthiah, Meenakshi Meyyappan, Visalakshi Ramaswamy, The Mansions of Chettinad (2000)",
+    "UNESCO World Heritage Centre, Chettinad, Village Clusters of the Tamil Merchants (2014)",
+    "Visalakshi Ramaswamy, The Chettiar Heritage (2010)"
+   ],
+   "aliases": [
+    "Chettiar Mansions",
+    "Chettinad Heritage Home",
+    "Nattukottai House"
+   ],
+   "region": "Sivaganga and Pudukkottai districts, Tamil Nadu, India",
+   "era": "Mid-19th to early 20th Century (c. 1850–1940)",
+   "search_terms": [
+    "Chettinad mansion courtyard pillars athangudi tiles",
+    "Chettiar house interior teak pillars tamil nadu",
+    "Chettinad thinnai entrance carved wooden door"
+   ]
+  },
+  {
+   "id": "rajasthani_haveli",
+   "name": "Rajasthani Haveli",
+   "group": "Indian regional",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Inward-facing courtyard",
+    "Jharokha balconies",
+    "Carved sandstone",
+    "Thick walls for thermal mass",
+    "Painted frescoes"
+   ],
+   "materials": {
+    "floor": "sandstone",
+    "wall": "lime_plaster",
+    "accent": "carved_sandstone"
+   },
+   "palette": {
+    "wall": "#F1D9B5",
+    "accent": "#C0532B",
+    "wood": "#6B3E26",
+    "floor": "#D8B98A"
+   },
+   "cost": "premium",
+   "mumbai": "Thermal mass helps less in humid Mumbai; use for character, add cross-ventilation.",
+   "compatible": [
+    "mughal_indo_islamic",
+    "old_world_heritage"
+   ],
+   "sources": [
+    "Giles Tillotson, The Rajput Palaces: The Development of an Architectural Style (1987)",
+    "Kulbhushan Jain & Minakshi Jain, Architecture of Rajasthan: Indian Traditions and Expressions (2000)",
+    "V.S. Pramar, Haveli: Wooden Houses and Mansions of Gujarat (1989)"
+   ],
+   "aliases": [
+    "Jaisalmer Courtyard House",
+    "Marwari Haveli",
+    "Shekhawati Haveli"
+   ],
+   "region": "Rajasthan (Shekhawati, Jaisalmer, Jodhpur, Jaipur), Western India",
+   "era": "17th–early 20th Century",
+   "search_terms": [
+    "Shekhawati haveli painted courtyard frescoes architecture",
+    "Jaisalmer haveli carved yellow sandstone jharokha balcony",
+    "Rajasthani courtyard chowk stone jaali pillars"
+   ]
+  },
+  {
+   "id": "goan_portuguese",
+   "name": "Goan Portuguese",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Balcão front porch with seats",
+    "Pastel lime-washed facades",
+    "Oyster-shell windows",
+    "Mangalore tile roofs",
+    "White mouldings"
+   ],
+   "materials": {
+    "floor": "terracotta",
+    "wall": "lime_wash",
+    "accent": "white_moulding"
+   },
+   "palette": {
+    "wall": "#F3C969",
+    "accent": "#FFFFFF",
+    "wood": "#7B4B2A",
+    "floor": "#B5562F"
+   },
+   "cost": "standard",
+   "mumbai": "Coastal style made for this climate; repaint lime wash every 3-4 years.",
+   "compatible": [
+    "konkan",
+    "mediterranean"
+   ],
+   "sources": [
+    "Bernardo Ferrão, Goan Vernacular Architecture: The Indo-Portuguese House (1997)",
+    "Gerard da Cunha, Heta Pandit, Annabel Mascarenhas, Houses of Goa (1999)",
+    "Paulo Varela Gomes, Whitewash, Red Stone: A History of Church Architecture in Goa (2011)"
+   ],
+   "aliases": [
+    "Casas de Goa",
+    "Indo-Portuguese House",
+    "Luso-Indian Manor"
+   ],
+   "region": "Goa (Bardez, Salcete, Tiswadi), Coastal Western India",
+   "era": "16th to early 20th Century (Luso-Indian colonial era)",
+   "search_terms": [
+    "Goan portuguese house balcao yellow facade colonial",
+    "Casas de goa interior oyster shell window carepas",
+    "Indo portuguese mansion verandah azulejos tiles goa"
+   ]
+  },
+  {
+   "id": "konkan",
+   "name": "Konkan Coastal",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Laterite stone walls",
+    "Mangalore tiled roof",
+    "Front verandah (oti)",
+    "Wooden rafters",
+    "Courtyard with tulsi"
+   ],
+   "materials": {
+    "floor": "red_oxide",
+    "wall": "laterite",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#C2643C",
+    "accent": "#EFE6D5",
+    "wood": "#5A3A22",
+    "floor": "#7E2F22"
+   },
+   "cost": "standard",
+   "mumbai": "Local to the region: laterite and tile are available near Mumbai.",
+   "compatible": [
+    "kerala_nalukettu",
+    "goan_portuguese",
+    "biophilic"
+   ],
+   "sources": [
+    "B.K. Sen, Vernacular Settlements of the Western Ghats Coastal Corridor (2004)",
+    "Mustansir Dalvi, The Vernacular Architecture of Konkan Maharashtra (2012)",
+    "V.S. Pramar, Indigenous Architecture of Western India (1992)"
+   ],
+   "aliases": [
+    "Coastal Khot Wada",
+    "Konkani Ghar",
+    "Malvani House"
+   ],
+   "region": "Konkan coastal region (Ratnagiri, Sindhudurg, Raigad, Coastal Maharashtra)",
+   "era": "17th–20th Century Vernacular",
+   "search_terms": [
+    "Konkan house laterite stone mangalore tiles vernacular",
+    "Traditional konkani house oti verandah red oxide floor",
+    "Coastal maharashtra rural house courtyard tulsi"
+   ]
+  },
+  {
+   "id": "bengali_traditional",
+   "name": "Bengali Traditional",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Red oxide floors",
+    "Green louvered shutters",
+    "Thakur dalan (prayer hall)",
+    "Courtyard",
+    "Cast-iron grilles"
+   ],
+   "materials": {
+    "floor": "red_oxide",
+    "wall": "lime_plaster",
+    "accent": "louvered_shutters"
+   },
+   "palette": {
+    "wall": "#F5EBDD",
+    "accent": "#2F6B4F",
+    "wood": "#6A4429",
+    "floor": "#9C2E22"
+   },
+   "cost": "economy",
+   "mumbai": "Louvered shutters ventilate while blocking monsoon rain.",
+   "compatible": [
+    "old_world_heritage",
+    "indian_contemporary"
+   ],
+   "sources": [
+    "Amit Chaudhuri, Calcutta: Two Years in the City (2013)",
+    "David McCutchion, Late Mediaeval Temples of Bengal: Origins and Classification (1972)",
+    "Partha Mitter, Art and Nationalism in Colonial India, 1850-1922 (1994)"
+   ],
+   "aliases": [
+    "Bangla Dokchala/Charchala",
+    "North Kolkata Courtyard Mansion",
+    "Zamindari Rajbari"
+   ],
+   "region": "Bengal (West Bengal & Bangladesh)",
+   "era": "17th Century (Chala folk forms) to 19th–early 20th Century (Colonial-Vernacular mansions)",
+   "search_terms": [
+    "Kolkata traditional courtyard house thakurdalan red oxide",
+    "Bengal terracotta temple curved roof char chala architecture",
+    "North kolkata colonial mansion green louvered shutters khorkhori"
+   ]
+  },
+  {
+   "id": "laurie_baker_vernacular",
+   "name": "Laurie Baker Brick Vernacular",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon",
+    "hot-dry"
+   ],
+   "features": [
+    "Rat-trap bond exposed brick",
+    "Brick jaali walls",
+    "Filler slabs",
+    "Curved walls",
+    "Low-cost local materials"
+   ],
+   "materials": {
+    "floor": "red_oxide",
+    "wall": "exposed_brick",
+    "accent": "brick_jaali"
+   },
+   "palette": {
+    "wall": "#B5553A",
+    "accent": "#E8DCC8",
+    "wood": "#5B3B25",
+    "floor": "#8C3A2A"
+   },
+   "cost": "economy",
+   "mumbai": "Cuts cost and cement; exposed brick needs a water-repellent coat for monsoon.",
+   "compatible": [
+    "biophilic",
+    "eco_passive",
+    "indian_contemporary"
+   ],
+   "sources": [
+    "Gautam Bhatia, Laurie Baker: Life, Work, Writings (1991)",
+    "Gerard da Cunha (ed.), Laurie Baker: Architecture and Written Works (2014)",
+    "Laurie Baker, Brick Work and Cost-Reduction Manual for House Builders (1986)"
+   ],
+   "aliases": [
+    "Baker Brick Architecture",
+    "Costford Vernacular",
+    "Exposed Brick Sustainable"
+   ],
+   "region": "Kerala, South India; adopted nationwide",
+   "era": "1970s–Present",
+   "search_terms": [
+    "Laurie Baker architecture exposed brick jaali kerala",
+    "Costford rat trap bond brick vernacular house",
+    "Laurie baker filler slab ceiling red oxide floor"
+   ]
+  },
+  {
+   "id": "tropical_modernism",
+   "name": "Tropical Modernism",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Deep overhangs and brise-soleil",
+    "Cross-ventilation",
+    "Open-to-sky courts",
+    "Raw concrete and brick",
+    "Indoor-outdoor living"
+   ],
+   "materials": {
+    "floor": "kota_stone",
+    "wall": "exposed_concrete",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#D9D4CC",
+    "accent": "#3D6B4F",
+    "wood": "#7A5533",
+    "floor": "#8F8A7E"
+   },
+   "cost": "standard",
+   "mumbai": "Designed for monsoon cities: shade, airflow and rain protection first.",
+   "compatible": [
+    "indian_contemporary",
+    "biophilic",
+    "brutalist",
+    "mid_century_modern"
+   ],
+   "sources": [
+    "Charles Correa, The New Landscape: Urbanisation in the Third World (1985)",
+    "David Robson, Geoffrey Bawa: The Complete Works (2002)",
+    "Hasan-Uddin Khan (ed.), Charles Correa: Architect in India (1987)",
+    "Maxwell Fry & Jane Drew, Tropical Architecture in the Humid Zone (1956)",
+    "Royal Institute of British Architects (RIBA), Charles Correa: India's Greatest Architect (2013)",
+    "Victoria and Albert Museum (V&A), Tropical Modernism: Architecture and Independence (2024)"
+   ],
+   "aliases": [
+    "Bawa Modernism",
+    "Correa Modernism",
+    "Monsoon Modernism",
+    "Open-to-Sky Architecture",
+    "Sri Lankan Tropical Modern",
+    "Tube House Typology"
+   ],
+   "region": "Mumbai, Goa, Ahmedabad, India",
+   "era": "1960s–2010s",
+   "search_terms": [
+    "Geoffrey bawa lunuganga tropical modernism architecture",
+    "Tropical modernism villa open pavilion courtyard pool bawa",
+    "Sri lankan modern house terracotta tile roof cement floor"
+   ]
+  },
+  {
+   "id": "bombay_art_deco",
+   "name": "Bombay Art Deco",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Streamlined curved balconies",
+    "Eyebrow sunshades",
+    "Geometric railings",
+    "Terrazzo floors",
+    "Pastel facades with bands"
+   ],
+   "materials": {
+    "floor": "terrazzo",
+    "wall": "smooth_plaster",
+    "accent": "metal_railing"
+   },
+   "palette": {
+    "wall": "#F2E6CF",
+    "accent": "#3E8A86",
+    "wood": "#5E3C27",
+    "floor": "#C9C1B2"
+   },
+   "cost": "standard",
+   "mumbai": "Mumbai's own style (Marine Drive); eyebrow shades suit the climate.",
+   "compatible": [
+    "art_deco",
+    "mid_century_modern"
+   ],
+   "sources": [
+    "Art Deco Mumbai Trust, Deco on the Oval: Research & Documentation Archive (2018)",
+    "Navin Ramani, Bombay Art Deco Architecture: A Western Indian Ocean Perspective (2007)",
+    "UNESCO World Heritage Centre, The Victorian and Art Deco Ensemble of Mumbai (2018)"
+   ],
+   "aliases": [
+    "Marine Drive Art Deco",
+    "Mumbai Deco",
+    "Oceana Deco"
+   ],
+   "region": "Mumbai (Marine Drive, Oval Maidan, Shivaji Park, Matunga), India",
+   "era": "1930s–1950s",
+   "search_terms": [
+    "Bombay art deco residential building marine drive curved balcony",
+    "Mumbai art deco architecture eyebrow chajja terrazzo",
+    "Art deco apartment interior bombay terrazzo floor geometric"
+   ]
+  },
+  {
+   "id": "indo_saracenic",
+   "name": "Indo-Saracenic",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "hot-dry"
+   ],
+   "features": [
+    "Pointed and cusped arches",
+    "Domes and chhatris",
+    "Stone facades",
+    "Verandahs",
+    "Ornamental brackets"
+   ],
+   "materials": {
+    "floor": "marble",
+    "wall": "stone_cladding",
+    "accent": "carved_stone"
+   },
+   "palette": {
+    "wall": "#E8D3B0",
+    "accent": "#7C2E2E",
+    "wood": "#4F3122",
+    "floor": "#E5DED2"
+   },
+   "cost": "premium",
+   "mumbai": "Heritage look; use as arches and brackets rather than full stone.",
+   "compatible": [
+    "mughal_indo_islamic",
+    "rajasthani_haveli"
+   ],
+   "sources": [
+    "Giles Tillotson, The Paradigm of Indian Architecture: Analysis of Indo-Saracenic Architecture (1998)",
+    "Sir Swinton Jacob, Jeypore Portfolio of Architectural Details (1890)",
+    "Thomas R. Metcalf, An Imperial Vision: Indian Architecture and Britain's Raj (1989)"
+   ],
+   "aliases": [
+    "Colonial Saracenic",
+    "Hindu-Gothic",
+    "Raj British-Indian Classical"
+   ],
+   "region": "Bombay Presidency, Madras, Calcutta, Princely States, India",
+   "era": "Late 19th to early 20th Century (c. 1870–1930)",
+   "search_terms": [
+    "Indo saracenic residential architecture colonial bungalow",
+    "Bombay colonial revival mansion stone arches chhatri",
+    "Indo gothic domestic building verandah jaali stone"
+   ]
+  },
+  {
+   "id": "mughal_indo_islamic",
+   "name": "Mughal / Indo-Islamic",
+   "group": "Indian regional",
+   "climate": [
+    "hot-dry",
+    "hot-humid"
+   ],
+   "features": [
+    "Symmetrical char-bagh plan",
+    "Arched openings",
+    "Inlay (pietra dura) details",
+    "Water features",
+    "Jaali screens"
+   ],
+   "materials": {
+    "floor": "marble",
+    "wall": "lime_plaster",
+    "accent": "marble_inlay"
+   },
+   "palette": {
+    "wall": "#F6F1E7",
+    "accent": "#1F5E7A",
+    "wood": "#4A2C1E",
+    "floor": "#EDE8DF"
+   },
+   "cost": "premium",
+   "mumbai": "Marble stays cool; keep water features shaded against mosquitoes.",
+   "compatible": [
+    "moroccan_riad",
+    "persian",
+    "rajasthani_haveli"
+   ]
+  },
+  {
+   "id": "kutchi_bhunga",
+   "name": "Kutchi Bhunga",
+   "group": "Indian regional",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Circular mud huts",
+    "Conical thatch roofs",
+    "Mirror and mud relief work (lippan)",
+    "Thick earthen walls",
+    "Earthquake-resilient form"
+   ],
+   "materials": {
+    "floor": "mud_cow_dung",
+    "wall": "mud_plaster",
+    "accent": "lippan_mirror"
+   },
+   "palette": {
+    "wall": "#E3CBA4",
+    "accent": "#FFFFFF",
+    "wood": "#6E4A2C",
+    "floor": "#A88560"
+   },
+   "cost": "economy",
+   "mumbai": "Character for interiors only; mud and thatch don't survive Mumbai rain.",
+   "compatible": [
+    "bohemian",
+    "eco_passive"
+   ],
+   "sources": [
+    "Channa Daswatte, Indigenous Buildings of Kutch (2005)",
+    "Hunnarshala Foundation & UNDP, Bhunga: Vernacular Architecture of Kutch (2002)",
+    "National Centre for Peoples'-Action in Disaster Preparedness (NCPDP), Seismic Safety of Vernacular Bhungas (2003)"
+   ],
+   "aliases": [
+    "Banni Bhunga",
+    "Desert Vernacular of Kutch",
+    "Kutch Mud Roundhouse"
+   ],
+   "region": "Kutch region (Banni plains, Hodka, Bhuj), Gujarat, India",
+   "era": "Centuries-old indigenous vernacular; reconstructed post-2001 Bhuj earthquake",
+   "search_terms": [
+    "Kutchi bhunga traditional circular mud house architecture",
+    "Lippan kaam mud mirror work interior wall kutch",
+    "Banni village round hut conical roof gujarat"
+   ]
+  },
+  {
+   "id": "japanese",
+   "name": "Japanese Traditional",
+   "group": "Asian",
+   "climate": [
+    "temperate",
+    "hot-humid"
+   ],
+   "features": [
+    "Modular tatami proportions",
+    "Sliding shoji screens",
+    "Engawa verandah",
+    "Tokonoma alcove",
+    "Garden views"
+   ],
+   "materials": {
+    "floor": "wood_flooring",
+    "wall": "plaster",
+    "accent": "cedar"
+   },
+   "palette": {
+    "wall": "#F4F0E6",
+    "accent": "#C9A27E",
+    "wood": "#8A6A4A",
+    "floor": "#B89B78"
+   },
+   "cost": "premium",
+   "mumbai": "Paper screens won't last; use fluted glass and treated timber.",
+   "compatible": [
+    "japandi",
+    "minimalist",
+    "wabi_sabi"
+   ],
+   "sources": [
+    "Heinrich Engel, The Japanese House: A Tradition for Contemporary Architecture (1964)",
+    "Kazuo Nishi & Kazuo Hozumi, What Is Japanese Architecture? (1985)",
+    "Teiji Itoh & Yukio Futagawa, The Elegant Japanese House: Traditional Sukiya Style (1969)"
+   ],
+   "aliases": [
+    "Minka",
+    "Sukiya-zukuri",
+    "Traditional Japanese Washitsu"
+   ],
+   "region": "Japan (Kyoto, Nara, rural Honshu)",
+   "era": "Edo Period (1603–1867) to early 20th Century",
+   "search_terms": [
+    "Traditional japanese sukiya house tatami room engawa",
+    "Japanese minka house timber post beam courtyard",
+    "Washitsu room shoji screen tokonoma alcove wood"
+   ]
+  },
+  {
+   "id": "japandi",
+   "name": "Japandi",
+   "group": "Asian",
+   "climate": [
+    "temperate",
+    "hot-humid",
+    "cold"
+   ],
+   "features": [
+    "Japanese calm + Scandinavian comfort",
+    "Low furniture",
+    "Muted natural tones",
+    "Handmade ceramics",
+    "Clutter-free storage"
+   ],
+   "materials": {
+    "floor": "oak_flooring",
+    "wall": "limewash",
+    "accent": "oak"
+   },
+   "palette": {
+    "wall": "#EDE7DD",
+    "accent": "#9C8B77",
+    "wood": "#B08D67",
+    "floor": "#C7B299"
+   },
+   "cost": "standard",
+   "mumbai": "Use engineered or vinyl wood floors; solid oak swells in humidity.",
+   "compatible": [
+    "japanese",
+    "scandinavian",
+    "minimalist"
+   ],
+   "sources": [
+    "Japan Institute of Design Promotion & Danish Design Center, East-West Minimalist Synthesis in Domestic Architecture (2021)",
+    "Laila Rietbergen, Japandi Living: Japanese and Scandinavian Interior Design (2022)",
+    "Rebecca Proctor, Modern Rustic: Natural Living in the Contemporary Home (2020)"
+   ],
+   "aliases": [
+    "Japanese-Scandinavian Modern",
+    "Nordic Wabi",
+    "Scandi-Japanese Fusion"
+   ],
+   "region": "Global synthesis of Japan and Scandinavia (Copenhagen & Tokyo)",
+   "era": "2010s–Present",
+   "search_terms": [
+    "Japandi living room interior light oak slatted wood",
+    "Japandi bedroom low platform bed muted neutral",
+    "Japanese scandinavian dining room paper pendant chair"
+   ]
+  },
+  {
+   "id": "balinese",
+   "name": "Balinese / Tropical Resort",
+   "group": "Asian",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Open pavilions",
+    "Alang-alang thatch look",
+    "Stone carvings",
+    "Outdoor bathrooms",
+    "Water gardens"
+   ],
+   "materials": {
+    "floor": "natural_stone",
+    "wall": "stone_cladding",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#D9CBB0",
+    "accent": "#4E6B3A",
+    "wood": "#5E4027",
+    "floor": "#8A7F6C"
+   },
+   "cost": "premium",
+   "mumbai": "Suits the climate; plan mosquito screening for open pavilions.",
+   "compatible": [
+    "biophilic",
+    "tropical_modernism"
+   ],
+   "sources": [
+    "Bali Cultural Heritage Documentation Agency, Asta Kosala Kosali: The Traditional Architectural Code of Bali (1998)",
+    "Julian Davison, Balinese Architecture (2003)",
+    "Made Wijaya, Architecture of Bali: A Source Book of Traditional and Modern Forms (2002)"
+   ],
+   "aliases": [
+    "Bali Pavilion Style",
+    "Balinese Vernacular",
+    "Tropical Balinese Resort"
+   ],
+   "region": "Bali, Indonesia",
+   "era": "Traditional Asta Kosala Kosali principles; 1980s–Present tropical modern resort revival",
+   "search_terms": [
+    "Balinese villa open pavilion bale alang alang thatch",
+    "Bali tropical resort bathroom outdoor shower paras stone",
+    "Balinese courtyard water garden carved stone candi bentar"
+   ]
+  },
+  {
+   "id": "chinese_courtyard",
+   "name": "Chinese Courtyard (Siheyuan)",
+   "group": "Asian",
+   "climate": [
+    "temperate",
+    "cold",
+    "hot-dry"
+   ],
+   "features": [
+    "Rooms around a central courtyard",
+    "Axial symmetry",
+    "Moon gates",
+    "Red lacquered columns",
+    "Grey tile roofs"
+   ],
+   "materials": {
+    "floor": "grey_brick_tile",
+    "wall": "grey_brick",
+    "accent": "lacquered_wood"
+   },
+   "palette": {
+    "wall": "#9A9A96",
+    "accent": "#A6262A",
+    "wood": "#5A2E1E",
+    "floor": "#6F6E69"
+   },
+   "cost": "premium",
+   "mumbai": "Courtyard idea works; drain the courtyard well for monsoon.",
+   "compatible": [
+    "feng_shui_modern",
+    "japanese"
+   ],
+   "sources": [
+    "Laurence G. Liu, Chinese Architecture (1989)",
+    "Ronald G. Knapp, China's Old Dwellings (2000)",
+    "Tsinghua University School of Architecture, Beijing Courtyard Houses: Typology and Spatial Analysis (2006)"
+   ],
+   "aliases": [
+    "Chinese Quadrangle",
+    "Siheyuan",
+    "Traditional Beijing Courtyard House"
+   ],
+   "region": "Northern & Central China (Beijing, Shanxi)",
+   "era": "Ming (1368–1644) and Qing (1644–1912) Dynasties",
+   "search_terms": [
+    "Beijing siheyuan courtyard house traditional architecture",
+    "Chinese courtyard house moon gate red pillars grey brick",
+    "Siheyuan interior ming furniture grey tile roof"
+   ]
+  },
+  {
+   "id": "korean_hanok",
+   "name": "Korean Hanok",
+   "group": "Asian",
+   "climate": [
+    "temperate",
+    "cold"
+   ],
+   "features": [
+    "Curved tile roofs",
+    "Ondol heated floors",
+    "Wooden frame and hanji paper",
+    "Maru open wooden floor",
+    "Courtyard (madang)"
+   ],
+   "materials": {
+    "floor": "wood_flooring",
+    "wall": "plaster",
+    "accent": "pine"
+   },
+   "palette": {
+    "wall": "#F2EEE4",
+    "accent": "#5C5A55",
+    "wood": "#9C7550",
+    "floor": "#B8916A"
+   },
+   "cost": "premium",
+   "mumbai": "Floor heating is unnecessary; borrow the maru verandah idea.",
+   "compatible": [
+    "japanese",
+    "minimalist"
+   ],
+   "sources": [
+    "Korea National Heritage Administration, Architectural Characteristics of Joseon Period Residential Dwellings (2018)",
+    "National Institute of Korean Language, Hanok: Traditional Korean Architecture (2010)",
+    "Peter Bartholomew, The Korean House: Hanok (2012)"
+   ],
+   "aliases": [
+    "Choseon Domestic Architecture",
+    "Hanok",
+    "Traditional Korean House"
+   ],
+   "region": "Korea (Seoul Bukchon, Jeonju, Andong)",
+   "era": "Joseon Dynasty (1392–1897) to early 20th Century",
+   "search_terms": [
+    "Korean hanok house bukchon courtyard curved roof",
+    "Traditional korean hanok daecheong maru wooden floor",
+    "Hanok interior hanji paper changho door pine"
+   ]
+  },
+  {
+   "id": "thai_traditional",
+   "name": "Thai Traditional",
+   "group": "Asian",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Raised on stilts",
+    "Steep layered roofs",
+    "Large shaded terraces",
+    "Teak panels",
+    "Open plan for airflow"
+   ],
+   "materials": {
+    "floor": "teak_wood",
+    "wall": "teak_panel",
+    "accent": "gold_leaf_detail"
+   },
+   "palette": {
+    "wall": "#E6D5B8",
+    "accent": "#B8860B",
+    "wood": "#6B4226",
+    "floor": "#7A5233"
+   },
+   "cost": "premium",
+   "mumbai": "Raised floors help in flood-prone lanes.",
+   "compatible": [
+    "balinese",
+    "tropical_modernism"
+   ],
+   "sources": [
+    "Association of Siamese Architects (ASA), Traditional Siamese Residential Architecture (2005)",
+    "Ruethai Chaichongrak et al., The Thai House: History and Evolution (2002)",
+    "Sumet Jumsai, Naga: Cultural Origins in Siam and the West Pacific (1988)"
+   ],
+   "aliases": [
+    "Central Plains Thai House",
+    "Ruen Thai",
+    "Traditional Siamese House"
+   ],
+   "region": "Central Plains of Thailand (Chao Phraya River basin, Ayutthaya, Bangkok)",
+   "era": "Ayutthaya Period (1351–1767) to late 19th Century",
+   "search_terms": [
+    "Thai traditional house ruen thai teak wood stilts",
+    "Traditional thai house elevated terrace chaan roof",
+    "Jim Thompson house bangkok thai architecture teak"
+   ]
+  },
+  {
+   "id": "moroccan_riad",
+   "name": "Moroccan Riad",
+   "group": "Middle East & North Africa",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Inward courtyard with fountain",
+    "Zellige mosaic tiles",
+    "Tadelakt polished plaster",
+    "Horseshoe arches",
+    "Carved cedar"
+   ],
+   "materials": {
+    "floor": "encaustic_tiles",
+    "wall": "tadelakt",
+    "accent": "zellige"
+   },
+   "palette": {
+    "wall": "#E9D3B4",
+    "accent": "#1C6E8C",
+    "wood": "#5B3720",
+    "floor": "#C46A3A"
+   },
+   "cost": "premium",
+   "mumbai": "Tadelakt is water-resistant and good for baths.",
+   "compatible": [
+    "mughal_indo_islamic",
+    "mediterranean",
+    "bohemian"
+   ],
+   "sources": [
+    "Corinne Verner, The Houses of Morocco (2004)",
+    "Moroccan Ministry of Culture Heritage Registers, Traditional Domestic Architecture of the Maghreb (1998)",
+    "Quentin Wilbaux, La Médina de Marrakech: Formation des espaces urbains (2001)"
+   ],
+   "aliases": [
+    "Dar",
+    "Marrakech Courtyard House",
+    "Moorish Domestic Architecture",
+    "Riad"
+   ],
+   "region": "Morocco (Marrakech, Fez, Essaouira)",
+   "era": "Idrisid and Almoravid periods (11th Century) through 19th Century",
+   "search_terms": [
+    "Marrakech moroccan riad central courtyard fountain zellige",
+    "Moroccan riad interior tadelakt plaster carved cedar",
+    "Riad courtyard orange trees arches lantern mosaic"
+   ]
+  },
+  {
+   "id": "arabian_courtyard",
+   "name": "Arabian / Gulf Courtyard",
+   "group": "Middle East & North Africa",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Mashrabiya screens",
+    "Wind towers (barjeel)",
+    "Majlis guest hall",
+    "Gender-separated zones",
+    "Thick walls"
+   ],
+   "materials": {
+    "floor": "limestone",
+    "wall": "lime_plaster",
+    "accent": "mashrabiya_wood"
+   },
+   "palette": {
+    "wall": "#E8DCC4",
+    "accent": "#7A5C3A",
+    "wood": "#4E3523",
+    "floor": "#D9CBB0"
+   },
+   "cost": "premium",
+   "mumbai": "Mashrabiya-style screens give privacy in dense lanes.",
+   "compatible": [
+    "moroccan_riad",
+    "mughal_indo_islamic"
+   ],
+   "sources": [
+    "Dubai Municipality Historic Buildings Section, Historic Buildings of the Coastal Gulf (2001)",
+    "Ronald Hawker, Traditional Architecture of the Arabian Gulf: Building on Desert Tides (2008)",
+    "Salma Samar Damluji, The Architecture of the United Arab Emirates (2006)"
+   ],
+   "aliases": [
+    "Bait Traditional Gulf House",
+    "Bastakiya House",
+    "Emirati Courtyard House"
+   ],
+   "region": "Arabian Gulf and Levant (Dubai Bastakiya, Bahrain, Kuwait, Jeddah Al-Balad)",
+   "era": "18th to early 20th Century",
+   "search_terms": [
+    "Traditional gulf house wind tower barjeel dubai bastakiya",
+    "Arabian courtyard house mashrabiya screen roshan",
+    "Emirati majlis traditional interior coral stone gypsum"
+   ]
+  },
+  {
+   "id": "persian",
+   "name": "Persian",
+   "group": "Middle East & North Africa",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Iwan vaulted halls",
+    "Four-part garden (chahar bagh)",
+    "Blue glazed tilework",
+    "Muqarnas details",
+    "Reflecting pools"
+   ],
+   "materials": {
+    "floor": "marble",
+    "wall": "glazed_tile",
+    "accent": "turquoise_tile"
+   },
+   "palette": {
+    "wall": "#F1E7D6",
+    "accent": "#1E7A8C",
+    "wood": "#5A3A24",
+    "floor": "#E2D8C6"
+   },
+   "cost": "premium",
+   "mumbai": "Glazed tiles are easy to clean in humidity.",
+   "compatible": [
+    "mughal_indo_islamic",
+    "moroccan_riad"
+   ],
+   "sources": [
+    "Cultural Heritage, Handicrafts and Tourism Organization of Iran (ICHHTO), Kashan Historical Houses Survey & Conservation (2008)",
+    "Mohammad Karim Pirnia, An Introduction to Islamic Architecture of Iran (2005)",
+    "Susan Roaf, The Traditional Windcatchers of Yazd (1982)"
+   ],
+   "aliases": [
+    "Kashan Courtyard Manor",
+    "Khaneh",
+    "Traditional Iranian House"
+   ],
+   "region": "Central Iranian Plateau (Kashan, Isfahan, Yazd, Shiraz)",
+   "era": "Safavid to Qajar Dynasties (16th–early 20th Century)",
+   "search_terms": [
+    "Kashan traditional persian courtyard house badgir pool",
+    "Persian house interior orosi stained glass window ayeneh kari",
+    "Traditional iranian house iwan muqarnas windcatcher"
+   ]
+  },
+  {
+   "id": "mediterranean",
+   "name": "Mediterranean",
+   "group": "European",
+   "climate": [
+    "hot-dry",
+    "temperate"
+   ],
+   "features": [
+    "Stucco walls",
+    "Terracotta roof tiles",
+    "Arched windows",
+    "Wrought-iron details",
+    "Shaded loggias"
+   ],
+   "materials": {
+    "floor": "terracotta",
+    "wall": "stucco",
+    "accent": "wrought_iron"
+   },
+   "palette": {
+    "wall": "#F2E3C9",
+    "accent": "#2F5D8A",
+    "wood": "#6A4528",
+    "floor": "#B5603A"
+   },
+   "cost": "standard",
+   "mumbai": "Works well; specify mould-resistant exterior paint.",
+   "compatible": [
+    "tuscan",
+    "greek_cycladic",
+    "spanish_colonial"
+   ],
+   "sources": [
+    "Bernard Rudofsky, Architecture Without Architects (1964)",
+    "Kenneth Frampton, Modern Architecture: A Critical History (1980)",
+    "Norman F. Carver Jr., Iberian Villages: Traditional Folk Architecture of Spain and Portugal (1988)"
+   ],
+   "aliases": [
+    "Coastal European",
+    "Mediterranean Coastal",
+    "Spanish Mediterranean"
+   ],
+   "region": "Mediterranean Basin (Spain, Southern France, Italy, Greece)",
+   "era": "Centuries-old folk vernacular; 1920s revival to Present",
+   "search_terms": [
+    "Mediterranean coastal villa terracotta tile pergola",
+    "Mediterranean house interior arched doorway cotto tile",
+    "Spanish mediterranean home stucco exterior wrought iron"
+   ]
+  },
+  {
+   "id": "tuscan",
+   "name": "Tuscan",
+   "group": "European",
+   "climate": [
+    "hot-dry",
+    "temperate"
+   ],
+   "features": [
+    "Rough stone and stucco",
+    "Exposed wooden beams",
+    "Warm earth colours",
+    "Arched doorways",
+    "Courtyard gardens"
+   ],
+   "materials": {
+    "floor": "travertine",
+    "wall": "textured_plaster",
+    "accent": "rustic_wood_beams"
+   },
+   "palette": {
+    "wall": "#E6C79C",
+    "accent": "#8A3B26",
+    "wood": "#5C3B22",
+    "floor": "#C8AE88"
+   },
+   "cost": "premium",
+   "mumbai": "Seal travertine against monsoon damp.",
+   "compatible": [
+    "mediterranean",
+    "french_provincial"
+   ],
+   "sources": [
+    "John Fleming, Robert Adam and His Style: Italian Rural Antecedents (1962)",
+    "Pieralberto Carlotti, Tuscan Rural Architecture (2005)",
+    "University of Florence Department of Architecture (DIDA), Traditional Rural Architecture of Tuscany: Typology and Materials (2016)"
+   ],
+   "aliases": [
+    "Casale Toscano",
+    "Italian Country House",
+    "Tuscan Farmhouse"
+   ],
+   "region": "Tuscany (Chianti, Val d'Orcia, Siena), Central Italy",
+   "era": "Renaissance rural farmsteads (15th–18th Century) to contemporary luxury estates",
+   "search_terms": [
+    "Tuscan farmhouse stone exterior terracotta roof cyprus",
+    "Tuscan country kitchen wood beams travertine fireplace",
+    "Casale toscano interior stone arches cotto floor"
+   ]
+  },
+  {
+   "id": "greek_cycladic",
+   "name": "Greek Cycladic",
+   "group": "European",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Whitewashed cubic forms",
+    "Blue doors and shutters",
+    "Flat roofs and terraces",
+    "Built-in plaster seating",
+    "Small deep windows"
+   ],
+   "materials": {
+    "floor": "white_microcement",
+    "wall": "whitewash",
+    "accent": "blue_paint"
+   },
+   "palette": {
+    "wall": "#FAFAF7",
+    "accent": "#1F4E9C",
+    "wood": "#8A6A4A",
+    "floor": "#E9E6DF"
+   },
+   "cost": "economy",
+   "mumbai": "White walls reflect heat but show monsoon stains; use elastomeric paint.",
+   "compatible": [
+    "mediterranean",
+    "minimalist"
+   ],
+   "sources": [
+    "Bernard Rudofsky, Architecture Without Architects (1964)",
+    "Dimitris Philippides (ed.), Greek Traditional Architecture: Cyclades (1983)",
+    "National Technical University of Athens (NTUA), Architecture of the Cyclades Islands: Form, Morphology and Climate (2011)"
+   ],
+   "aliases": [
+    "Aegean Architecture",
+    "Cycladic Vernacular",
+    "Mykonian Style",
+    "Santorini Cave House"
+   ],
+   "region": "Cyclades Archipelago (Santorini, Mykonos, Paros, Naxos), Greece",
+   "era": "Centuries-old Aegean vernacular; Modernist inspiration (Le Corbusier 1930s)",
+   "search_terms": [
+    "Santorini cycladic house white cubic architecture aegean blue",
+    "Mykonos interior built-in plaster sofa microcement",
+    "Greek island whitewashed villa rounded corners terrace"
+   ]
+  },
+  {
+   "id": "scandinavian",
+   "name": "Scandinavian",
+   "group": "European",
+   "climate": [
+    "cold",
+    "temperate"
+   ],
+   "features": [
+    "Light, bright interiors",
+    "Pale woods",
+    "Simple functional furniture",
+    "Large windows",
+    "Cosy textiles (hygge)"
+   ],
+   "materials": {
+    "floor": "light_wood_laminate",
+    "wall": "matte_paint",
+    "accent": "birch"
+   },
+   "palette": {
+    "wall": "#F7F6F2",
+    "accent": "#7F9CA8",
+    "wood": "#D2B48C",
+    "floor": "#D9C9A8"
+   },
+   "cost": "standard",
+   "mumbai": "Big windows need shading here; pick moisture-resistant laminate.",
+   "compatible": [
+    "japandi",
+    "minimalist",
+    "mid_century_modern"
+   ],
+   "sources": [
+    "Alvar Aalto Foundation, Alvar Aalto: Toward a Human Modernism (2014)",
+    "Christian Norberg-Schulz, Nightlands: Nordic Building (1996)",
+    "Michael Sheridan, The Furniture of Poul Kjærholm and the Danish Modern Home (2006)"
+   ],
+   "aliases": [
+    "Danish Modern Domestic",
+    "Nordic Modern",
+    "Scandi Design"
+   ],
+   "region": "Nordic countries (Denmark, Sweden, Norway, Finland)",
+   "era": "1930s–Present (interwar functionalism to modern hygge living)",
+   "search_terms": [
+    "Scandinavian living room pale oak floor hygge white",
+    "Nordic modern apartment interior large window light",
+    "Danish dining room ph5 pendant wegner chair"
+   ]
+  },
+  {
+   "id": "english_cottage",
+   "name": "English Cottage",
+   "group": "European",
+   "climate": [
+    "temperate",
+    "cold"
+   ],
+   "features": [
+    "Steep gabled roofs",
+    "Small-paned windows",
+    "Exposed beams",
+    "Fireplace focus",
+    "Cottage gardens"
+   ],
+   "materials": {
+    "floor": "wood_flooring",
+    "wall": "plaster",
+    "accent": "stone"
+   },
+   "palette": {
+    "wall": "#F1EADB",
+    "accent": "#5D7052",
+    "wood": "#6B4A30",
+    "floor": "#8C6B4C"
+   },
+   "cost": "standard",
+   "mumbai": "Interior mood only; small windows trap heat here.",
+   "compatible": [
+    "farmhouse",
+    "french_provincial"
+   ],
+   "sources": [
+    "Alec Clifton-Taylor, The Pattern of English Building (1972)",
+    "Gertrude Jekyll & Lawrence Weaver, Gardens for Small Country Houses (1912)",
+    "Society for the Protection of Ancient Buildings (SPAB), Cottage and Vernacular Architecture in Britain (2015)"
+   ],
+   "aliases": [
+    "Cotswold Cottage",
+    "English Country Cottage",
+    "Tudor Cottage"
+   ],
+   "region": "Rural England (Cotswolds, Devon, Sussex, Yorkshire)",
+   "era": "16th to early 20th Century vernacular; Arts and Crafts movement",
+   "search_terms": [
+    "Cotswold stone cottage thatched roof english garden",
+    "English country cottage kitchen exposed beams aga stove",
+    "English cottage living room fireplace chintz floral"
+   ]
+  },
+  {
+   "id": "french_provincial",
+   "name": "French Provincial",
+   "group": "European",
+   "climate": [
+    "temperate"
+   ],
+   "features": [
+    "Symmetrical facades",
+    "Hipped roofs",
+    "Tall shuttered windows",
+    "Distressed painted furniture",
+    "Stone floors"
+   ],
+   "materials": {
+    "floor": "limestone",
+    "wall": "plaster",
+    "accent": "painted_wood"
+   },
+   "palette": {
+    "wall": "#EFE8DB",
+    "accent": "#8DA3A6",
+    "wood": "#9A7B5B",
+    "floor": "#D8CDB8"
+   },
+   "cost": "premium",
+   "mumbai": "Tall shuttered windows suit cross-ventilation.",
+   "compatible": [
+    "tuscan",
+    "english_cottage"
+   ],
+   "sources": [
+    "Charles Saunier, L'Habitation Française: Régionalisme et Tradition (1928)",
+    "Christian Lassure, Architecture Vernaculaire de la France (2004)",
+    "Philip Lippincott Goodwin & Henry Oothout Milliken, French Provincial Architecture: As Shown in Various Examples of Town & Country Houses (1924)"
+   ],
+   "aliases": [
+    "French Country",
+    "Manoir Provincial",
+    "Provençal Style"
+   ],
+   "region": "Provence and rural regions of France (Normandy, Dordogne, Loire)",
+   "era": "17th–18th Century French regional country estates (Louis XIV–Louis XVI provincial)",
+   "search_terms": [
+    "French provincial manor house exterior hipped roof shutters",
+    "French country kitchen tomettes tiles limestone fireplace",
+    "Provencal bedroom bergere chair toile de jouy"
+   ]
+  },
+  {
+   "id": "spanish_colonial",
+   "name": "Spanish Colonial",
+   "group": "European",
+   "climate": [
+    "hot-dry",
+    "temperate"
+   ],
+   "features": [
+    "Thick stucco walls",
+    "Red clay roof tiles",
+    "Interior courtyards",
+    "Wooden balconies",
+    "Decorative tiles"
+   ],
+   "materials": {
+    "floor": "saltillo_terracotta",
+    "wall": "stucco",
+    "accent": "painted_tiles"
+   },
+   "palette": {
+    "wall": "#F3E6D0",
+    "accent": "#A0442C",
+    "wood": "#4E3220",
+    "floor": "#B8653F"
+   },
+   "cost": "standard",
+   "mumbai": "Close relative of Goan Portuguese; suits the climate.",
+   "compatible": [
+    "mediterranean",
+    "goan_portuguese",
+    "pueblo"
+   ],
+   "sources": [
+    "David Gebhard, Spanish Colonial Revival in Southern California (1967)",
+    "Getty Conservation Institute, Historic Adobe and Stucco Building Conservation (2006)",
+    "Rexford Newcomb, The Spanish House for America (1927)"
+   ],
+   "aliases": [
+    "Hispano-Colonial Domestic",
+    "Mission Revival",
+    "Spanish Eclectic"
+   ],
+   "region": "Spain, the Caribbean, Central America, California, and Florida",
+   "era": "16th–19th Century colonial; 1915–1930s Revival movement",
+   "search_terms": [
+    "Spanish colonial revival house courtyard red tile roof",
+    "Spanish style home interior talavera tile saltillo floor",
+    "Mission revival architecture stucco arches wrought iron"
+   ]
+  },
+  {
+   "id": "bauhaus",
+   "name": "Bauhaus",
+   "group": "European",
+   "climate": [
+    "temperate",
+    "cold"
+   ],
+   "features": [
+    "Form follows function",
+    "Flat roofs",
+    "Ribbon windows",
+    "Primary-colour accents",
+    "Steel and glass"
+   ],
+   "materials": {
+    "floor": "polished_concrete",
+    "wall": "smooth_plaster",
+    "accent": "steel"
+   },
+   "palette": {
+    "wall": "#F5F5F2",
+    "accent": "#C8302A",
+    "wood": "#3A3A3A",
+    "floor": "#A9A9A6"
+   },
+   "cost": "standard",
+   "mumbai": "Add sunshades to ribbon windows on west faces.",
+   "compatible": [
+    "minimalist",
+    "mid_century_modern",
+    "industrial"
+   ],
+   "sources": [
+    "Bauhaus-Archiv Berlin, The Bauhaus Archive Research Compendium (2019)",
+    "Magdalena Droste, Bauhaus: 1919–1933 (2002)",
+    "Walter Gropius, The New Architecture and the Bauhaus (1935)"
+   ],
+   "aliases": [
+    "Bauhaus Architecture",
+    "International Modernism",
+    "Weimar Functionalism"
+   ],
+   "region": "Germany (Weimar, Dessau, Berlin)",
+   "era": "1919–1933 (original German school); enduring global influence",
+   "search_terms": [
+    "Bauhaus dessau masters houses walter gropius architecture",
+    "Bauhaus modern residential house flat roof ribbon window",
+    "Bauhaus interior marcel breuer wassily chair tubular steel"
+   ]
+  },
+  {
+   "id": "art_deco",
+   "name": "Art Deco",
+   "group": "European",
+   "climate": [
+    "temperate",
+    "hot-humid"
+   ],
+   "features": [
+    "Geometric patterns",
+    "Stepped forms",
+    "Polished metals",
+    "Bold contrasting colours",
+    "Luxurious materials"
+   ],
+   "materials": {
+    "floor": "marble",
+    "wall": "lacquer_paint",
+    "accent": "brass"
+   },
+   "palette": {
+    "wall": "#EDE4D3",
+    "accent": "#0F5257",
+    "wood": "#2E1F18",
+    "floor": "#F0EBE2"
+   },
+   "cost": "premium",
+   "mumbai": "Brass tarnishes in sea air; use PVD-coated finishes.",
+   "compatible": [
+    "bombay_art_deco",
+    "maximalist"
+   ],
+   "sources": [
+    "Alastair Duncan, Art Deco Complete: The Definitive Guide to the Decorative Arts (2009)",
+    "Bevis Hillier, Art Deco of the 20s and 30s (1968)",
+    "Victoria and Albert Museum (V&A), Art Deco 1910–1939 (2003)"
+   ],
+   "aliases": [
+    "Art Moderne",
+    "Classical Art Deco",
+    "Jazz Age Deco",
+    "Style Moderne"
+   ],
+   "region": "France (Paris 1925 Exposition Internationale des Arts Décoratifs) and Europe",
+   "era": "1920s–1930s (Interwar period)",
+   "search_terms": [
+    "Classic art deco interior geometric brass marble",
+    "Art deco living room macassar ebony velvet sunburst",
+    "1930s art deco residential facade curved balcony speedlines"
+   ]
+  },
+  {
+   "id": "victorian",
+   "name": "Victorian",
+   "group": "European",
+   "climate": [
+    "temperate",
+    "cold"
+   ],
+   "features": [
+    "Ornate mouldings",
+    "Bay windows",
+    "Patterned encaustic tiles",
+    "Dark wood panelling",
+    "Rich wallpapers"
+   ],
+   "materials": {
+    "floor": "encaustic_tiles",
+    "wall": "wallpaper",
+    "accent": "mahogany"
+   },
+   "palette": {
+    "wall": "#D9C7B0",
+    "accent": "#5B1F2A",
+    "wood": "#3E2418",
+    "floor": "#7A5B45"
+   },
+   "cost": "premium",
+   "mumbai": "Wallpaper peels in humidity; use paint effects instead.",
+   "compatible": [
+    "old_world_heritage",
+    "maximalist"
+   ],
+   "sources": [
+    "Historic England, Domestic Housing Typologies: Victorian Era (2016)",
+    "John Gloag, Victorian Taste: Some Social Aspects of Architecture and Industrial Design (1962)",
+    "Stefan Muthesius, The English Terraced House (1982)"
+   ],
+   "aliases": [
+    "High Victorian",
+    "Queen Anne Domestic",
+    "Victorian Terraced House"
+   ],
+   "region": "United Kingdom (London, Manchester, Glasgow) and the British Empire",
+   "era": "Victorian Era (1837–1901)",
+   "search_terms": [
+    "Victorian terraced house bay window red brick london",
+    "Victorian interior ceiling rose cornicing fireplace minton tile",
+    "High victorian living room chesterfield william morris"
+   ]
+  },
+  {
+   "id": "georgian",
+   "name": "Georgian / Colonial Classical",
+   "group": "European",
+   "climate": [
+    "temperate"
+   ],
+   "features": [
+    "Strict symmetry",
+    "Sash windows in proportion",
+    "Pediments and columns",
+    "Central hall plan",
+    "Panelled doors"
+   ],
+   "materials": {
+    "floor": "wood_flooring",
+    "wall": "smooth_plaster",
+    "accent": "white_moulding"
+   },
+   "palette": {
+    "wall": "#EFEAE0",
+    "accent": "#2E4057",
+    "wood": "#5C4033",
+    "floor": "#8B6B4F"
+   },
+   "cost": "premium",
+   "mumbai": "Colonial bungalows across India used this with verandahs added.",
+   "compatible": [
+    "old_world_heritage",
+    "french_provincial"
+   ],
+   "sources": [
+    "Dan Cruickshank & Peter Wyld, London: The Art of Georgian Building (1975)",
+    "Sir John Summerson, Georgian London (1945)",
+    "The Georgian Group (UK), Georgian Architectural Design & Detailing Guidelines (2012)"
+   ],
+   "aliases": [
+    "Colonial Classical Bungalow",
+    "Georgian Architecture",
+    "Palladian Domestic"
+   ],
+   "region": "Great Britain (London, Bath, Edinburgh) and Anglo-Colonial world",
+   "era": "Reigns of George I–IV (1714–1830); widely revived worldwide",
+   "search_terms": [
+    "Georgian townhouse architecture symmetry bath stone sash window",
+    "Georgian interior drawing room classical cornice fireplace",
+    "Colonial classical bungalow pediment portico symmetry"
+   ]
+  },
+  {
+   "id": "mid_century_modern",
+   "name": "Mid-century Modern",
+   "group": "Americas",
+   "climate": [
+    "temperate",
+    "hot-dry"
+   ],
+   "features": [
+    "Low horizontal lines",
+    "Floor-to-ceiling glass",
+    "Organic curved furniture",
+    "Teak and walnut",
+    "Indoor-outdoor flow"
+   ],
+   "materials": {
+    "floor": "terrazzo",
+    "wall": "matte_paint",
+    "accent": "walnut"
+   },
+   "palette": {
+    "wall": "#F2EBDD",
+    "accent": "#D9822B",
+    "wood": "#7A4E2D",
+    "floor": "#C9BFAE"
+   },
+   "cost": "standard",
+   "mumbai": "Shade the glass; terrazzo suits the climate.",
+   "compatible": [
+    "scandinavian",
+    "bombay_art_deco",
+    "tropical_modernism"
+   ],
+   "sources": [
+    "Alan Hess, The Architecture of John Lautner (1999)",
+    "Elizabeth A.T. Smith, Case Study Houses: The Complete CSH Program 1945–1966 (2002)",
+    "Esther McCoy, Five California Architects (1960)"
+   ],
+   "aliases": [
+    "Atomic Age Domestic",
+    "California Modernism",
+    "MCM",
+    "Post-War Modern"
+   ],
+   "region": "United States (Palm Springs, Los Angeles, New Canaan, Sarasota)",
+   "era": "c. 1945–1969 (Post-WWII boom to Apollo era)",
+   "search_terms": [
+    "Mid century modern house exterior flat roof glass walls",
+    "Mid century modern living room eames chair stone fireplace",
+    "Palm springs modern architecture post and beam clerestory"
+   ]
+  },
+  {
+   "id": "craftsman",
+   "name": "Craftsman",
+   "group": "Americas",
+   "climate": [
+    "temperate"
+   ],
+   "features": [
+    "Low-pitched gabled roofs",
+    "Wide front porch",
+    "Tapered columns",
+    "Built-in cabinetry",
+    "Exposed rafters"
+   ],
+   "materials": {
+    "floor": "wood_flooring",
+    "wall": "matte_paint",
+    "accent": "oak"
+   },
+   "palette": {
+    "wall": "#E7DCC6",
+    "accent": "#5E6B47",
+    "wood": "#6E4B2F",
+    "floor": "#8F6A47"
+   },
+   "cost": "standard",
+   "mumbai": "The front porch idea suits Indian verandah living.",
+   "compatible": [
+    "farmhouse",
+    "english_cottage"
+   ],
+   "sources": [
+    "Gustav Stickley, Craftsman Homes (1909)",
+    "Randell L. Makinson, Greene & Greene: Architecture as a Fine Art (1977)",
+    "Robert Winter, The California Bungalow (1980)"
+   ],
+   "aliases": [
+    "Arts and Crafts House",
+    "California Craftsman",
+    "Craftsman Bungalow",
+    "Greene and Greene Style"
+   ],
+   "region": "United States (California Pasadena, Chicago, Pacific Northwest)",
+   "era": "c. 1905–1930s (American Arts and Crafts Movement)",
+   "search_terms": [
+    "Craftsman bungalow exterior tapered columns porch",
+    "Craftsman interior built-in buffet quarter sawn oak",
+    "Greene and greene gamble house pasadena architecture"
+   ]
+  },
+  {
+   "id": "farmhouse",
+   "name": "Modern Farmhouse",
+   "group": "Americas",
+   "climate": [
+    "temperate",
+    "hot-dry"
+   ],
+   "features": [
+    "Board-and-batten cladding",
+    "Gabled roofs",
+    "Black window frames",
+    "Shiplap interiors",
+    "Big family kitchen"
+   ],
+   "materials": {
+    "floor": "wood_look_tiles",
+    "wall": "shiplap_paint",
+    "accent": "black_metal"
+   },
+   "palette": {
+    "wall": "#F4F2EC",
+    "accent": "#2B2B2B",
+    "wood": "#A07B55",
+    "floor": "#9E8466"
+   },
+   "cost": "standard",
+   "mumbai": "Use wood-look tiles instead of real boards for humidity.",
+   "compatible": [
+    "craftsman",
+    "scandinavian",
+    "industrial"
+   ],
+   "sources": [
+    "American Institute of Architects (AIA), AIA Housing Knowledge Community: Rural Typologies and Modern Transpositions (2019)",
+    "Nora Richter Greer, The Rural Heritage: American Barns and Farmhouses (1998)",
+    "Witold Rybczynski, Home: A Short History of an Idea (1986)"
+   ],
+   "aliases": [
+    "American Farmhouse",
+    "Contemporary Farmhouse",
+    "Modern Country House"
+   ],
+   "region": "Rural United States; popularized nationwide by 2010s design movement",
+   "era": "Traditional agrarian 19th Century; modern revival 2010s–Present",
+   "search_terms": [
+    "Modern farmhouse exterior white board and batten black roof",
+    "Modern farmhouse kitchen apron sink open shelves",
+    "Farmhouse living room shiplap fireplace barn door"
+   ]
+  },
+  {
+   "id": "prairie",
+   "name": "Prairie",
+   "group": "Americas",
+   "climate": [
+    "temperate"
+   ],
+   "features": [
+    "Strong horizontal lines",
+    "Wide overhanging eaves",
+    "Bands of windows",
+    "Central hearth",
+    "Natural materials"
+   ],
+   "materials": {
+    "floor": "wood_flooring",
+    "wall": "brick",
+    "accent": "art_glass"
+   },
+   "palette": {
+    "wall": "#C9A27A",
+    "accent": "#6B7B3A",
+    "wood": "#5A3D25",
+    "floor": "#7C5A3E"
+   },
+   "cost": "premium",
+   "mumbai": "Wide eaves are useful in monsoon.",
+   "compatible": [
+    "mid_century_modern",
+    "craftsman"
+   ],
+   "sources": [
+    "Bruce Brooks Pfeiffer, Frank Lloyd Wright: The Complete Works 1885–1916 (1991)",
+    "Frank Lloyd Wright, An American Architecture (1955)",
+    "H. Allen Brooks, The Prairie School: Frank Lloyd Wright and His Midwest Contemporaries (1972)"
+   ],
+   "aliases": [
+    "Midwestern Organic",
+    "Prairie School",
+    "Wrightian Architecture"
+   ],
+   "region": "American Midwest (Oak Park, Chicago, Illinois)",
+   "era": "c. 1893–1920 (developed by Frank Lloyd Wright and Prairie School contemporaries)",
+   "search_terms": [
+    "Frank lloyd wright robie house prairie style horizontal",
+    "Prairie school architecture cantilever eaves roman brick",
+    "Prairie house interior art glass oak trim fireplace"
+   ]
+  },
+  {
+   "id": "pueblo",
+   "name": "Pueblo / Adobe",
+   "group": "Americas",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Rounded adobe walls",
+    "Flat roofs with vigas",
+    "Earth tones",
+    "Small deep windows",
+    "Kiva fireplaces"
+   ],
+   "materials": {
+    "floor": "terracotta",
+    "wall": "earth_plaster",
+    "accent": "rough_timber"
+   },
+   "palette": {
+    "wall": "#D2A679",
+    "accent": "#2F6E73",
+    "wood": "#5E3F25",
+    "floor": "#A8613D"
+   },
+   "cost": "standard",
+   "mumbai": "Earth plaster needs protection from driving rain.",
+   "compatible": [
+    "spanish_colonial",
+    "bohemian"
+   ],
+   "sources": [
+    "Bainbridge Bunting, Of Earth and Timbers Made: New Mexico Architecture (1974)",
+    "Historic Santa Fe Foundation, Santa Fe Historic Style Guidelines (2010)",
+    "Trent Elwood Sanford, The Architecture of the Southwest (1950)"
+   ],
+   "aliases": [
+    "Adobe Revival",
+    "Pueblo Spanish Modern",
+    "Santa Fe Style",
+    "Southwestern Vernacular"
+   ],
+   "region": "American Southwest (New Mexico - Santa Fe, Taos, Albuquerque)",
+   "era": "Centuries-old Puebloan adobe traditions; 1920s–1930s Santa Fe Revival",
+   "search_terms": [
+    "Pueblo revival house santa fe adobe vigas canales",
+    "Santa fe style interior kiva fireplace viga ceiling",
+    "Adobe house rounded stucco exterior turquoise door"
+   ]
+  },
+  {
+   "id": "brazilian_modernism",
+   "name": "Brazilian Modernism",
+   "group": "Americas",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Free-form concrete curves",
+    "Pilotis (columns lifting the house)",
+    "Cobogó breeze blocks",
+    "Lush tropical gardens",
+    "Open ground floor"
+   ],
+   "materials": {
+    "floor": "polished_concrete",
+    "wall": "exposed_concrete",
+    "accent": "cobogo_blocks"
+   },
+   "palette": {
+    "wall": "#E3E0D8",
+    "accent": "#2E7D5B",
+    "wood": "#7A5230",
+    "floor": "#9D9A92"
+   },
+   "cost": "standard",
+   "mumbai": "Made for a similar climate; cobogó blocks ventilate like jaalis.",
+   "compatible": [
+    "tropical_modernism",
+    "brutalist",
+    "biophilic"
+   ],
+   "sources": [
+    "Instituto Lina Bo e P.M. Bardi, Lina Bo Bardi: Casa de Vidro Monograph (1994)",
+    "Lauro Cavalcanti, When Brazil Was Modern: Guide to Architecture 1928–1960 (2003)",
+    "Stamo Papadaki, The Work of Oscar Niemeyer (1950)"
+   ],
+   "aliases": [
+    "Brazilian Tropical Modern",
+    "Carioca Modernism",
+    "Paulista Modernism",
+    "Tropical Brutalism"
+   ],
+   "region": "Brazil (São Paulo, Rio de Janeiro, Brasília)",
+   "era": "1940s–1970s (Oscar Niemeyer, Lina Bo Bardi, Vilanova Artigas, Paulo Mendes da Rocha)",
+   "search_terms": [
+    "Brazilian modernism house concrete pilotis cobogo",
+    "Lina bo bardi casa de vidro glass house modern",
+    "Paulo mendes da rocha house board formed concrete garden"
+   ]
+  },
+  {
+   "id": "minimalist",
+   "name": "Minimalist",
+   "group": "Modern movements",
+   "climate": [
+    "hot-humid",
+    "hot-dry",
+    "temperate",
+    "cold"
+   ],
+   "features": [
+    "Clean lines, no ornament",
+    "Hidden storage",
+    "Monochrome palette",
+    "Light as the main material",
+    "Few, essential pieces"
+   ],
+   "materials": {
+    "floor": "large_format_vitrified",
+    "wall": "smooth_plaster",
+    "accent": "fluted_glass"
+   },
+   "palette": {
+    "wall": "#F7F7F5",
+    "accent": "#BDBAB3",
+    "wood": "#C2A988",
+    "floor": "#E4E2DD"
+   },
+   "cost": "standard",
+   "mumbai": "Easy to keep clean; pick off-white over pure white to hide stains.",
+   "compatible": [
+    "japandi",
+    "scandinavian",
+    "indian_contemporary"
+   ],
+   "sources": [
+    "Alberto Campo Baeza, The Built Idea: Alberto Campo Baeza (2015)",
+    "Franco Bertoni, Minimalist Architecture (2002)",
+    "John Pawson, Minimum (1996)"
+   ],
+   "aliases": [
+    "Architectural Minimalism",
+    "Pure Modernism",
+    "Reductive Architecture"
+   ],
+   "region": "Global (Japan, Germany, UK, Switzerland; John Pawson, Alberto Campo Baeza)",
+   "era": "1980s–Present",
+   "search_terms": [
+    "Architectural minimalism house white pure geometry pawson",
+    "Minimalist interior shadow gap seamless microcement floor",
+    "Campo baeza house pure white light architecture"
+   ]
+  },
+  {
+   "id": "brutalist",
+   "name": "Brutalist",
+   "group": "Modern movements",
+   "climate": [
+    "temperate",
+    "hot-dry",
+    "hot-humid"
+   ],
+   "features": [
+    "Raw board-formed concrete",
+    "Massive sculptural volumes",
+    "Deep-set windows",
+    "Honest structure",
+    "Monolithic forms"
+   ],
+   "materials": {
+    "floor": "polished_concrete",
+    "wall": "exposed_concrete",
+    "accent": "black_granite"
+   },
+   "palette": {
+    "wall": "#A7A6A1",
+    "accent": "#2B2B2B",
+    "wood": "#6E5038",
+    "floor": "#8C8B86"
+   },
+   "cost": "standard",
+   "mumbai": "Exposed concrete stains black in monsoon; use anti-carbonation sealer.",
+   "compatible": [
+    "industrial",
+    "tropical_modernism",
+    "brazilian_modernism"
+   ],
+   "sources": [
+    "Barnabas Calder, Raw Concrete: The Beauty of Brutalism (2016)",
+    "Reyner Banham, The New Brutalism: Ethic or Aesthetic? (1966)",
+    "Willy Boesiger (ed.), Le Corbusier: Oeuvre Complète 1952–1957 (1957)"
+   ],
+   "aliases": [
+    "Béton Brut",
+    "Monumental Concrete Modernism",
+    "New Brutalism"
+   ],
+   "region": "United Kingdom, France, and Global (Le Corbusier, Alison and Peter Smithson)",
+   "era": "1950s–1970s; contemporary architectural revival",
+   "search_terms": [
+    "Brutalist house board formed concrete architecture",
+    "Brutalist residential interior raw concrete wood",
+    "Monumental modern house exposed concrete cantilever"
+   ]
+  },
+  {
+   "id": "industrial",
+   "name": "Industrial",
+   "group": "Modern movements",
+   "climate": [
+    "temperate",
+    "hot-dry"
+   ],
+   "features": [
+    "Exposed brick and ducts",
+    "Steel-framed windows",
+    "Concrete floors",
+    "Open lofts",
+    "Reclaimed wood"
+   ],
+   "materials": {
+    "floor": "polished_concrete",
+    "wall": "exposed_brick",
+    "accent": "black_steel"
+   },
+   "palette": {
+    "wall": "#8E5B43",
+    "accent": "#2A2A2A",
+    "wood": "#6A4B32",
+    "floor": "#7D7B76"
+   },
+   "cost": "standard",
+   "mumbai": "Steel rusts in sea air; specify galvanised or powder-coated.",
+   "compatible": [
+    "brutalist",
+    "farmhouse",
+    "bauhaus"
+   ],
+   "sources": [
+    "James Steele, Industrial Architecture: Conservation and Redevelopment (1994)",
+    "Sharon Zukin, Loft Living: Culture and Capital in Urban Change (1982)",
+    "Sophie Bush, Warehouse Home (2017)"
+   ],
+   "aliases": [
+    "Loft Style",
+    "Steampunk Chic",
+    "Urban Industrial",
+    "Warehouse Domestic"
+   ],
+   "region": "United States (New York SoHo, Brooklyn) and Europe (London Shoreditch)",
+   "era": "1960s–1970s artist warehouse conversions to modern urban domestic design",
+   "search_terms": [
+    "Industrial loft apartment exposed brick concrete floor",
+    "Warehouse conversion living room crittall steel windows",
+    "Urban industrial interior exposed ductwork reclaimed wood"
+   ]
+  },
+  {
+   "id": "biophilic",
+   "name": "Biophilic",
+   "group": "Modern movements",
+   "climate": [
+    "hot-humid",
+    "monsoon",
+    "temperate",
+    "hot-dry"
+   ],
+   "features": [
+    "Plants and green walls indoors",
+    "Daylight and views to nature",
+    "Natural materials",
+    "Courtyards and water",
+    "Natural ventilation"
+   ],
+   "materials": {
+    "floor": "natural_stone",
+    "wall": "lime_plaster",
+    "accent": "timber_battens"
+   },
+   "palette": {
+    "wall": "#EDE8DA",
+    "accent": "#4A6B3F",
+    "wood": "#7B5A3A",
+    "floor": "#9A8F7A"
+   },
+   "cost": "standard",
+   "mumbai": "Choose plants for shade and humidity; avoid stagnant water.",
+   "compatible": [
+    "tropical_modernism",
+    "japandi",
+    "kerala_nalukettu"
+   ],
+   "sources": [
+    "Edward O. Wilson, Biophilia (1984)",
+    "Stephen R. Kellert, Judith Heerwagen, Martin Mador, Biophilic Design: The Theory, Science and Practice of Bringing Buildings to Life (2008)",
+    "Terrapin Bright Green, 14 Patterns of Biophilic Design: Improving Health & Well-Being in the Built Environment (2014)"
+   ],
+   "aliases": [
+    "Bio-Design Domestic",
+    "Living Architecture",
+    "Nature-Centric Home"
+   ],
+   "region": "Global evolutionary biology and architecture (E.O. Wilson, Stephen Kellert)",
+   "era": "1984 (Biophilia hypothesis) to Present",
+   "search_terms": [
+    "Biophilic residential house indoor garden courtyard tree",
+    "Biophilic living room vertical green wall natural light",
+    "Nature centric modern house indoor water feature wood"
+   ]
+  },
+  {
+   "id": "wabi_sabi",
+   "name": "Wabi-sabi",
+   "group": "Modern movements",
+   "climate": [
+    "temperate",
+    "hot-humid"
+   ],
+   "features": [
+    "Beauty in imperfection",
+    "Handmade textures",
+    "Raw plaster walls",
+    "Aged wood",
+    "Muted earthy tones"
+   ],
+   "materials": {
+    "floor": "microcement",
+    "wall": "lime_plaster",
+    "accent": "reclaimed_wood"
+   },
+   "palette": {
+    "wall": "#E5DDCF",
+    "accent": "#8C7B66",
+    "wood": "#7D6247",
+    "floor": "#B9AD99"
+   },
+   "cost": "standard",
+   "mumbai": "Lime plaster suits humidity; patina is part of the look.",
+   "compatible": [
+    "japandi",
+    "japanese",
+    "biophilic"
+   ],
+   "sources": [
+    "Axel Vervoordt & Michael Paul, Wabi Inspirations (2010)",
+    "Kenya Hara, White (2009)",
+    "Leonard Koren, Wabi-Sabi for Artists, Designers, Poets & Philosophers (1994)"
+   ],
+   "aliases": [
+    "Imperfect Beauty",
+    "Organic Restraint",
+    "Wabi-Sabi Home"
+   ],
+   "region": "Japan (Zen Buddhist tea ceremony philosophy)",
+   "era": "15th–16th Century Sen no Rikyū; 21st Century global interior movement (Axel Vervoordt)",
+   "search_terms": [
+    "Wabi sabi interior axel vervoordt living room imperfect plaster",
+    "Wabi sabi architecture raw lime wall reclaimed wood",
+    "Minimalist wabi sabi bedroom low platform bed stone"
+   ]
+  },
+  {
+   "id": "maximalist",
+   "name": "Maximalist",
+   "group": "Modern movements",
+   "climate": [
+    "temperate",
+    "hot-humid",
+    "hot-dry"
+   ],
+   "features": [
+    "Bold colour and pattern",
+    "Layered collections",
+    "Statement wallpapers",
+    "Mixed periods",
+    "Jewel tones"
+   ],
+   "materials": {
+    "floor": "patterned_tiles",
+    "wall": "bold_paint",
+    "accent": "velvet_brass"
+   },
+   "palette": {
+    "wall": "#1F4E5F",
+    "accent": "#D4A017",
+    "wood": "#4A2C2A",
+    "floor": "#8E3B46"
+   },
+   "cost": "premium",
+   "mumbai": "Deep colours hide monsoon marks; ventilate fabrics against mould.",
+   "compatible": [
+    "art_deco",
+    "bohemian",
+    "victorian"
+   ],
+   "sources": [
+    "Iris Apfel, Accidental Icon: Musings of a Geriatric Starlet (2018)",
+    "Kelly Wearstler, Evocative Style (2019)",
+    "Luke Edward Hall, Greco Disco: The Art & Design of Luke Edward Hall (2019)"
+   ],
+   "aliases": [
+    "Curated Theatrical Design",
+    "Eclectic Maximalism",
+    "More-Is-More Domestic"
+   ],
+   "region": "Global (United Kingdom, United States - Iris Apfel, Tony Duquette, Kelly Wearstler)",
+   "era": "Victorian roots; late 20th Century to 2020s revival",
+   "search_terms": [
+    "Maximalist living room jewel tones wallpaper velvet gallery wall",
+    "Eclectic maximalism interior pattern clashing brass",
+    "Kelly wearstler maximalist apartment dramatic marble"
+   ]
+  },
+  {
+   "id": "bohemian",
+   "name": "Bohemian",
+   "group": "Modern movements",
+   "climate": [
+    "hot-humid",
+    "hot-dry",
+    "temperate"
+   ],
+   "features": [
+    "Layered rugs and textiles",
+    "Rattan and cane",
+    "Plants everywhere",
+    "Global collected decor",
+    "Relaxed low seating"
+   ],
+   "materials": {
+    "floor": "terracotta",
+    "wall": "warm_paint",
+    "accent": "rattan"
+   },
+   "palette": {
+    "wall": "#F0E3CE",
+    "accent": "#C0603A",
+    "wood": "#8A5A34",
+    "floor": "#B26E45"
+   },
+   "cost": "economy",
+   "mumbai": "Cane and rattan are local and affordable.",
+   "compatible": [
+    "moroccan_riad",
+    "biophilic",
+    "maximalist"
+   ],
+   "sources": [
+    "Justina Blakeney, The New Bohemians: Cool & Collected Homes (2015)",
+    "Robert Kime, Swainswick: The Interiors of Robert Kime (2020)",
+    "World of Interiors Archive Compendium, The World of Interiors: Bohemian and Artisanal Living (2018)"
+   ],
+   "aliases": [
+    "Boho Chic",
+    "Global Eclectic",
+    "New Bohemian Home",
+    "Nomadic Domestic"
+   ],
+   "region": "Global (Parisian Rive Gauche, California Laurel Canyon, Ibiza)",
+   "era": "1960s–1970s counter-culture to 2010s New Bohemian revival",
+   "search_terms": [
+    "Bohemian living room rattan plants moroccan rug",
+    "Boho chic bedroom macrame cane headboard plants",
+    "New bohemian interior eclectic textiles daybed"
+   ]
+  },
+  {
+   "id": "eco_passive",
+   "name": "Eco / Passive House",
+   "group": "Modern movements",
+   "climate": [
+    "hot-humid",
+    "hot-dry",
+    "temperate",
+    "cold"
+   ],
+   "features": [
+    "Orientation for sun and wind",
+    "Insulation and shading",
+    "Rainwater harvesting",
+    "Solar roof",
+    "Low-embodied-carbon materials"
+   ],
+   "materials": {
+    "floor": "kota_stone",
+    "wall": "aac_block_plaster",
+    "accent": "solar_shading"
+   },
+   "palette": {
+    "wall": "#EEEAE0",
+    "accent": "#5B7F4A",
+    "wood": "#8A6A48",
+    "floor": "#9B978A"
+   },
+   "cost": "standard",
+   "mumbai": "In Mumbai, shading and cross-ventilation matter more than airtightness.",
+   "compatible": [
+    "biophilic",
+    "laurie_baker_vernacular",
+    "tropical_modernism"
+   ],
+   "sources": [
+    "Bureau of Energy Efficiency (BEE), Ministry of Power, India, Eco-Niwas Samhita: Energy Conservation Building Code for Residential Buildings (2021)",
+    "G.Z. Brown & Mark DeKay, Sun, Wind, and Light: Architectural Design Strategies (2014)",
+    "Wolfgang Feist, Passivhaus Institut Technical Guidelines: Passive House in Warm and Humid Climates (2015)"
+   ],
+   "aliases": [
+    "Net-Zero Energy House",
+    "Passive Solar Home",
+    "Passivhaus",
+    "Sustainable Eco-House"
+   ],
+   "region": "Germany (Passivhaus Institut Darmstadt) and Global Green Building movements",
+   "era": "1991 (Wolfgang Feist) to Present; adapted globally for tropical Net-Zero codes",
+   "search_terms": [
+    "Passivhaus modern residential exterior solar panels shading",
+    "Eco passive house interior triple glazed natural wood",
+    "Net zero energy house green roof timber cladding"
+   ]
+  },
+  {
+   "id": "old_world_heritage",
+   "name": "Old-world Indian Heritage",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "hot-dry"
+   ],
+   "features": [
+    "Antique brass and rosewood",
+    "Jhula swing",
+    "Carved doors",
+    "Red oxide or terrazzo floors",
+    "Heirloom furniture"
+   ],
+   "materials": {
+    "floor": "terrazzo",
+    "wall": "lime_plaster",
+    "accent": "rosewood"
+   },
+   "palette": {
+    "wall": "#F1E4C8",
+    "accent": "#9C2F2F",
+    "wood": "#4A2A1C",
+    "floor": "#B08F6A"
+   },
+   "cost": "standard",
+   "mumbai": "Polish brass seasonally against sea-air tarnish.",
+   "compatible": [
+    "chettinad",
+    "bengali_traditional",
+    "rajasthani_haveli"
+   ]
+  },
+  {
+   "id": "feng_shui_modern",
+   "name": "Modern Feng Shui",
+   "group": "Asian",
+   "climate": [
+    "hot-humid",
+    "temperate"
+   ],
+   "features": [
+    "Balanced five elements",
+    "Clear entry (qi flow)",
+    "Command position for bed and desk",
+    "Rounded furniture edges",
+    "Water and plants"
+   ],
+   "materials": {
+    "floor": "wood_look_tiles",
+    "wall": "matte_paint",
+    "accent": "bamboo"
+   },
+   "palette": {
+    "wall": "#F3EEE3",
+    "accent": "#7A1F1F",
+    "wood": "#8A6A45",
+    "floor": "#A88E6E"
+   },
+   "cost": "standard",
+   "mumbai": "Pairs with the Feng Shui tradition pack for placement rules.",
+   "compatible": [
+    "chinese_courtyard",
+    "minimalist",
+    "biophilic"
+   ]
+  },
+  {
+   "id": "dravidian_residential",
+   "name": "Dravidian-Influenced Residential",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "hot-dry"
+   ],
+   "features": [
+    "Narrow linear shotgun plan form aligned along cardinal axes in accordance with classical Mayamatam rules",
+    "Street-facing front verandah (thinnai) with raised masonry seat platforms and carved timber/granite columns",
+    "Central open-to-sky rainwater courtyard (muttram) catching runoff in a sunken stone perimeter basin",
+    "Sloping terracotta-tiled roofs with decorative ridge-capping tiles (kokkarai) and copper finials",
+    "Carved timber doorway frame (nilai) featuring Gajalakshmi lintels and heavy brass lock hardware (manichitrathazhu)"
+   ],
+   "materials": {
+    "floor": "granite",
+    "wall": "smooth_plaster",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#E8D5B5",
+    "accent": "#8A3324",
+    "wood": "#4A2E1B",
+    "floor": "#C2A24D"
+   },
+   "cost": "standard",
+   "mumbai": "Well suited to Mumbai's dense urban plots and coastal conditions.",
+   "compatible": [
+    "chettinad",
+    "kerala_nalukettu",
+    "indian_contemporary",
+    "tropical_modernism"
+   ],
+   "aliases": [
+    "Tamil Agrahara Row House",
+    "Mayamatam Domestic",
+    "Madurai Courtyard House"
+   ],
+   "region": "Tamil Nadu, Kerala, Coastal Karnataka (Cauvery Delta temple towns)",
+   "era": "Classical Vedic to 19th Century Agrahara settlements",
+   "search_terms": [
+    "Tamil agrahara traditional row house thinnai verandah",
+    "Dravidian traditional courtyard house muttram architecture",
+    "South indian ancestral house wooden pillars clay tiles"
+   ],
+   "sources": [
+    "Bruno Dagens (trans.), Mayamatam: Treatise of Housing, Architecture and Iconography (1994)",
+    "A. Srivathsan, The Tamil Brahmin Agrahara: Spatial Pattern and Cultural Meaning (2002)",
+    "V. Ganapati Sthapati, Building Architecture of Sthapatya Veda (2001)"
+   ]
+  },
+  {
+   "id": "ranch",
+   "name": "American Ranch / Rambler",
+   "group": "Americas",
+   "climate": [
+    "temperate",
+    "hot-dry"
+   ],
+   "features": [
+    "Single-storey sprawling horizontal layout with a low-pitched gabled or hipped roof",
+    "L-shaped or U-shaped floor plan wrapping around a sheltered backyard patio and lawn",
+    "Exposed low-pitched gables featuring decorative rustic wooden shake or shingle accents",
+    "Large horizontal picture windows in front living rooms and sliding glass patio doors at the rear",
+    "Built on a low concrete slab-on-grade foundation with minimal or zero steps to exterior ground"
+   ],
+   "materials": {
+    "floor": "wood_look_tiles",
+    "wall": "smooth_plaster",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#EFEBD9",
+    "accent": "#9E472A",
+    "wood": "#5A3B22",
+    "floor": "#7A8A6E"
+   },
+   "cost": "economy",
+   "mumbai": "Single-storey slab-on-grade construction must be raised on a high plinth (minimum 750–900 mm above road level) in Mumbai to prevent monsoon street waterlogging and coastal flash flooding.",
+   "compatible": [
+    "mid_century_modern",
+    "farmhouse",
+    "craftsman"
+   ],
+   "aliases": [
+    "California Ranch",
+    "Rambler House",
+    "Tract Ranch",
+    "Suburban Ranch"
+   ],
+   "region": "Western United States (Southern California, popularized by Cliff May)",
+   "era": "1930s–1970s (Suburban housing boom)",
+   "search_terms": [
+    "California ranch house exterior cliff may low pitch roof",
+    "Mid century ranch home interior open plan backyard patio",
+    "1950s suburban ranch house brick siding sliding glass"
+   ],
+   "sources": [
+    "Cliff May & Paul C. Johnson, Western Ranch Houses by Cliff May (1958)",
+    "Alan Hess, The Ranch House (2004)",
+    "National Park Service (NPS), Post-World War II Suburb and the Ranch House (2002)"
+   ]
+  },
+  {
+   "id": "parametric",
+   "name": "Parametric / Organic Computational Design",
+   "group": "Modern movements",
+   "climate": [
+    "hot-dry",
+    "hot-humid",
+    "temperate"
+   ],
+   "features": [
+    "Seamless, continuous, double-curved fluid surfaces (non-standard NURBS surfaces) rejecting rigid right angles",
+    "Algorithmic generative geometries optimized computationally for structural stress lines and solar trajectories",
+    "Double-curved fluid shells constructed from glass-fiber reinforced concrete (GFRC) or curved steel framing",
+    "Parametric variable-aperture shading screens modulating perforations according to solar radiation maps",
+    "Seamless integration of building envelope, floor plates, ramps, and built-in furniture into single continuous surfaces"
+   ],
+   "materials": {
+    "floor": "large_format_vitrified",
+    "wall": "smooth_plaster",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#F0EFEA",
+    "accent": "#8A8D91",
+    "wood": "#1F2326",
+    "floor": "#D4AF37"
+   },
+   "cost": "premium",
+   "mumbai": "Double-curved fluid geometry eliminates conventional flat roof water-ponding points, allowing rainwater to flow swiftly along curved gutters.",
+   "compatible": [
+    "minimalist",
+    "biophilic"
+   ],
+   "aliases": [
+    "Parametricism",
+    "Computational Organic Architecture",
+    "Blob Architecture",
+    "Algorithmic Design"
+   ],
+   "region": "Global (Zaha Hadid, Greg Lynn, Patrik Schumacher)",
+   "era": "Late 1990s–Present",
+   "search_terms": [
+    "Parametric residential house fluid concrete zaha hadid",
+    "Organic computational architecture house curved gfrc",
+    "Parametric interior fluid ceiling corian curved walls"
+   ],
+   "sources": [
+    "Patrik Schumacher, The Autopoiesis of Architecture: A New Framework for Architecture (2011)",
+    "Michael Hensel, Achim Menges, Michael Weinstock, Emergent Technologies and Design: Towards a Biological Paradigm for Architecture (2010)",
+    "Zaha Hadid Design, Zaha Hadid Architects: Residential Architecture Compendium (2020)"
+   ]
+  },
+  {
+   "id": "contemporary",
+   "name": "Global Contemporary",
+   "group": "Modern movements",
+   "climate": [
+    "hot-humid",
+    "hot-dry",
+    "temperate",
+    "cold"
+   ],
+   "features": [
+    "Dramatic rectilinear cantilevered volumes and floating geometric planes forming a dynamic facade silhouette",
+    "Monumental motorized floor-to-ceiling ultra-slimline sliding glass walls (e.g. Sky-Frame, Schuco) with concealed floor tracks",
+    "Sophisticated layering of mixed high-end materials: textured architectural concrete, imported stone, metal louvers, and warm timber slats",
+    "Seamless indoor-outdoor living extending onto covered infinity-edge pool terraces and sunken fire pits",
+    "Double-height and triple-height central lightwells connecting open-plan living, dining, and gallery circulation spaces"
+   ],
+   "materials": {
+    "floor": "large_format_vitrified",
+    "wall": "smooth_plaster",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#F5F3EF",
+    "accent": "#9B958C",
+    "wood": "#212326",
+    "floor": "#6B4E38"
+   },
+   "cost": "premium",
+   "mumbai": "The dominant style for luxury residences in Mumbai.",
+   "compatible": [
+    "minimalist",
+    "indian_contemporary",
+    "tropical_modernism",
+    "brazilian_modernism"
+   ],
+   "aliases": [
+    "21st Century Contemporary",
+    "Modern Luxury Villa",
+    "Current Architecture"
+   ],
+   "region": "Global cosmopolitan metropolises (Mumbai, London, Singapore, Los Angeles)",
+   "era": "2010s–Present (cutting-edge current practice)",
+   "search_terms": [
+    "Contemporary luxury villa cantilever infinity pool glass",
+    "Modern architectural house slimline sliding doors stone",
+    "Global contemporary living room double height minotti"
+   ],
+   "sources": [
+    "Philip Jodidio, Architecture Now! Vol 10 (2014)",
+    "Phaidon Editors, The Phaidon Atlas of 21st Century World Architecture (2008)",
+    "Architectural Record, Residential Building Excellence Reviews 2021–2025 (2024)"
+   ]
+  }
+ ]
 }

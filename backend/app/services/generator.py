@@ -43,11 +43,16 @@ TYPES: Dict[str, Dict[str, Any]] = {
     "puja":           {"zone": "middle", "min_w": 1.0, "area": 1.2, "weight": 0.25, "hab": False, "ext": False},
     "balcony":        {"zone": "front",  "min_w": 1.2, "area": 2.4, "weight": 0.5, "hab": False, "ext": True},
     "stair":          {"zone": "middle", "hab": False, "ext": False},
+    "lift":           {"zone": "middle", "hab": False, "ext": False},
     "passage":        {"zone": "middle", "min_w": 1.0, "area": 2.0, "weight": 0.3, "hab": False, "ext": False, "aspect": 8},
+    "help":           {"zone": "rear",   "min_w": 2.1, "area": 6.0, "weight": 0.5, "hab": True, "ext": True},
+    "laundry":        {"zone": "rear",   "min_w": 1.2, "area": 2.5, "weight": 0.3, "hab": False, "ext": True, "wet": True},
+    "store":          {"zone": "middle", "min_w": 1.2, "area": 2.0, "weight": 0.2, "hab": False, "ext": False},
     "utility":        {"zone": "middle", "min_w": 0.9, "area": 0.0, "weight": 0.0, "hab": False, "ext": False, "aspect": 99},
 }
+LIFT_M = 1.6
 MAX_ASPECT = {"porch": 3.0, "kitchen": 3.0, "toilet": 3.5, "balcony": 6.0, "dining": 2.6}
-MAX_AREA = {"toilet": 6.0, "puja": 5.0, "passage": 12.0, "kitchen": 16.0, "entrance": 8.0, "dining": 18.0,
+MAX_AREA = {"laundry": 5.0, "store": 5.0, "help": 9.0, "toilet": 6.0, "puja": 5.0, "passage": 12.0, "kitchen": 16.0, "entrance": 8.0, "dining": 18.0,
             "balcony": 9.0, "study": 12.0, "porch": 18.0}
 NON_FSI = ("porch",)  # open parking: non-FSI per DCPR 2034 Reg. 31(1) (unverified)
 TEMPLATE_TYPE_MAP = {"entrance": "porch", "family_lounge": "lounge", "store": None, "courtyard": None}
@@ -93,11 +98,14 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
         add("entrance", "entrance", 0, 1)
     elif parking == "car":
         add("porch", "porch", 0, 1)
+        rooms[-1]["min_w"] = 2.7 * brief.cars
     else:
         add("entrance", "entrance", 0, 3)  # optional: the main door can open straight into the living room
     if floors > 1:
         for f in range(floors):
             add(f"stair_{f}", "stair", f, 1)
+            if brief.lift != "none":
+                add(f"lift_{f}", "lift", f, 1)
 
     living_floors = list(range(g, floors))
     rental = brief.rental_floor and len(living_floors) >= 2
@@ -106,7 +114,17 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
     add("living", "living", g, 1)
     add("kitchen", "kitchen", g, 1)
     add("toilet_common", "toilet", g, 2 if brief.elders else 1)  # the elder's toilet can double as common
-    add("dining", "dining", g, 3)
+    if brief.kitchen == "closed":
+        add("dining", "dining", g, 3 if brief.dining_seats <= 4 else 2)
+        rooms[-1]["min_area"] = {2: 4.5, 4: 6.0, 6: 8.0, 8: 10.5}.get(min(8, brief.dining_seats - brief.dining_seats % 2), 12.0)
+    else:  # open kitchen: the living room absorbs dining
+        next(x for x in rooms if x["id"] == "living")["weight"] += 1.2
+    if brief.laundry:
+        add("laundry", "laundry", g, 2)
+    if brief.store_room:
+        add("store", "store", g, 3)
+    if brief.help_room:
+        add("help_room", "help", g, 2)
     if brief.puja != "none":
         add("puja", "puja", g, 2 if brief.puja == "room" else 3)
     if brief.elders:
@@ -122,6 +140,12 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
             add("toilet_master", "toilet", f, 1)
         else:
             add(f"bedroom_{i + 1}", "bedroom", f, 1 if i < 2 else 2)
+    if brief.master_dressing:
+        m = next((x for x in rooms if x["id"] == "bedroom_master"), None)
+        if m:
+            m["min_area"] += 3.0
+    if brief.guest_room:
+        add("bedroom_guest", "bedroom", g if not brief.elders else upper[0], 2)
     for f in upper:
         if f != g and not any(x["floor"] == f and x["type"] == "toilet" and x["id"] != "toilet_master" for x in rooms):
             add(f"toilet_{f}", "toilet", f, 2)
@@ -153,6 +177,8 @@ def _bounds(room: Dict[str, Any], depth: float, stair: Dict[str, float]) -> Opti
     """(narrowest, widest) width for this room in a row of this depth, or None if the depth doesn't work."""
     if room["type"] == "stair":
         return (stair["width_m"], stair["width_m"]) if depth >= stair["length_m"] - 1e-6 else None
+    if room["type"] == "lift":  # 1.6 m square core (car + wall), stacked beside the stair
+        return (LIFT_M, LIFT_M) if depth >= LIFT_M - 1e-6 else None
     if depth < max(room["min_d"], room["min_w"]) - 1e-6:
         return None
     a = _aspect(room)
@@ -187,18 +213,24 @@ def _fit_row(rooms: List[Dict[str, Any]], width: float, depth: float, stair: Dic
                       "hab": False, "ext": False, "wet": False})
         widths.append(spare)
     elif spare > 1e-6:
-        flex = [i for i, rm in enumerate(rooms) if rm["type"] != "stair"]
+        flex = [i for i, rm in enumerate(rooms) if rm["type"] not in ("stair", "lift")]
         if not flex:
             return None
         widths[max(flex, key=lambda i: widths[i])] += spare
     # Order: stair at its end, rooms needing an outside wall at the row ends, interior-ok rooms between.
     idx = range(len(rooms))
-    stair_i = [i for i in idx if rooms[i]["type"] == "stair"]
-    ext = [i for i in idx if rooms[i]["ext"] and rooms[i]["type"] != "stair"]
-    inner = [i for i in idx if not rooms[i]["ext"] and rooms[i]["type"] != "stair"]
+    stair_i = [i for i in idx if rooms[i]["type"] == "stair"] + [i for i in idx if rooms[i]["type"] == "lift"]
+    core = ("stair", "lift")
+    ext = [i for i in idx if rooms[i]["ext"] and rooms[i]["type"] not in core]
+    inner = [i for i in idx if not rooms[i]["ext"] and rooms[i]["type"] not in core]
     seq = stair_i + ([ext[0]] if ext and not stair_i else []) + inner + ext[(0 if stair_i else 1):]
     if not stair_left:
         seq = seq[::-1]
+    # Front/rear rows without a stair touch an outer wall everywhere, so order is free: honour side preferences
+    # (absolute left/centre/right as seen from the road), e.g. a tradition wanting the kitchen on one side.
+    if not stair_i and rooms[0]["zone"] != "middle" and any(rooms[i].get("side") for i in idx):
+        rank = {"left": 0, "centre": 1, "right": 2}
+        seq = sorted(seq, key=lambda i: rank.get(rooms[i].get("side"), 1))
     out, x = [], 0.0
     for i in seq:
         out.append(dict(rooms[i], x=round(x, 3), y=round(y, 3), w=round(widths[i], 3), d=round(depth, 3)))
@@ -212,12 +244,12 @@ def _exterior(rm: Dict[str, Any], W: float, D: float) -> bool:
 
 
 def _zone(rm: Dict[str, Any], zones: Dict[str, str], collapse: bool) -> str:
-    z = rm["zone"] if rm["type"] in ("stair", "porch") else zones.get(rm["type"], rm["zone"])
+    z = rm["zone"] if rm["type"] in ("stair", "lift", "porch") else zones.get(rm["type"], rm["zone"])
     return "front" if collapse and z == "rear" else z
 
 
 def fit(rooms: List[Dict[str, Any]], env: Dict[str, float], r: Dict[str, Any], depths: Dict[str, float],
-        zones: Dict[str, str], stair_left: bool, collapse: bool = False) -> Optional[Dict[str, Any]]:
+        zones: Dict[str, str], stair_left: bool, collapse: bool = False, sides: Optional[Dict[str, str]] = None) -> Optional[Dict[str, Any]]:
     """Places rooms floor by floor. Moves rooms between rows, then drops optional rooms, until rows fit."""
     W, D = env["width_m"], env["depth_m"]
     stair = pack.stair_box(r)
@@ -231,7 +263,7 @@ def fit(rooms: List[Dict[str, Any]], env: Dict[str, float], r: Dict[str, Any], d
             z = _zone(rm, zones, collapse)
             if z not in live:
                 z = live[-1]
-            rows[z].append(dict(rm, zone=z))
+            rows[z].append(dict(rm, zone=z, side=(sides or {}).get(rm["type"], rm.get("side"))))
         fits = lambda z: _fit_row(rows[z], W, depths[z], stair, stair_left, y0[z]) is not None
         moved_once: set = set()  # each room moves at most once, so rooms can't ping-pong between rows
         for _ in range(60):
@@ -244,7 +276,7 @@ def fit(rooms: List[Dict[str, Any]], env: Dict[str, float], r: Dict[str, Any], d
                     bad, ext_only = "middle", True
             if bad is None:
                 break
-            movable = sorted((x for x in rows[bad] if x["type"] not in ("stair", "porch") and x["id"] not in moved_once),
+            movable = sorted((x for x in rows[bad] if x["type"] not in ("stair", "lift", "porch") and x["id"] not in moved_once),
                              key=lambda x: (-x["prio"], x["weight"]))
             if ext_only:
                 movable = [x for x in movable if x["ext"]]
@@ -264,7 +296,7 @@ def fit(rooms: List[Dict[str, Any]], env: Dict[str, float], r: Dict[str, Any], d
                     break
             if moved:
                 continue
-            ok = lambda x: x["prio"] >= 2 and x["type"] not in ("stair", "porch")
+            ok = lambda x: x["prio"] >= 2 and x["type"] not in ("stair", "lift", "porch")
             opt = [(bad, x) for x in rows[bad] if ok(x) and (x["ext"] or not ext_only)]
             if not opt:  # free space elsewhere on this floor so a room from the stuck row can move there
                 opt = [(z, x) for z in ZONES for x in rows[z] if ok(x)]
@@ -293,7 +325,8 @@ def _row_depths(rooms: List[Dict[str, Any]], env: Dict[str, float], r: Dict[str,
     for f in {rm["floor"] for rm in rooms}:
         per = {z: 0.0 for z in ZONES}
         for rm in (x for x in rooms if x["floor"] == f):
-            area = stair["width_m"] * stair["length_m"] if rm["type"] == "stair" else rm["min_area"] + rm["weight"] * 3.0
+            area = (stair["width_m"] * stair["length_m"] if rm["type"] == "stair" else LIFT_M * LIFT_M if rm["type"] == "lift"
+                    else rm["min_area"] + rm["weight"] * 3.0)
             per[_zone(rm, zones, collapse)] += area
         for z in ZONES:
             demand[z] = max(demand[z], per[z])
@@ -364,7 +397,7 @@ def make_candidate(brief: Brief, rng: random.Random, strategy: Dict[str, Any], a
         # Fit; while over the FSI cap, drop the largest optional top-floor room and refit (it becomes terrace).
         prog = list(rooms)
         while True:
-            layout = fit(prog, env, r, depths, arrangement["zones"], stair_left, collapse)
+            layout = fit(prog, env, r, depths, arrangement["zones"], stair_left, collapse, arrangement.get("sides"))
             if layout is None:
                 break
             layout["stilt"] = strategy["stilt"]
@@ -381,7 +414,7 @@ def make_candidate(brief: Brief, rng: random.Random, strategy: Dict[str, Any], a
                     "floors": strategy["floors"],
                 }
             top = max(x["floor"] for x in prog)
-            opt = [x for x in prog if x["floor"] == top and x["prio"] >= 2]
+            opt = [x for x in prog if x["floor"] == top and x["prio"] >= 2 and x["type"] not in ("stair", "lift")]
             if not opt:
                 break
             prog.remove(max(opt, key=lambda x: (x["prio"], x["min_area"] + x["weight"])))

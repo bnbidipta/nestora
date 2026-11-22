@@ -14,6 +14,14 @@ export default function HouseViewerPage() {
   const houseId = useParams().id as string;
   const { twin, error } = useTwin(houseId);
   if (!twin) return <TwinStatus error={error} />;
+  if (!twin.floors.length) {
+    return (
+      <div className="py-16 text-center text-slate-300">
+        <p>This house doesn&apos;t have a chosen design yet.</p>
+        <Link href={`/house/${twin.house_id}/options`} className="mt-4 inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900">See layout options</Link>
+      </div>
+    );
+  }
 
   const { plot_width_ft, plot_depth_ft } = twin.plot;
   const floors = twin.floors.length;
@@ -35,7 +43,7 @@ export default function HouseViewerPage() {
               <StatusBadge status={twin.status} />
             </div>
             <p className="font-mono text-xs text-slate-400">
-              {plot_width_ft}×{plot_depth_ft} ft plot • {floors === 1 ? 'G' : `G+${floors - 1}`} • {twin.plot.address}
+              {plot_width_ft}×{plot_depth_ft} ft plot • {floors === 1 ? 'G' : `G+${floors - 1}`} • {String(twin.metadata?.city ?? 'mumbai').replace(/^./, (c) => c.toUpperCase())}
             </p>
           </div>
         </div>

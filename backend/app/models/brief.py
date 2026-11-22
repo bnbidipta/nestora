@@ -18,6 +18,11 @@ class Brief(BaseModel):
     soil: Literal["black_cotton", "red_soil", "hard_rock", "coastal"] = "black_cotton"
     floors_wanted: int = Field(default=2, ge=1, le=3)
     parking: Literal["none", "two_wheeler", "car"] = "two_wheeler"
+    cars: int = Field(default=1, ge=1, le=2)
+    flood_prone: bool = False  # street waterlogs in monsoon -> higher plinth
+    future_extra_floor: bool = False  # size columns/footings for one more storey later
+    lift: Literal["none", "shaft", "lift"] = "none"  # shaft = space reserved now, lift fitted later
+    low_maintenance: bool = False
     budget_inr: float = Field(default=4_000_000, ge=100_000, le=1_000_000_000)
     tier: Literal["economy", "standard", "premium"] = "standard"
     adults: int = Field(default=2, ge=1, le=12)
@@ -29,6 +34,14 @@ class Brief(BaseModel):
     joint_family: bool = False
     rental_floor: bool = False
     puja: Literal["none", "nook", "room"] = "nook"
+    kitchen: Literal["closed", "open"] = "closed"  # open: kitchen + dining flow into living, no separate dining room
+    dining_seats: int = Field(default=4, ge=2, le=12)
+    guest_room: bool = False
+    help_room: bool = False  # live-in domestic help
+    laundry: bool = False  # separate wash/utility area
+    store_room: bool = False
+    master_dressing: bool = False  # walk-in dressing in the master bedroom
+    terrace_garden: bool = False  # prefers keeping an open terrace on the top floor
     traditions: Dict[str, Strictness] = Field(default_factory=lambda: {"vaastu": "soft"})
     styles: List[str] = Field(default_factory=list, max_length=5)
     styles_locked: bool = False  # true when the user picked styles by hand; swipes then don't override them

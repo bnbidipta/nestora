@@ -63,6 +63,21 @@ def brief_sentences(b: Brief) -> List[str]:
         out.append(f"A study for {b.wfh_people} person(s) working from home.")
     if b.puja != "none":
         out.append("A puja " + ("room." if b.puja == "room" else "corner."))
+    extras = [n for n, on in (("a guest room", b.guest_room), ("a room for live-in help", b.help_room), ("a laundry area", b.laundry),
+                              ("a store room", b.store_room), ("a dressing area in the master bedroom", b.master_dressing)) if on]
+    if extras:
+        out.append("Also: " + ", ".join(extras) + ".")
+    out.append("Open kitchen flowing into the living room." if b.kitchen == "open" else f"Closed kitchen with dining for {b.dining_seats}.")
+    for txt, on in (("Your street floods in monsoon: we raise the plinth.", b.flood_prone),
+                    ("Frame sized for one more floor later.", b.future_extra_floor),
+                    ("Lift shaft reserved." if b.lift == "shaft" else "A lift.", b.lift != "none"),
+                    ("Low-maintenance finishes.", b.low_maintenance)):
+        if on:
+            out.append(txt)
+    if b.parking == "car" and b.cars == 2:
+        out.append("Parking for 2 cars if it fits.")
+    if b.terrace_garden:
+        out.append("Keep an open terrace garden on top where the rules allow.")
     if b.rental_floor:
         out.append("The top floor is a separate rental unit with its own kitchen.")
     act = [f"{k.replace('_', ' ').title()} ({v})" for k, v in b.traditions.items() if v != "off"]

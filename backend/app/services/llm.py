@@ -95,7 +95,7 @@ def extract(text: str, style_ids: List[str]) -> Dict[str, Any]:
 def keyword_extract(text: str) -> Dict[str, Any]:
     t = text.lower()
     f: Dict[str, Any] = {}
-    if _has(t, ["elder", "grandma", "grandmother", "grandfather", "grandparent", "granny", "parents", "in-laws", "senior", "dadi", "nani", "dada", "nana"]):
+    if _has(t, ["elder", "grandma", "grandmother", "grandfather", "grandparent", "granny", "parents", "in-laws", "senior", "dadi", "nani", "dada", "nana", "mother", "father", "mom", "dad", "mummy", "papa", "maa"]):
         f["elders"] = 1 if not _has(t, ["grandparents", "parents", "in-laws"]) else 2
     if _has(t, ["knee", "wheelchair", "walker", "arthritis", "can't climb", "cannot climb", "no stairs"]):
         f["elder_mobility_issue"] = True

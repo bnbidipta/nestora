@@ -1,272 +1,91 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { 
-  Heart, 
-  X, 
-  Sparkles, 
-  Users, 
-  Layers, 
-  CheckCircle2, 
-  Loader2,
-  SlidersHorizontal,
-  Compass
-} from 'lucide-react';
-import { getSwipeDecks, submitSwipe, generateHouse } from '@/lib/api';
+import { Heart, Loader2, X } from 'lucide-react';
+import { SwipeCard, getSwipeCards, submitSwipe } from '@/lib/api';
+import { track } from '@/lib/analytics';
 
+/** Photo taste swipe. Stops as soon as one style clearly leads (10–24 swipes). Keyboard: ← pass, → like. */
 export default function SwipeDeck() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const houseId = searchParams.get('house_id');
-  const [genResult, setGenResult] = useState<{ trace: string[]; failed: boolean; error: string | null } | null>(null);
-  const swipeBusy = useRef(false);
-
-  const [cards, setCards] = useState<any[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [cardStartTime, setCardStartTime] = useState<number>(Date.now());
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [consensusMode, setConsensusMode] = useState(false);
-  const [swipedStats, setSwipedStats] = useState({ liked: 0, passed: 0 });
-  const [swipeAnim, setSwipeAnim] = useState<string>('');
+  const houseId = useSearchParams().get('house');
+  const [cards, setCards] = useState<SwipeCard[]>([]);
+  const [i, setI] = useState(0);
+  const [max, setMax] = useState(24);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [leader, setLeader] = useState<{ style: string; confidence: number } | null>(null);
+  const shownAt = useRef(Date.now());
 
   useEffect(() => {
-    async function loadCards() {
-      try {
-        const res = await getSwipeDecks();
-        if (res.success && res.decks) {
-          const allCards = [
-            ...res.decks.structure,
-            ...res.decks.color_material,
-            ...res.decks.decor
-          ];
-          setCards(allCards);
-          setCardStartTime(Date.now());
-        }
-      } catch (err) {
-        console.error('Failed to load swipe cards', err);
-      }
-    }
-    loadCards();
+    getSwipeCards().then((r) => { setCards(r.cards); setMax(r.max_swipes); }).catch((e) => setError(e.message));
   }, []);
+  useEffect(() => { shownAt.current = Date.now(); }, [i]);
 
-  const handleSwipe = async (direction: 'right' | 'left') => {
-    if (!houseId || currentIndex >= cards.length || swipeBusy.current) return;
-    swipeBusy.current = true;
+  const finish = useCallback(() => {
+    track('swipe_done', { swipes: i });
+    router.push(`/house/${houseId}/options`);
+  }, [houseId, i, router]);
 
-    const currentCard = cards[currentIndex];
-    const dwellMs = Date.now() - cardStartTime;
-
-    // Trigger visual swipe animation
-    setSwipeAnim(direction === 'right' ? 'translate-x-32 rotate-6 opacity-0' : '-translate-x-32 -rotate-6 opacity-0');
-
-    // Optimistic state update
-    if (direction === 'right') {
-      setSwipedStats(prev => ({ ...prev, liked: prev.liked + 1 }));
-    } else {
-      setSwipedStats(prev => ({ ...prev, passed: prev.passed + 1 }));
-    }
-
+  const swipe = useCallback(async (direction: 'left' | 'right') => {
+    if (busy || !houseId || !cards[i]) return;
+    setBusy(true);
+    setError(null);
     try {
-      await submitSwipe(houseId, {
-        card_id: currentCard.id,
-        deck: currentCard.deck,
-        direction,
-        dwell_ms: dwellMs
-      });
-    } catch (err) {
-      console.error('Error submitting swipe', err);
+      const r = await submitSwipe(houseId, { card_id: cards[i].id, direction, dwell_ms: Date.now() - shownAt.current });
+      const [style] = Object.entries(r.style_scores)[0] ?? [''];
+      setLeader(style ? { style, confidence: r.confidence } : null);
+      if (r.done || i + 1 >= cards.length) finish();
+      else setI((x) => x + 1);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not save that swipe.');
+    } finally {
+      setBusy(false);
     }
+  }, [busy, cards, finish, houseId, i]);
 
-    setTimeout(() => {
-      // Advance to next card
-      const nextIdx = currentIndex + 1;
-      setCurrentIndex(nextIdx);
-      setSwipeAnim('');
-      setCardStartTime(Date.now());
-      swipeBusy.current = false;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') swipe('left');
+      if (e.key === 'ArrowRight') swipe('right');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [swipe]);
 
-      // If deck completed, trigger generation!
-      if (nextIdx >= cards.length) {
-        triggerGeneration();
-      }
-    }, 200);
-  };
+  if (!houseId) return <p className="p-8 text-center text-slate-300">Start from the questionnaire so we know which house this is for.</p>;
+  if (!cards.length) return <p className="flex items-center justify-center gap-2 p-8 text-slate-300">{error ?? <><Loader2 className="h-4 w-4 animate-spin" /> Loading photos…</>}</p>;
 
-  const triggerGeneration = async () => {
-    if (!houseId) return;
-    setIsGenerating(true);
-    setGenResult(null);
-    try {
-      const res = await generateHouse(houseId);
-      if (res?.success) {
-        router.push(`/house/${houseId}`);
-        return;
-      }
-      // The house exists but failed checks, or the server errored: show what actually happened.
-      setGenResult({
-        trace: Array.isArray(res?.execution_trace) ? res.execution_trace : [],
-        failed: Boolean(res?.house_id),
-        error: res?.house_id ? null : (res?.detail ?? 'Generation failed on the server.'),
-      });
-    } catch {
-      setGenResult({ trace: [], failed: false, error: 'Could not reach the server. Check your connection and try again.' });
-    }
-    setIsGenerating(false);
-  };
-
-  const currentCard = cards[currentIndex];
-  const progressPct = cards.length ? Math.round((currentIndex / cards.length) * 100) : 0;
-
-  if (!houseId) {
-    return (
-      <div role="alert" className="py-16 text-center text-slate-300">
-        No house selected. <a href="/questionnaire" className="text-blue-400 underline">Start a new design</a>.
-      </div>
-    );
-  }
-
-  if (isGenerating) {
-    return (
-      <div role="status" className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-        <Loader2 className="h-10 w-10 animate-spin text-blue-500" aria-hidden />
-        <h2 className="mt-6 font-mono text-2xl font-bold text-white">Designing your house…</h2>
-        <p className="mt-2 text-sm text-slate-400">Laying out rooms, structure, plumbing and costs, then running the automated checks.</p>
-      </div>
-    );
-  }
-
-  if (genResult) {
-    return (
-      <div className="mx-auto max-w-xl py-10">
-        <div role="alert" className="rounded-2xl border border-red-800/60 bg-[#131926] p-6">
-          <h2 className="text-lg font-bold text-white">
-            {genResult.failed ? 'Your house was generated, but some checks failed' : 'Generation did not finish'}
-          </h2>
-          {genResult.error && <p className="mt-2 text-sm text-red-300">{genResult.error}</p>}
-          {genResult.trace.length > 0 && (
-            <ol className="mt-4 space-y-1 rounded-xl border border-slate-800 bg-slate-900/60 p-4 font-mono text-xs text-slate-300">
-              {genResult.trace.map((t, i) => <li key={i}>{t}</li>)}
-            </ol>
-          )}
-          <div className="mt-6 flex gap-3">
-            <button type="button" onClick={triggerGeneration} className="rounded-xl border border-slate-700 px-4 py-2.5 text-sm text-slate-200 hover:bg-slate-800">
-              Try again
-            </button>
-            {genResult.failed && (
-              <button type="button" onClick={() => router.push(`/house/${houseId}`)} className="flex-1 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-500">
-                See the house and failed checks
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  const card = cards[i];
   return (
-    <div className="mx-auto max-w-xl px-4 py-8">
-      {/* Header with Consensus Toggle */}
-      <div className="flex items-center justify-between">
-        <div>
-          <span className="font-mono text-xs text-slate-400">
-            CARD {currentIndex + 1} OF {cards.length || 30}
-          </span>
-          <p className="text-sm font-bold text-white capitalize">
-            Deck: {currentCard?.deck?.replace('_', ' ') || 'Architecture'}
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setConsensusMode(!consensusMode)}
-          className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-mono transition ${consensusMode ? 'border-amber-500 bg-amber-500/10 text-amber-400' : 'border-slate-800 bg-slate-900/60 text-slate-400'}`}
-        >
-          <Users className="h-3.5 w-3.5" />
-          <span>Consensus: {consensusMode ? 'ON' : 'OFF'}</span>
+    <div className="mx-auto max-w-md">
+      <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
+        <span>Do you like this? {i + 1} / up to {max}</span>
+        <button type="button" onClick={finish} className="underline hover:text-white">Skip to layouts</button>
+      </div>
+      <div className="h-1.5 overflow-hidden rounded bg-slate-800"><div className="h-full bg-emerald-500 transition-all" style={{ width: `${(100 * (i + 1)) / max}%` }} /></div>
+      <figure className="mt-4 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={card.file} alt={card.alt} className="aspect-[4/5] w-full object-cover" />
+        <figcaption className="px-3 py-2 text-xs text-slate-400">
+          {card.alt}. Photo: {card.author} ({card.licence.split(' (')[0]}).
+        </figcaption>
+      </figure>
+      <div className="mt-5 flex justify-center gap-6">
+        <button type="button" aria-label="Not for me (left arrow)" disabled={busy} onClick={() => swipe('left')}
+          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-slate-600 bg-slate-900 text-slate-300 hover:border-red-400 hover:text-red-400 disabled:opacity-50">
+          <X className="h-7 w-7" />
+        </button>
+        <button type="button" aria-label="I like this (right arrow)" disabled={busy} onClick={() => swipe('right')}
+          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 disabled:opacity-50">
+          <Heart className="h-7 w-7" />
         </button>
       </div>
-
-      {/* Progress Bar */}
-      <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-slate-800">
-        <div 
-          className="h-full bg-blue-500 transition-all duration-200"
-          style={{ width: `${progressPct}%` }}
-        />
-      </div>
-
-      {/* Card Swipe Area */}
-      <div className="relative mt-8 flex min-h-[420px] items-center justify-center">
-        {currentCard && (
-          <div
-            className={`relative w-full overflow-hidden rounded-3xl border border-slate-700/80 bg-gradient-to-b from-[#1E293B] to-[#0F172A] p-6 shadow-2xl transition-all duration-200 ${swipeAnim}`}
-          >
-            {/* Aesthetic Visual Box */}
-            <div className="relative flex h-52 w-full flex-col justify-between rounded-2xl border border-slate-700 bg-slate-900/90 p-4">
-              <div className="flex items-center justify-between">
-                <span className="rounded bg-blue-950/80 px-2 py-0.5 font-mono text-[10px] uppercase text-blue-400 border border-blue-800/50">
-                  Style: {currentCard.style}
-                </span>
-                <span className="font-mono text-xs text-slate-500">ID: {currentCard.id}</span>
-              </div>
-
-              <div className="flex flex-col items-center justify-center text-center">
-                <Layers className="h-10 w-10 text-blue-400/80 mb-2" />
-                <span className="font-mono text-xs text-slate-400">Architectural Concept</span>
-              </div>
-
-              <div className="font-mono text-[10px] text-amber-400/80">
-                Dwell &gt;3s = 1.8x Preference Weight
-              </div>
-            </div>
-
-            {/* Title & Description */}
-            <div className="mt-5">
-              <h3 className="text-xl font-bold text-white">
-                {currentCard.title}
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-slate-300">
-                {currentCard.desc}
-              </p>
-            </div>
-
-            {/* Vector Status Strip */}
-            <div className="mt-6 flex items-center justify-between border-t border-slate-800/80 pt-4 font-mono text-[11px] text-slate-400">
-              <span>Vector: 512 Floats</span>
-              <span>Liked: {swipedStats.liked} • Passed: {swipedStats.passed}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Swipe Action Controls */}
-      <div className="mt-8 flex items-center justify-center gap-6">
-        <button
-          type="button"
-          onClick={() => handleSwipe('left')}
-          className="flex h-14 w-14 items-center justify-center rounded-full border border-red-500/30 bg-red-950/20 text-red-400 transition hover:scale-105 hover:bg-red-900/30 shadow-lg"
-          title="Pass / Left"
-        >
-          <X className="h-6 w-6" />
-        </button>
-
-        <button
-          type="button"
-          onClick={triggerGeneration}
-          className="rounded-xl border border-slate-700 bg-slate-800/60 px-5 py-2.5 font-mono text-xs text-slate-300 hover:bg-slate-700 transition"
-        >
-          Skip to Generate
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleSwipe('right')}
-          className="flex h-14 w-14 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-950/20 text-emerald-400 transition hover:scale-105 hover:bg-emerald-900/30 shadow-lg"
-          title="Like / Right"
-        >
-          <Heart className="h-6 w-6 fill-emerald-400/30" />
-        </button>
-      </div>
+      {leader && leader.confidence > 0.1 && (
+        <p className="mt-4 text-center text-sm text-slate-400">Leaning towards <strong className="text-slate-200">{leader.style.replace('_', ' ')}</strong></p>
+      )}
+      {error && <p role="alert" className="mt-3 text-center text-sm text-red-400">{error}</p>}
     </div>
   );
 }

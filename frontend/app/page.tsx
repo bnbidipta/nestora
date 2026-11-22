@@ -7,6 +7,7 @@ import UnifiedHorizontalStack from '@/components/landing/UnifiedHorizontalStack'
 import { CompassRoseIcon, ArrowFolioRightIcon } from '@/components/landing/BespokeIcons';
 import MobileLanding from '@/components/landing/mobile/MobileLanding';
 import { warmUpApi } from '@/lib/api';
+import { track } from '@/lib/analytics';
 
 function DesktopLanding() {
   // Structured JSON-LD Schema for Google Search, GEO, and AI Engine Optimization
@@ -113,6 +114,7 @@ export default function LandingPage() {
   const [desktop, setDesktop] = useState(false);
   useEffect(() => {
     warmUpApi();
+    track('landing_view');
     const mq = window.matchMedia(DESKTOP_QUERY);
     const update = () => setDesktop(mq.matches);
     update();

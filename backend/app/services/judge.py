@@ -38,7 +38,7 @@ def _rules(twin: HouseTwin) -> Dict[str, Any]:
 
 def _kind(name: str, rtype: str = None) -> str:
     n = (rtype or name).lower()
-    for k in ("bedroom", "living", "lounge", "study", "kitchen", "toilet", "stair", "passage", "porch", "puja", "dining", "balcony"):
+    for k in ("lift", "bedroom", "living", "lounge", "study", "kitchen", "toilet", "stair", "passage", "porch", "puja", "dining", "balcony", "help", "laundry"):
         if k in n:
             return k
     if "bath" in n:
@@ -46,7 +46,7 @@ def _kind(name: str, rtype: str = None) -> str:
     return "other"
 
 
-HABITABLE = ("bedroom", "living", "lounge", "study")
+HABITABLE = ("bedroom", "living", "lounge", "study", "help")
 
 
 class JudgeService:
@@ -120,7 +120,7 @@ class JudgeService:
             for room in floor.rooms:
                 k = _kind(room.name, room.type)
                 short = min(room.length_ft, room.width_ft)
-                if k in HABITABLE and k != "study":
+                if k in HABITABLE and k not in ("study", "help"):
                     if room.area_sqft < hab_min * (1 - TOL):
                         result.add_failure("B_MIN_HABITABLE_AREA", f"{room.name} is {room.area_sqft:.0f} sqft; habitable rooms need {hab_min:.0f} sqft.")
                     if short < hab_w * (1 - TOL):
@@ -161,6 +161,9 @@ class JudgeService:
             x0, y0 = stairs[0][1].x, stairs[0][1].y
             if any(abs(s.x - x0) > 0.1 or abs(s.y - y0) > 0.1 for _, s in stairs):
                 result.add_failure("B_STAIR_NOT_STACKED", "Stairs on different floors don't line up.")
+        lifts = [x for f in twin.floors for x in f.rooms if _kind(x.name, x.type) == "lift"]
+        if lifts and any(abs(l.x - lifts[0].x) > 0.1 or abs(l.y - lifts[0].y) > 0.1 for l in lifts):
+            result.add_failure("B_LIFT_NOT_STACKED", "Lift shafts on different floors don't line up.")
         stair_w = md.get("stair_width_mm", r["stair_min_width_m"] * 1000)
         if stair_w < r["stair_min_width_m"] * 1000:
             result.add_failure("B_STAIR_WIDTH", f"Stair width {stair_w} mm is under {r['stair_min_width_m'] * 1000:.0f} mm.")

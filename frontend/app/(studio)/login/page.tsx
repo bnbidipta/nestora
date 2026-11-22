@@ -42,6 +42,13 @@ function LoginForm() {
     <div className="mx-auto max-w-sm py-16">
       <h1 className="text-2xl font-bold text-white">Sign in to save your designs</h1>
       <p className="mt-2 text-sm text-slate-400">We&apos;ll email you a sign-in link. No password needed.</p>
+      {process.env.NEXT_PUBLIC_GOOGLE_AUTH === '1' && (
+        <button type="button"
+          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/login?next=${encodeURIComponent(next)}` } })}
+          className="mt-6 w-full rounded-xl border border-slate-600 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 hover:bg-slate-100">
+          Continue with Google
+        </button>
+      )}
       {state === 'sent' ? (
         <p role="status" className="mt-6 rounded-xl border border-emerald-800/60 bg-emerald-950/40 p-4 text-sm text-emerald-300">
           Check your inbox at <strong>{email}</strong> and click the link to continue.

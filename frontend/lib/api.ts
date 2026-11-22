@@ -61,13 +61,118 @@ export async function getHouse(houseId: string): Promise<HouseTwin> {
   return json.data;
 }
 
-export const submitQuestionnaire = (houseId: string, answers: object) =>
-  call(`/api/v1/house/${houseId}/questionnaire`, { method: 'POST', body: JSON.stringify(answers) }, houseId);
+export type Strictness = 'off' | 'soft' | 'strict';
 
-export const getSwipeDecks = () => call('/api/v1/swipe/decks');
+/** Mirrors backend/app/models/brief.py. */
+export interface Brief {
+  build_type: 'new_plot' | 'renovation' | 'flat_interior';
+  city: string;
+  plot_width_ft: number;
+  plot_depth_ft: number;
+  road_width_m: number;
+  facing: 'N' | 'E' | 'S' | 'W';
+  corner_plot: boolean;
+  soil: 'black_cotton' | 'red_soil' | 'hard_rock' | 'coastal';
+  floors_wanted: number;
+  parking: 'none' | 'two_wheeler' | 'car';
+  cars: number;
+  flood_prone: boolean;
+  future_extra_floor: boolean;
+  lift: 'none' | 'shaft' | 'lift';
+  low_maintenance: boolean;
+  budget_inr: number;
+  tier: 'economy' | 'standard' | 'premium';
+  adults: number;
+  elders: number;
+  elder_mobility_issue: boolean;
+  kids: number;
+  pets: boolean;
+  wfh_people: number;
+  joint_family: boolean;
+  rental_floor: boolean;
+  puja: 'none' | 'nook' | 'room';
+  kitchen: 'closed' | 'open';
+  dining_seats: number;
+  guest_room: boolean;
+  help_room: boolean;
+  laundry: boolean;
+  store_room: boolean;
+  master_dressing: boolean;
+  terrace_garden: boolean;
+  traditions: Record<string, Strictness>;
+  styles: string[];
+  styles_locked: boolean;
+  free_text: string;
+}
 
-export const submitSwipe = (houseId: string, swipe: { card_id: string; deck: string; direction: string; dwell_ms: number }) =>
-  call(`/api/v1/house/${houseId}/swipe`, { method: 'POST', body: JSON.stringify(swipe) }, houseId);
+export interface StyleEntry {
+  id: string;
+  name: string;
+  group: string;
+  climate: string[];
+  features: string[];
+  palette: Record<'wall' | 'accent' | 'wood' | 'floor', string>;
+  cost: string;
+  mumbai: string;
+}
+
+export interface Option {
+  id: string;
+  pass: boolean;
+  judge: { pass: boolean; failures: { rule_id: string; message: string }[]; warnings: { rule_id: string; message: string }[] };
+  traditions: Record<string, { mode: Strictness; score: number }>;
+  score: { total: number; brief_fit: Record<string, number>; features: Record<string, number> };
+  summary: {
+    floors: number; parking: string; stilt: boolean; arrangement: string; built_up_sqft: number; fsi_used: number;
+    bedrooms: number; cost_inr: { low: number; expected: number; high: number }; dropped: string[]; envelope_ft: [number, number];
+  };
+  preview: { f: number; id: string; t: string; x: number; y: number; w: number; d: number }[];
+  tradition_relaxed?: boolean;
+}
+
+export interface OptionsResponse {
+  success: boolean; status: string; round?: number; options: Option[]; reason?: string; exhausted?: boolean;
+}
+
+export const saveBrief = (houseId: string, brief: Brief) =>
+  call<{ success: boolean; understood: string[]; waitlist: string | null }>(
+    `/api/v1/house/${houseId}/brief`, { method: 'POST', body: JSON.stringify(brief) }, houseId);
+
+export const extractBrief = (text: string) =>
+  call<{ fields: Partial<Brief>; evidence: Record<string, string>; questions: string[]; source: string }>(
+    '/api/v1/brief/extract', { method: 'POST', body: JSON.stringify({ text }) });
+
+export const getStyles = () => call<{ groups: string[]; styles: StyleEntry[] }>('/api/v1/styles');
+
+export const getTraditions = () =>
+  call<{ traditions: { id: string; name: string; description: string; verified: boolean }[] }>('/api/v1/traditions');
+
+export const joinWaitlist = (kind: 'city' | 'flat_interior' | 'renovation', email: string, city?: string) =>
+  call('/api/v1/waitlist', { method: 'POST', body: JSON.stringify({ kind, email, city }) });
+
+export interface SwipeCard {
+  id: string; file: string; deck: string; style: string; alt: string; author: string; url: string; licence: string;
+}
+
+export const getSwipeCards = () => call<{ cards: SwipeCard[]; min_swipes: number; max_swipes: number }>('/api/v1/swipe/cards');
+
+export const submitSwipe = (houseId: string, swipe: { card_id: string; direction: 'left' | 'right'; dwell_ms: number }) =>
+  call<{ done: boolean; swipes: number; recommended_styles: string[]; style_scores: Record<string, number>; confidence: number }>(
+    `/api/v1/house/${houseId}/swipe`, { method: 'POST', body: JSON.stringify(swipe) }, houseId);
+
+export const startOptions = (houseId: string) =>
+  call<OptionsResponse>(`/api/v1/house/${houseId}/options`, { method: 'POST' }, houseId);
+
+export const selectOptions = (houseId: string, keep: string[], discard: string[]) =>
+  call<OptionsResponse>(`/api/v1/house/${houseId}/options/select`, { method: 'POST', body: JSON.stringify({ keep, discard }) }, houseId);
+
+export const chooseOption = (houseId: string, id: string) =>
+  call<{ success: boolean; status: string }>(`/api/v1/house/${houseId}/options/choose`, { method: 'POST', body: JSON.stringify({ id }) }, houseId);
+
+export const editHouse = (houseId: string, action: 'grow' | 'shrink' | 'mirror', room?: string) =>
+  call<{ success: boolean; status: string }>(`/api/v1/house/${houseId}/edit`, { method: 'POST', body: JSON.stringify({ action, room }) }, houseId);
+
+export const dxfUrl = (houseId: string) => `${API_BASE}/api/v1/house/${houseId}/export/dxf`;
 
 export const generateHouse = (houseId: string) =>
   call(`/api/v1/house/${houseId}/generate`, { method: 'POST' }, houseId);

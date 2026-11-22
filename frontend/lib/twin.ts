@@ -19,6 +19,9 @@ export interface Room {
   x: number;
   y: number;
   is_ground_floor?: boolean;
+  type?: string;
+  exterior?: boolean;
+  compass?: string;
 }
 
 export interface Floor {

@@ -58,16 +58,19 @@ def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[s
 
 def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
     extra = []
+    if any(v != "off" for v in brief.traditions.values()):
+        extra.append(traditions.arrangement_for(brief.facing, brief.traditions))
     proposal = llm.propose_arrangement(brief)
     if proposal:
         extra.append(proposal)
     cands = generator.candidates(brief, n=24, seed=seed, extra_arrangements=extra)
     scored = [(c, evaluate(brief, c, prefs)) for c in cands]
     good = [x for x in scored if x[1]["pass"]]
-    if not good:  # strict traditions vetoed everything code-compliant: show those, flagged, rather than nothing
-        good = [x for x in scored if x[1]["judge"]["pass"]]
-        for _, e in good:
+    if len(good) < SHOW:  # strict traditions vetoed most code-compliant layouts: top up with the closest, flagged
+        relaxed = sorted((x for x in scored if x[1]["judge"]["pass"] and not x[1]["pass"]), key=lambda x: -x[1]["score"]["total"])
+        for _, e in relaxed:
             e["tradition_relaxed"] = True
+        good = good + relaxed
     good.sort(key=lambda x: -x[1]["score"]["total"])
     return good
 

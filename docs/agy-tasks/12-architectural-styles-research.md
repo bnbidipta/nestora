@@ -37,3 +37,23 @@ For each style, give:
 
 ## Done when
 There are ≥ 40 styles, every style has sources, and the JSON parses.
+
+---
+
+## Done + Caveats (agy task 12)
+
+- **Completed:** Researched 51 comprehensive residential architectural and interior styles across all 6 specified categories:
+  - Indian regional (13 styles)
+  - Asian (6 styles)
+  - Middle East / North Africa (3 styles)
+  - European (11 styles)
+  - Americas (7 styles)
+  - Movements and approaches (11 styles)
+- **Deliverables written:**
+  - `backend/app/data/styles_research.draft.json` (valid JSON with top-level `"verified": false`, 51 detailed style objects, verified parseable)
+  - `docs/research/architectural-styles.md` (readable comprehensive markdown report with 51-row master summary table, 1 robust synthesis paragraph per style, detailed features, materiality, color palettes, Mumbai monsoon adaptations, and full academic/heritage citations)
+- **Caveats:**
+  1. `"verified": false` remains set at top level; all architectural parameters, dimensions, and material substitutions require professional review by a licensed architect before incorporation into spatial solvers or generative prompts.
+  2. Mumbai coastal suitability: All foreign styles (Cycladic, Pueblo, Bauhaus, Hanok, English Cottage, etc.) include explicit technical adaptations for high relative humidity (>85%), monsoon downpours (>2,500 mm), and coastal salt mist (e.g. replacing unbaked mud/thatch with stabilized earth blocks/tiles, substituting paper shoji with frosted laminated glass, and requiring anti-carbonation coatings on fair-faced concrete).
+  3. No code, UI, or taste generator mappings were edited; pure research output ready for Claude's downstream style picker design.
+

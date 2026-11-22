@@ -69,7 +69,7 @@ export const STAGES_DATA: StageData[] = [
     primaryMetric: '0 Templates Used',
     metricLabel: 'Fitted to your family and plot',
     ctaText: 'Explore Styles',
-    ctaLink: '/swipe'
+    ctaLink: '/questionnaire'
   },
   {
     id: 'structure',

@@ -44,6 +44,8 @@ def brief_fit(brief: Brief, c: Dict[str, Any]) -> Dict[str, float]:
         "bedrooms": min(beds / max(brief.bedrooms_needed, 1), 1.0),
         "study": 1.0 if not brief.wfh_people or "study" in ids else 0.0,
         "puja": 1.0 if brief.puja == "none" or "puja" in ids else 0.0,
+        "guest": 1.0 if not brief.guest_room or "bedroom_guest" in ids else 0.0,
+        "help": 1.0 if not brief.help_room or "help_room" in ids else 0.0,
         "elder_ground": 1.0 if not brief.elders or any(r["type"] == "bedroom_elder" and r["floor"] == 0 for r in rooms) else 0.0,
     }
     return out
@@ -53,6 +55,7 @@ def score(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float], tradition_sc
     fit = brief_fit(brief, c)
     f = features(c)
     fit_score = 2 * fit["bedrooms"] + fit["floors"] + fit["parking"] + 0.5 * fit["study"] + 0.5 * fit["puja"] + 3 * fit["elder_ground"]
+    fit_score += 0.4 * fit["guest"] + 0.4 * fit["help"] + (1.0 * f["terrace_share"] if brief.terrace_garden else 0.0)
     learned = sum(prefs.get(k, 0.0) * f[k] for k in FEATURES)
     total = fit_score + 1.5 * f["proportion"] + 1.5 * tradition_score + learned - 0.15 * warnings - 0.2 * len(c["layout"]["dropped"])
     return {"total": round(total, 3), "brief_fit": fit, "features": {k: round(v, 3) for k, v in f.items()},

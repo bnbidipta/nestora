@@ -1,518 +1,285 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { 
-  Compass, 
-  Layers, 
-  Ruler, 
-  Zap, 
-  Droplets, 
-  Palette, 
-  Sofa, 
-  Sun, 
-  Volume2, 
-  FileSpreadsheet,
-  CheckCircle2,
-  Info,
-  Download,
-  ShieldCheck,
-  ChevronRight
-} from 'lucide-react';
+import { Box, ChevronRight, Copy, Download, FlipHorizontal, Info, Layers, Minus, Plus, Printer, Ruler, Share2, ShieldCheck } from 'lucide-react';
 import { HouseTwin, getJudge, builtUpSqft } from '@/lib/twin';
+import { canEditLocally, dxfUrl, editHouse, getHouse } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
+import { track } from '@/lib/analytics';
 
-interface ViewerProps {
-  twin: HouseTwin;
-}
+type ViewMode = 'plan' | 'structure' | '3d';
+type Decision = { field: string; value: string | number; source: string; reason: string; rule?: string };
+type TraditionPack = { mode: string; score: number; verified: boolean; findings: { rule: string; status: string; why: string }[] };
 
-type ViewMode = 'blueprint' | 'structure' | 'mep' | 'paint' | 'decor' | 'climate' | 'sound';
+const FILL: Record<string, string> = {
+  living: '#E8DCC4', lounge: '#E8DCC4', dining: '#EFE3CB', kitchen: '#F3C9A5', bedroom: '#C9D8C5', bedroom_master: '#B7CDB2',
+  bedroom_elder: '#A9C7B8', study: '#D4DCE8', toilet: '#BFD9E6', stair: '#9CA3AF', lift: '#7C8594', passage: '#F1F1EE', porch: '#D6D3CC',
+  entrance: '#E4E0D6', puja: '#F4D47A', balcony: '#DCE9D5', utility: '#E5E5E2', help: '#D9D2E6', laundry: '#CFE3EC', store: '#E2DED7',
+};
+const NORTH_ROT: Record<string, number> = { South: 0, East: 90, North: 180, West: 270 };
+const label = (s: string) => s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-export default function Viewer({ twin }: ViewerProps) {
-  const [activeMode, setActiveMode] = useState<ViewMode>('blueprint');
-  const [selectedElement, setSelectedElement] = useState<any>(null);
+export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
+  const [twin, setTwin] = useState(initial);
+  const [mode, setMode] = useState<ViewMode>('plan');
+  const [floorNo, setFloorNo] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [canEdit, setCanEdit] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
 
-  // SVG calculations for Blueprint Mode
-  const scale = 14.0;
-  const plotWidth = twin.plot.plot_width_ft * scale;
-  const plotDepth = twin.plot.plot_depth_ft * scale;
-  // Setbacks come from the pipeline (metres); fall back to 0 so nothing is invented.
-  const M_TO_FT = 3.28084;
-  const setbackM = {
-    front: Number(twin.metadata?.setback_front_m ?? 0),
-    rear: Number(twin.metadata?.setback_rear_m ?? 0),
-    side: Number(twin.metadata?.setback_side_m ?? 0),
-  };
-  const sbFront = setbackM.front * M_TO_FT * scale;
-  const sbRear = setbackM.rear * M_TO_FT * scale;
-  const sbSide = setbackM.side * M_TO_FT * scale;
-
-  const judge = getJudge(twin);
-  const builtUp = builtUpSqft(twin);
-  const fsi = twin.plot.plot_area_sqft > 0 ? builtUp / twin.plot.plot_area_sqft : 0;
-
-  const floor0 = twin.floors && twin.floors.length > 0 ? twin.floors[0] : null;
-
-  // Initialize Three.js scene for 3D modes
   useEffect(() => {
-    if (activeMode === 'blueprint') return;
-    if (!mountRef.current) return;
+    // Editable by the creating browser (edit token) or a signed-in owner; the API enforces it either way.
+    supabase.auth.getSession().then(({ data }) => setCanEdit(canEditLocally(twin.house_id) || !!data.session));
+  }, [twin.house_id]);
 
-    const width = mountRef.current.clientWidth;
-    const height = mountRef.current.clientHeight || 500;
+  const md = twin.metadata ?? {};
+  const W = Number(md.envelope_width_ft ?? twin.plot.plot_width_ft);
+  const D = Number(md.envelope_depth_ft ?? twin.plot.plot_depth_ft);
+  const sbSide = Number(md.setback_side_m ?? 0) * 3.28084;
+  const sbFront = Number(md.setback_front_m ?? 0) * 3.28084;
+  const PW = twin.plot.plot_width_ft;
+  const PD = twin.plot.plot_depth_ft;
+  const judge = getJudge(twin);
+  const builtUp = Number(md.fsi_built_up_sqft ?? builtUpSqft(twin));
+  const floor = twin.floors.find((f) => f.floor_no === floorNo) ?? twin.floors[0];
+  const room = floor?.rooms.find((r) => r.name === selected) ?? null;
+  const decisions = (md.decisions ?? []) as Decision[];
+  const trads = (md.traditions ?? {}) as Record<string, TraditionPack>;
+  // Plan coordinates: plot origin top-left on screen, road at the bottom.
+  const px = (x: number) => sbSide + x;
+  const py = (y: number, d: number) => PD - sbFront - y - d;
 
-    // 1. Scene, Camera, Renderer
+  useEffect(() => {
+    if (mode !== '3d' || !mountRef.current) return;
+    const el = mountRef.current;
+    const w = el.clientWidth, h = el.clientHeight || 480;
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0b0f17);
-
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(12, 14, 16);
-    camera.lookAt(0, 0, 0);
-
+    scene.background = new THREE.Color(0xf7f6f2);
+    const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 2000);
+    const r = Math.max(W, D) * 1.6;
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
-    renderer.shadowMap.enabled = true;
-    mountRef.current.appendChild(renderer.domElement);
-
-    // 2. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xfffaed, 1.2);
-    dirLight.position.set(10, 20, 10);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-
-    // 3. Ground / Raft Foundation Slab
-    const raftGeo = new THREE.BoxGeometry(9, 0.5, 9);
-    const raftMat = new THREE.MeshStandardMaterial({ 
-      color: 0x334155, 
-      roughness: 0.9 
+    renderer.setSize(w, h);
+    el.appendChild(renderer.domElement);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8577, 1.1));
+    const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+    sun.position.set(r, r, r / 2);
+    scene.add(sun);
+    const group = new THREE.Group();
+    const disposables: { dispose: () => void }[] = [];
+    twin.floors.forEach((f) => {
+      const fh = f.floor_height_ft;
+      f.rooms.forEach((rm) => {
+        const g = new THREE.BoxGeometry(rm.length_ft - 0.4, fh - 0.6, rm.width_ft - 0.4);
+        const m = new THREE.MeshStandardMaterial({ color: FILL[rm.type ?? ''] ?? '#e5e5e5', transparent: f.floor_no > 0, opacity: f.floor_no > 0 ? 0.92 : 1 });
+        const mesh = new THREE.Mesh(g, m);
+        mesh.position.set(rm.x + rm.length_ft / 2 - W / 2, f.floor_no * fh + fh / 2, -(rm.y + rm.width_ft / 2 - D / 2));
+        group.add(mesh);
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({ color: 0x334155 }));
+        edges.position.copy(mesh.position);
+        group.add(edges);
+        disposables.push(g, m, edges.geometry, edges.material as THREE.Material);
+      });
     });
-    const raftMesh = new THREE.Mesh(raftGeo, raftMat);
-    raftMesh.position.y = -0.25;
-    scene.add(raftMesh);
-
-    // Add Architectural Grid
-    const grid = new THREE.GridHelper(20, 20, 0x2563eb, 0x1e293b);
-    grid.position.y = -0.01;
-    scene.add(grid);
-
-    // 4. Render 3D Columns per IS 456
-    const columnMeshes: THREE.Mesh[] = [];
-    if (twin.structure && twin.structure.columns) {
-      twin.structure.columns.forEach((col, idx) => {
-        const colWidth = (col.size_mm / 1000) * 1.5;
-        const colGeo = new THREE.BoxGeometry(colWidth, 3.2, colWidth);
-        const colMat = new THREE.MeshStandardMaterial({
-          color: activeMode === 'structure' ? 0x2563eb : 0x475569,
-          roughness: 0.4,
-          wireframe: false
-        });
-        const colMesh = new THREE.Mesh(colGeo, colMat);
-        colMesh.position.set((col.x * 0.25) - 3.5, 1.6, (col.y * 0.25) - 2.5);
-        colMesh.userData = { type: 'column', index: idx, data: col };
-        scene.add(colMesh);
-        columnMeshes.push(colMesh);
-      });
-    }
-
-    // 5. Render 3D Beams
-    if (activeMode === 'structure' && twin.structure && twin.structure.beams) {
-      twin.structure.beams.forEach((b, idx) => {
-        const beamGeo = new THREE.BoxGeometry(4.5, (b.depth_mm / 1000) * 1.5, 0.35);
-        const beamMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.5 });
-        const beamMesh = new THREE.Mesh(beamGeo, beamMat);
-        beamMesh.position.set(-1.5, 3.2, (idx * 2.0) - 2.5);
-        scene.add(beamMesh);
-      });
-    }
-
-    // 6. MEP Overlay Lines
-    if (activeMode === 'mep') {
-      // Fresh Water Supply (Blue vertical riser)
-      const waterGeo = new THREE.CylinderGeometry(0.06, 0.06, 3.2, 16);
-      const waterMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
-      const waterMesh = new THREE.Mesh(waterGeo, waterMat);
-      waterMesh.position.set(-3.5, 1.6, -2.5);
-      scene.add(waterMesh);
-
-      // 1:60 Drainage Sewer Line (Green pipe)
-      const drainGeo = new THREE.CylinderGeometry(0.08, 0.08, 6.0, 16);
-      const drainMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
-      const drainMesh = new THREE.Mesh(drainGeo, drainMat);
-      drainMesh.position.set(-0.75, 0.15, -0.5);
-      drainMesh.rotation.z = Math.PI / 2;
-      drainMesh.rotation.y = 0.5;
-      scene.add(drainMesh);
-
-      // Electrical Conduit (Yellow line)
-      const elecGeo = new THREE.CylinderGeometry(0.04, 0.04, 5.0, 16);
-      const elecMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
-      const elecMesh = new THREE.Mesh(elecGeo, elecMat);
-      elecMesh.position.set(-0.5, 1.2, -2.5);
-      elecMesh.rotation.z = Math.PI / 2;
-      scene.add(elecMesh);
-    }
-
-    // 7. Paint / Color Walls
-    if (activeMode === 'paint' || activeMode === 'decor') {
-      const wallGeo = new THREE.BoxGeometry(4.0, 3.0, 0.2);
-      const wallMat = new THREE.MeshStandardMaterial({ 
-        color: 0xf5f0e6, // Warm White
-        roughness: 0.8 
-      });
-      const wallMesh = new THREE.Mesh(wallGeo, wallMat);
-      wallMesh.position.set(-1.5, 1.5, -2.5);
-      scene.add(wallMesh);
-    }
-
-    // 8. Decor Furniture
-    if (activeMode === 'decor') {
-      // Platform Sofa
-      const sofaGeo = new THREE.BoxGeometry(2.5, 0.6, 1.2);
-      const sofaMat = new THREE.MeshStandardMaterial({ color: 0x78716c });
-      const sofaMesh = new THREE.Mesh(sofaGeo, sofaMat);
-      sofaMesh.position.set(-1.5, 0.3, 0.5);
-      scene.add(sofaMesh);
-
-      // Teak Table
-      const tableGeo = new THREE.BoxGeometry(1.4, 0.4, 0.8);
-      const tableMat = new THREE.MeshStandardMaterial({ color: 0x7c2d12 });
-      const tableMesh = new THREE.Mesh(tableGeo, tableMat);
-      tableMesh.position.set(-1.5, 0.2, 1.6);
-      scene.add(tableMesh);
-    }
-
-    // Animation Loop (Slow rotation for architectural showcase)
-    let animationId: number;
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
-      scene.rotation.y += 0.0015;
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(PW, PD), new THREE.MeshStandardMaterial({ color: 0xd9d4c7 }));
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(sbSide + W / 2 - PW / 2, -0.01, -(PD / 2 - sbFront - D / 2));
+    disposables.push(ground.geometry, ground.material as THREE.Material);
+    scene.add(group, ground);
+    let angle = 0.8, drag: number | null = null, raf = 0, visible = true;
+    const onDown = (e: PointerEvent) => { drag = e.clientX; };
+    const onMove = (e: PointerEvent) => { if (drag !== null) { angle += (e.clientX - drag) * 0.01; drag = e.clientX; } };
+    const onUp = () => { drag = null; };
+    el.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; });
+    io.observe(el);
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      if (!visible) return;
+      if (drag === null) angle += 0.002;
+      camera.position.set(Math.sin(angle) * r, r * 0.7, Math.cos(angle) * r);
+      camera.lookAt(0, twin.floors.length * 4, 0);
       renderer.render(scene, camera);
     };
-    animate();
-
-    // Memory Disposal Cleanup
+    tick();
     return () => {
-      cancelAnimationFrame(animationId);
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      el.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      disposables.forEach((d) => d.dispose());
       renderer.dispose();
-      raftGeo.dispose();
-      raftMat.dispose();
+      el.removeChild(renderer.domElement);
     };
-  }, [activeMode, twin]);
+  }, [mode, twin, W, D, PW, PD, sbSide, sbFront]);
+
+  const edit = async (action: 'grow' | 'shrink' | 'mirror') => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      await editHouse(twin.house_id, action, action === 'mirror' ? undefined : selected ?? undefined);
+      setTwin(await getHouse(twin.house_id));
+      track('design_edited', { action });
+      setMsg('Updated and re-checked.');
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : 'Could not apply that change.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const share = async () => {
+    const url = window.location.href.split('?')[0];
+    try {
+      await navigator.clipboard.writeText(url);
+      setMsg('Link copied.');
+    } catch {
+      setMsg(url);
+    }
+    track('design_shared', { via: 'copy' });
+  };
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      {/* Main Viewport Container */}
-      <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6">
-        {/* Mode Toggle Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
-          <div className="flex flex-wrap gap-1.5">
-            {[
-              { id: 'blueprint', label: 'Blueprint 2D', icon: Ruler },
-              { id: 'structure', label: 'Structure 3D', icon: Layers },
-              { id: 'mep', label: 'MEP Flow 3D', icon: Zap },
-              { id: 'paint', label: 'Paint Science', icon: Palette },
-              { id: 'decor', label: 'Decor & Style', icon: Sofa },
-              { id: 'climate', label: 'Climate & Sound', icon: Sun }
-            ].map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeMode === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveMode(tab.id as ViewMode);
-                    setSelectedElement(null);
-                  }}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-mono font-medium transition ${isActive ? 'bg-blue-600 text-white shadow-md' : 'border border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'}`}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  <span>{tab.label}</span>
+    <div className="flex flex-col gap-6 lg:flex-row print:block">
+      <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
+          <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
+            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
+              <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${mode === id ? 'bg-blue-600 text-white' : 'border border-slate-700 text-slate-300 hover:text-white'}`}>
+                <Icon className="h-3.5 w-3.5" aria-hidden />{text}
+              </button>
+            ))}
+          </div>
+          {mode !== '3d' && (
+            <div className="flex gap-1.5" role="tablist" aria-label="Floor">
+              {twin.floors.map((f) => (
+                <button key={f.floor_no} type="button" role="tab" aria-selected={f.floor_no === floorNo} onClick={() => { setFloorNo(f.floor_no); setSelected(null); }}
+                  className={`rounded-lg px-3 py-1.5 font-mono text-xs ${f.floor_no === floorNo ? 'bg-white text-slate-900' : 'border border-slate-700 text-slate-300'}`}>
+                  {f.floor_no === 0 ? 'Ground' : `Floor ${f.floor_no}`}
                 </button>
-              );
-            })}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {judge ? (
-              <span className={`font-mono text-xs flex items-center gap-1 ${judge.pass ? 'text-emerald-400' : 'text-red-400'}`}>
-                <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
-                <span>{judge.pass ? 'Automated checks passed' : `${judge.failures.length} check(s) failed`}</span>
-              </span>
-            ) : (
-              <span className="font-mono text-xs text-slate-500">Not checked yet</span>
-            )}
-          </div>
-        </div>
-
-        {/* Viewport Display */}
-        <div className="relative mt-4 min-h-[480px] w-full overflow-hidden rounded-xl border border-slate-800/80 bg-[#0B0F17]">
-          {/* MODE 1: Blueprint 2D (Interactive SVG) */}
-          {activeMode === 'blueprint' && (
-            <div className="flex h-full w-full items-center justify-center p-6 overflow-auto">
-              <svg 
-                viewBox={`0 0 ${plotWidth + 120} ${plotDepth + 120}`}
-                className="max-h-[520px] max-w-full select-none"
-              >
-                {/* Outer Plot Boundary */}
-                <rect 
-                  x="60" 
-                  y="60" 
-                  width={plotWidth} 
-                  height={plotDepth} 
-                  fill="#0B0F17" 
-                  stroke="#334155" 
-                  strokeWidth="2" 
-                  strokeDasharray="6 4"
-                />
-                <text x="70" y="80" fill="#64748B" fontSize="10" fontFamily="monospace">
-                  Plot {twin.plot.plot_width_ft}ft x {twin.plot.plot_depth_ft}ft ({twin.plot.plot_area_sqft.toLocaleString('en-IN')} sqft)
-                </text>
-
-                {/* Setback lines (values from the pipeline) */}
-                <line x1="60" y1={60 + sbFront} x2={60 + plotWidth} y2={60 + sbFront} stroke="#1E293B" strokeWidth="1" strokeDasharray="3 3" />
-                <text x={70} y={60 + (sbFront / 2)} fill="#F59E0B" fontSize="9" fontFamily="monospace">
-                  Front setback {setbackM.front} m
-                </text>
-
-                <line x1="60" y1={60 + plotDepth - sbRear} x2={60 + plotWidth} y2={60 + plotDepth - sbRear} stroke="#1E293B" strokeWidth="1" strokeDasharray="3 3" />
-                <text x={70} y={60 + plotDepth - (sbRear / 2)} fill="#F59E0B" fontSize="9" fontFamily="monospace">
-                  Rear setback {setbackM.rear} m
-                </text>
-
-                {/* Buildable Footprint & Rooms */}
-                {floor0 && floor0.rooms.map((r, i) => {
-                  const rx = 60 + sbSide + (r.x * scale);
-                  const ry = 60 + sbFront + (r.y * scale);
-                  const rw = r.length_ft * scale;
-                  const rh = r.width_ft * scale;
-
-                  return (
-                    <g 
-                      key={i} 
-                      onClick={() => setSelectedElement({ type: 'room', data: r })}
-                      className="cursor-pointer hover:opacity-80 transition"
-                    >
-                      {/* Room Area */}
-                      <rect 
-                        x={rx} 
-                        y={ry} 
-                        width={rw} 
-                        height={rh} 
-                        fill="#131926" 
-                        stroke="#2563EB" 
-                        strokeWidth="2.5" 
-                      />
-
-                      {/* Room Label */}
-                      <text 
-                        x={rx + 10} 
-                        y={ry + 20} 
-                        fill="#F8FAFC" 
-                        fontSize="11" 
-                        fontWeight="bold"
-                        fontFamily="sans-serif"
-                      >
-                        {r.name.toUpperCase().replace('_', ' ')}
-                      </text>
-                      <text 
-                        x={rx + 10} 
-                        y={ry + 34} 
-                        fill="#94A3B8" 
-                        fontSize="9.5" 
-                        fontFamily="monospace"
-                      >
-                        {r.length_ft}' x {r.width_ft}' ({r.area_sqft} sqft)
-                      </text>
-
-                      {/* Door Indicator */}
-                      <circle cx={rx + 6} cy={ry + rh - 6} r="4" fill="#10B981" />
-                      <text x={rx + 14} y={ry + rh - 3} fill="#10B981" fontSize="8" fontFamily="monospace">
-                        Door {r.door_width_mm}mm
-                      </text>
-
-                      {/* Window Indicator */}
-                      <line x1={rx + rw - 15} y1={ry} x2={rx + rw} y2={ry} stroke="#38BDF8" strokeWidth="4" />
-                    </g>
-                  );
-                })}
-
-                {/* Structural Columns */}
-                {twin.structure.columns.map((col, cIdx) => {
-                  const cx = 60 + sbSide + (col.x * scale);
-                  const cy = 60 + sbFront + (col.y * scale);
-                  return (
-                    <g 
-                      key={cIdx}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedElement({ type: 'column', data: col, index: cIdx + 1 });
-                      }}
-                      className="cursor-pointer"
-                    >
-                      <rect 
-                        x={cx - 5} 
-                        y={cy - 5} 
-                        width="10" 
-                        height="10" 
-                        fill="#2563EB" 
-                        stroke="#93C5FD" 
-                        strokeWidth="1.5" 
-                      />
-                    </g>
-                  );
-                })}
-
-                {/* North Arrow */}
-                <g transform={`translate(${plotWidth + 30}, 80)`}>
-                  <circle cx="15" cy="15" r="14" fill="#1E293B" stroke="#475569" strokeWidth="1" />
-                  <polygon points="15,4 10,18 20,18" fill="#EF4444" />
-                  <text x="12" y="26" fill="#F8FAFC" fontSize="8" fontFamily="monospace" fontWeight="bold">N</text>
-                </g>
-              </svg>
+              ))}
             </div>
           )}
+          <span className={`flex items-center gap-1 font-mono text-xs ${judge?.pass ? 'text-emerald-400' : 'text-red-400'}`}>
+            <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+            {judge ? (judge.pass ? 'Automated checks passed' : `${judge.failures.length} check(s) failed`) : 'Not checked yet'}
+          </span>
+        </div>
 
-          {/* 3D Viewport for Structure, MEP, Paint, Decor */}
-          {activeMode !== 'blueprint' && (
-            <div ref={mountRef} className="h-[480px] w-full cursor-grab active:cursor-grabbing" />
+        <div className="relative mt-4 overflow-hidden rounded-xl bg-[#FAFAF7] print:mt-0">
+          {mode === '3d' ? (
+            <div ref={mountRef} className="h-[480px] w-full cursor-grab active:cursor-grabbing" aria-label="3D massing model, drag to rotate" />
+          ) : (
+            <svg viewBox={`-3 -3 ${PW + 10} ${PD + 8}`} className="max-h-[560px] w-full" role="img" aria-label={`Floor ${floorNo} plan`}>
+              <rect x={0} y={0} width={PW} height={PD} fill="#EFEDE6" stroke="#475569" strokeWidth={0.25} strokeDasharray="1 0.6" />
+              <rect x={sbSide} y={PD - sbFront - D} width={W} height={D} fill="none" stroke="#D97706" strokeWidth={0.2} strokeDasharray="0.6 0.4" />
+              {floor?.rooms.map((r) => (
+                <g key={r.name} onClick={() => setSelected(r.name)} tabIndex={0} role="button" aria-label={`${label(r.name)}, ${r.length_ft} by ${r.width_ft} feet`}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(r.name)} className="cursor-pointer focus:outline-none">
+                  <rect x={px(r.x)} y={py(r.y, r.width_ft)} width={r.length_ft} height={r.width_ft} fill={FILL[r.type ?? ''] ?? '#EEE'}
+                    stroke={selected === r.name ? '#1D4ED8' : '#1F2937'} strokeWidth={selected === r.name ? 0.5 : 0.25} />
+                  {r.length_ft > 4 && r.type !== 'passage' && r.type !== 'utility' && (
+                    <>
+                      <text x={px(r.x) + r.length_ft / 2} y={py(r.y, r.width_ft) + r.width_ft / 2 - 0.4} textAnchor="middle" fontSize={Math.min(1.3, r.length_ft / 7)} fontWeight={600} fill="#111827">{label(r.name)}</text>
+                      <text x={px(r.x) + r.length_ft / 2} y={py(r.y, r.width_ft) + r.width_ft / 2 + 1.1} textAnchor="middle" fontSize={Math.min(1.0, r.length_ft / 9)} fill="#374151">
+                        {r.length_ft.toFixed(1)}′×{r.width_ft.toFixed(1)}′
+                      </text>
+                    </>
+                  )}
+                </g>
+              ))}
+              {mode === 'structure' && twin.structure.columns.map((c, i) => (
+                <rect key={i} x={px(c.x) - 0.4} y={PD - sbFront - c.y - 0.4} width={0.8} height={((c.size_y_mm ?? 230) / 304.8)} fill="#1D4ED8">
+                  <title>{`C${i + 1}: 230×${c.size_y_mm ?? 230} mm, ${c.load_tons} t`}</title>
+                </rect>
+              ))}
+              <text x={PW / 2} y={PD + 2.6} textAnchor="middle" fontSize={1.2} fill="#64748B">Road ({twin.plot.orientation} side) · plot {PW}′×{PD}′ · dashed orange = setback line</text>
+              <g transform={`translate(${PW + 3.5}, 3) rotate(${NORTH_ROT[twin.plot.orientation] ?? 0})`} aria-label="North arrow">
+                <circle r={2} fill="#fff" stroke="#475569" strokeWidth={0.15} />
+                <polygon points="0,-1.7 -0.7,0.6 0.7,0.6" fill="#DC2626" />
+                <text y={-2.3} textAnchor="middle" fontSize={1} fill="#111827">N</text>
+              </g>
+            </svg>
           )}
-
-          {/* Viewport Overlay Floating Legend */}
-          <div className="absolute bottom-3 left-3 rounded-lg border border-slate-800 bg-slate-900/90 px-3 py-1.5 backdrop-blur-md">
-            <span className="font-mono text-[11px] text-slate-400">
-              {activeMode === 'blueprint' && 'Mode: Architectural 2D Plan (Scale 1ft = 14px)'}
-              {activeMode === 'structure' && 'Mode: IS 456 Structural Wireframe & Columns'}
-              {activeMode === 'mep' && 'Mode: Plumbing (Blue/Green) & Electric (Yellow) Flow'}
-              {activeMode === 'paint' && 'Mode: Wall Science (LRV > 70 Ambient Reflection)'}
-              {activeMode === 'decor' && 'Mode: 70% Japanese / 30% Forest Style Blend'}
-              {activeMode === 'climate' && 'Mode: Mumbai 19°N Solar Path & STC Acoustic Insulation'}
-            </span>
-          </div>
         </div>
       </div>
 
-      {/* Side Engineering Details Panel */}
-      <div className="w-full lg:w-80 rounded-2xl border border-slate-800 bg-[#131926] p-5">
-        <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3">
-          <Info className="h-4 w-4 text-blue-400" />
-          <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
-            Structural & Code Rationale
-          </h3>
-        </div>
-
-        {selectedElement ? (
-          <div className="mt-4 space-y-4">
-            <div className="rounded-xl border border-blue-900/60 bg-blue-950/20 p-3.5">
-              <span className="font-mono text-[10px] uppercase text-blue-400">
-                Selected {selectedElement.type}
-              </span>
-              <p className="mt-1 text-base font-bold text-white capitalize">
-                {selectedElement.type === 'column' ? `Column C${selectedElement.index}` : selectedElement.data.name.replace('_', ' ')}
-              </p>
-            </div>
-
-            {selectedElement.type === 'column' && (
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Dimensions:</span>
-                  <span className="text-white font-bold">{selectedElement.data.size_mm} x {selectedElement.data.size_y_mm || selectedElement.data.size_mm} mm</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Tributary Axial Load:</span>
-                  <span className="text-amber-400 font-bold">{selectedElement.data.load_tons} Metric Tons</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Code Standard:</span>
-                  <span className="text-white">IS 456 Cl. 39</span>
-                </div>
-                <div className="mt-3 rounded-lg bg-slate-900/80 p-2.5 text-[11px] text-slate-300 leading-relaxed font-mono">
-                  {selectedElement.data.reason}
-                </div>
+      <aside className="w-full rounded-2xl border border-slate-800 bg-[#131926] p-5 lg:w-80 print:mt-6 print:w-full print:border-0 print:bg-white print:text-black">
+        {room ? (
+          <div className="space-y-3">
+            <p className="font-mono text-[10px] uppercase text-blue-400">Selected room</p>
+            <h3 className="text-lg font-bold text-white">{label(room.name)}</h3>
+            <Row k="Size" v={`${room.length_ft}′ × ${room.width_ft}′ (${room.area_sqft} sqft)`} />
+            <Row k="Door" v={`${room.door_width_mm} mm`} />
+            <Row k="Window" v={room.window_area_sqft ? `${room.window_area_sqft} sqft` : room.exterior ? 'Vent' : 'Internal (duct/exhaust)'} />
+            <Row k="Direction" v={room.compass ?? '—'} />
+            <Row k="Floor finish" v={label(room.material_floor)} />
+            <Row k="Wall" v={`${room.color_wall_A?.hex ?? ''} · LRV ${room.color_wall_A?.lrv}`} swatch={room.color_wall_A?.hex} />
+            {canEdit && room.type !== 'stair' && room.type !== 'utility' && (
+              <div className="flex gap-2 pt-2 print:hidden">
+                <button type="button" disabled={busy} onClick={() => edit('grow')} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-slate-600 px-2 py-1.5 text-xs text-white hover:bg-slate-800 disabled:opacity-50"><Plus className="h-3.5 w-3.5" />Bigger</button>
+                <button type="button" disabled={busy} onClick={() => edit('shrink')} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-slate-600 px-2 py-1.5 text-xs text-white hover:bg-slate-800 disabled:opacity-50"><Minus className="h-3.5 w-3.5" />Smaller</button>
               </div>
             )}
-
-            {selectedElement.type === 'room' && (
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Dimensions:</span>
-                  <span className="text-white font-bold">{selectedElement.data.length_ft}' x {selectedElement.data.width_ft}'</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Carpet Area:</span>
-                  <span className="text-emerald-400 font-bold">{selectedElement.data.area_sqft} sqft</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Door Width:</span>
-                  <span className="text-white">{selectedElement.data.door_width_mm} mm</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Wall Color:</span>
-                  <span className="text-white">{selectedElement.data.color_wall_A?.name} (LRV {selectedElement.data.color_wall_A?.lrv})</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-800/60 font-mono">
-                  <span className="text-slate-400">Floor Material:</span>
-                  <span className="text-amber-400 capitalize">{selectedElement.data.material_floor.replace('_', ' ')}</span>
-                </div>
-              </div>
-            )}
+            <button type="button" onClick={() => setSelected(null)} className="text-xs text-slate-400 underline print:hidden">Back to overview</button>
           </div>
         ) : (
-          <div className="mt-4 space-y-3 font-mono text-xs">
-            <div className="flex justify-between py-1.5 border-b border-slate-800/80">
-              <span className="text-slate-400">Plot Dimensions:</span>
-              <span className="text-white font-bold">
-                {twin.plot.plot_width_ft}ft x {twin.plot.plot_depth_ft}ft ({twin.plot.plot_area_sqft.toLocaleString('en-IN')} sqft)
-              </span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-800/80">
-              <span className="text-slate-400">Total Built-up:</span>
-              <span className="text-white font-bold">
-                {builtUp.toLocaleString('en-IN')} sqft ({twin.floors.length <= 1 ? 'G' : `G+${twin.floors.length - 1}`})
-              </span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-800/80">
-              <span className="text-slate-400">FSI Used:</span>
-              <span className="text-white font-bold">{fsi.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-800/80">
-              <span className="text-slate-400">Safety Factor:</span>
-              <span className="text-white font-bold">{twin.structure.safety_factor.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-800/80">
-              <span className="text-slate-400">Foundation:</span>
-              <span className="text-white font-bold capitalize">
-                {twin.structure.foundation.depth_ft}ft {twin.structure.foundation.type.replace(/_/g, ' ')}
-              </span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-800/80">
-              <span className="text-slate-400">Drainage Slope:</span>
-              <span className="text-white font-bold">{twin.mep.waste_pipes[0]?.slope ?? '—'}</span>
-            </div>
-
-            <p className="mt-4 text-xs text-slate-500 leading-normal">
-              Click a room or column in the Blueprint view to see its numbers.
-            </p>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2"><Info className="h-4 w-4 text-blue-400" /><h3 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">Why this design</h3></div>
+            <Row k="Plot" v={`${PW}′ × ${PD}′ (${twin.plot.plot_area_sqft.toLocaleString('en-IN')} sqft)`} />
+            <Row k="Built-up (FSI)" v={`${Math.round(builtUp).toLocaleString('en-IN')} sqft (${(builtUp / twin.plot.plot_area_sqft).toFixed(2)})`} />
+            <Row k="Foundation" v={`${twin.structure.foundation.type}, ${twin.structure.foundation.depth_ft} ft`} />
+            <Row k="Columns" v={`${twin.structure.columns.length}`} />
+            <ul className="mt-3 space-y-2">
+              {decisions.map((d) => (
+                <li key={d.field} className="rounded-lg bg-slate-900/70 p-2.5 text-xs text-slate-300">
+                  <span className="font-semibold text-white">{label(d.field)}:</span> {String(d.value)}
+                  <span className="block text-slate-400">{d.reason}</span>
+                </li>
+              ))}
+            </ul>
+            {Object.entries(trads).map(([k, p]) => (
+              <details key={k} className="rounded-lg bg-slate-900/70 p-2.5 text-xs text-slate-300">
+                <summary className="cursor-pointer font-semibold text-white">{label(k)} ({p.mode}) · {Math.round((p.score + 1) * 50)}% aligned</summary>
+                <ul className="mt-2 space-y-1">
+                  {p.findings.map((f) => <li key={f.rule}><span className={f.status === 'violated' ? 'text-red-400' : f.status === 'satisfied' ? 'text-emerald-400' : 'text-slate-400'}>{f.status.replace('_', ' ')}</span> · {f.rule}</li>)}
+                </ul>
+                {!p.verified && <p className="mt-2 text-slate-500">Rules are a research draft, not yet reviewed by an expert.</p>}
+              </details>
+            ))}
+            <p className="pt-1 text-xs text-slate-500 print:hidden">Click a room to see its numbers{canEdit ? ' or resize it' : ''}.</p>
           </div>
         )}
 
-        {/* Action Link to BOQ */}
-        <div className="mt-6 border-t border-slate-800/80 pt-4">
-          <a
-            href={`/house/${twin.house_id}/boq`}
-            className="flex items-center justify-between rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-blue-500"
-          >
-            <span>View cost estimate</span>
-            <ChevronRight className="h-4 w-4" />
+        {msg && <p role="status" className="mt-3 rounded-lg bg-slate-900 p-2 text-xs text-slate-200">{msg}</p>}
+
+        <div className="mt-5 grid grid-cols-2 gap-2 border-t border-slate-800/80 pt-4 print:hidden">
+          {canEdit && <button type="button" disabled={busy} onClick={() => edit('mirror')} className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><FlipHorizontal className="h-3.5 w-3.5" />Mirror the plan</button>}
+          <a href={dxfUrl(twin.house_id)} onClick={() => track('export', { format: 'dxf' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Download className="h-3.5 w-3.5" />DXF (CAD)</a>
+          <button type="button" onClick={() => { track('export', { format: 'pdf' }); window.print(); }} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Printer className="h-3.5 w-3.5" />PDF / print</button>
+          <a href={`https://wa.me/?text=${encodeURIComponent('My Nestora house concept: ' + (typeof window !== 'undefined' ? window.location.href.split('?')[0] : ''))}`} target="_blank" rel="noopener noreferrer"
+            onClick={() => track('design_shared', { via: 'whatsapp' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Share2 className="h-3.5 w-3.5" />WhatsApp</a>
+          <button type="button" onClick={share} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Copy className="h-3.5 w-3.5" />Copy link</button>
+          <a href={`/house/${twin.house_id}/boq`} className="col-span-2 flex items-center justify-between rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500">
+            <span>Cost estimate (3 finish levels)</span><ChevronRight className="h-4 w-4" />
           </a>
         </div>
-      </div>
+      </aside>
+    </div>
+  );
+}
+
+function Row({ k, v, swatch }: { k: string; v: string; swatch?: string }) {
+  return (
+    <div className="flex justify-between gap-3 border-b border-slate-800/60 py-1 font-mono text-xs">
+      <span className="text-slate-400">{k}</span>
+      <span className="flex items-center gap-1.5 text-right text-white">{swatch && <span className="inline-block h-3 w-3 rounded-sm border border-slate-500" style={{ background: swatch }} />}{v}</span>
     </div>
   );
 }

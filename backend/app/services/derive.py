@@ -40,6 +40,12 @@ def colour(name: str, hexv: str) -> ColorWall:
     return ColorWall(name=name, rgb=",".join(map(str, rgb)), cmyk=",".join(map(str, cmy + [round(100 * k)])), lrv=lrv, hex=hexv)
 
 
+LOW_MAINT_SWAP = {"wood_flooring": "wood_look_tiles", "oak_flooring": "wood_look_tiles", "teak_wood": "wood_look_tiles",
+                  "lime_plaster": "vitrified_tiles", "red_oxide": "vitrified_tiles", "mud_cow_dung": "vitrified_tiles",
+                  "terracotta": "terracotta_look_tiles", "travertine": "vitrified_tiles", "microcement": "vitrified_tiles",
+                  "white_microcement": "vitrified_tiles", "saltillo_terracotta": "terracotta_look_tiles"}
+
+
 def _floor_material(t: str, style: Dict[str, Any], brief: Brief) -> str:
     if t in ("toilet", "kitchen", "balcony", "porch"):
         return "anti_skid_ceramic" if t != "porch" else "paver_blocks"
@@ -49,7 +55,8 @@ def _floor_material(t: str, style: Dict[str, Any], brief: Brief) -> str:
         return "anti_skid_vitrified"
     if brief.pets and style["materials"]["floor"] in ("wood_flooring", "oak_flooring", "teak_wood"):
         return "wood_look_tiles"  # scratch resistant
-    return style["materials"]["floor"]
+    m = style["materials"]["floor"]
+    return LOW_MAINT_SWAP.get(m, m) if brief.low_maintenance else m
 
 
 def _door_mm(rm: Dict[str, Any], brief: Brief, r: Dict[str, Any]) -> int:
@@ -59,7 +66,7 @@ def _door_mm(rm: Dict[str, Any], brief: Brief, r: Dict[str, Any]) -> int:
         return max(r["door_main_mm"], 1050 if wide else 0)
     if t == "toilet":
         return 900 if "elder" in rm["id"] and brief.elders else r["door_toilet_mm"]
-    if t in ("bedroom", "bedroom_master", "bedroom_elder", "study", "lounge", "kitchen"):
+    if t in ("bedroom", "bedroom_master", "bedroom_elder", "study", "lounge", "kitchen", "help"):
         return 1000 if wide else r["door_habitable_mm"]
     return r["door_habitable_mm"]
 
@@ -76,12 +83,14 @@ def build_floors(brief: Brief, cand: Dict[str, Any]) -> List[Floor]:
             area = round(l * w, 1)
             needs_window = rm["hab"] or rm["type"] == "kitchen"
             window = round(area * r["window_ratio"] * 1.2, 1) if rm["exterior"] and needs_window else (4.0 if rm["exterior"] and rm["wet"] else 0.0)
-            wall = pal["wall"] if rm["type"] not in ("toilet", "kitchen") else "#F4F6F6"
+            light, dark = sorted((pal["wall"], pal["accent"]), key=lambda h: -colour("", h).lrv)
+            # interiors need reflectance: the lighter style tone on walls, the darker as the feature accent
+            wall = (light if colour("", light).lrv >= 55 else "#EFE9DD") if rm["type"] not in ("toilet", "kitchen") else "#F4F6F6"
             rooms.append(Room(
                 name=rm["id"], type=rm["type"], length_ft=l, width_ft=w, area_sqft=area, window_area_sqft=window,
                 door_width_mm=_door_mm(dict(rm, stilt=cand["layout"].get("stilt")), brief, r),
                 color_wall_A=colour(f"{st['name']} wall", wall),
-                color_accent=colour(f"{st['name']} accent", pal["accent"]) if rm["hab"] else None,
+                color_accent=colour(f"{st['name']} accent", dark) if rm["hab"] else None,
                 material_floor=_floor_material(rm["type"], st, brief),
                 x=round(rm["x"] / FT, 2), y=round(rm["y"] / FT, 2), is_ground_floor=f == 0,
                 has_attached_bath=rm["type"] in ("bedroom_master", "bedroom_elder"),
@@ -110,7 +119,7 @@ def build_structure(brief: Brief, cand: Dict[str, Any]) -> Structure:
     rooms = cand["layout"]["rooms"]
     xs = _grid([e for rm in rooms for e in (rm["x"], rm["x"] + rm["w"])], env["width_m"])
     ys = _grid([e for rm in rooms for e in (rm["y"], rm["y"] + rm["d"])], env["depth_m"])
-    n_floors = cand["floors"]
+    n_floors = cand["floors"] + (1 if brief.future_extra_floor else 0)  # sized for a future storey if asked
     cols: List[Column] = []
     for i, x in enumerate(xs):
         for j, y in enumerate(ys):
@@ -150,8 +159,8 @@ def twin_soil(brief: Brief) -> str:
 
 
 def build_mep(twin: HouseTwin, brief: Brief) -> MEP:
-    pts = {"bedroom": 8, "bedroom_master": 10, "bedroom_elder": 9, "living": 12, "lounge": 8, "kitchen": 10, "toilet": 4,
-           "study": 8, "dining": 5, "puja": 2, "passage": 2, "stair": 3, "balcony": 2, "porch": 3, "entrance": 2}
+    pts = {"lift": 2, "bedroom": 8, "bedroom_master": 10, "bedroom_elder": 9, "living": 12, "lounge": 8, "kitchen": 10, "toilet": 4,
+           "study": 8, "dining": 5, "help": 4, "laundry": 4, "store": 1, "puja": 2, "passage": 2, "stair": 3, "balcony": 2, "porch": 3, "entrance": 2}
     rooms = [x for f in twin.floors for x in f.rooms]
     acs = []
     if brief.tier != "economy":
@@ -181,6 +190,7 @@ def build_boq(twin: HouseTwin, brief: Brief, cand: Dict[str, Any]) -> Dict[str, 
     wall_sqft = 2.5 * sqft  # both faces of walls, rough
     found = twin.structure.foundation
     fp_m2 = cand["envelope"]["area_m2"]
+    plinth_m = 0.9 if brief.flood_prone else 0.45
     found_m3 = fp_m2 * 0.3 if found.type == "raft" else sum(col.load_tons * 9.81 * 1.1 / found.bearing_capacity_kn_m2 for col in twin.structure.columns) * 0.45
     out: Dict[str, Any] = {"tiers": {}, "rates_as_of": rp["rates_as_of"], "rates_verified": rp.get("verified", False),
                            "gst_note": rp.get("gst_note"), "built_up_sqft": round(sqft)}
@@ -193,6 +203,7 @@ def build_boq(twin: HouseTwin, brief: Brief, cand: Dict[str, Any]) -> Dict[str, 
                          + sqft * _rate(lab["rcc_frame_per_sqft_builtup"], k))
             masonry = qty["bricks"] * _rate(m["red_brick_each"], k) + 1.2 * sqft * _rate(lab["masonry_per_sqft"], k) + wall_sqft * _rate(lab["plaster_per_sqft"], k)
             foundation = found_m3 * (_rate(m["rmc_m25_m3"], k) + 80 * _rate(m["steel_fe500d_kg"], k))
+            foundation += fp_m2 * plinth_m * 0.5 * _rate(m["rmc_m25_m3"], k)  # plinth fill + PCC, rough
             finishing = 0.8 * sqft * _rate(fin["flooring"], k) + wall_sqft * _rate(fin["paint"], k) + sqft * _rate(fin["doors_windows_lumpsum_per_sqft"], k)
             services = sqft * (_rate(mep["electrical"], k) + _rate(mep["plumbing"], k))
             sub = foundation + structure + masonry + finishing + services
@@ -260,6 +271,22 @@ def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any]) -> List[Dict[str,
         {"field": "budget", "value": f"₹{exp['total']:,.0f} ({brief.tier})", "source": "rates",
          "reason": f"Rates as of {boq['rates_as_of']}, unverified, excl. GST. Your budget ₹{brief.budget_inr:,.0f}."},
     ]
+    people = brief.adults + brief.elders + brief.kids + (1 if brief.help_room else 0)
+    daily = people * 135  # litres per person per day, IS 1172 / NBC Part 9 (unverified)
+    twin.metadata["water"] = {"daily_litres": daily, "overhead_tank_litres": int(math.ceil(daily / 500) * 500),
+                              "sump_litres": int(math.ceil(daily * 1.5 / 500) * 500),
+                              "rainwater_harvesting": twin.plot.plot_area_sqft * SQFT >= 300}
+    w = twin.metadata["water"]
+    decisions.append({"field": "water", "value": f"{w['overhead_tank_litres']:,} L overhead, {w['sump_litres']:,} L sump", "source": "derived",
+                      "reason": f"{people} people × 135 L/day. Rainwater harvesting " + ("is required for plots of 300 m² or more (DCPR 2034, unverified)." if w["rainwater_harvesting"] else "is recommended.")})
+    decisions.append({"field": "plinth", "value": f"{0.9 if brief.flood_prone else 0.45} m above road", "source": "user" if brief.flood_prone else "default",
+                      "reason": "Raised for monsoon waterlogging; the entrance needs steps plus a ramp." if brief.flood_prone else "Standard plinth; tell us if your street floods."})
+    if brief.future_extra_floor:
+        decisions.append({"field": "future_floor", "value": "columns and footings sized for one more floor", "source": "user",
+                          "reason": "Costs more now, avoids rebuilding the frame later. The extra floor still needs FSI and approval."})
+    if brief.lift != "none":
+        decisions.append({"field": "lift", "value": "lift shaft reserved" if brief.lift == "shaft" else "lift", "source": "user",
+                          "reason": "1.6 m core beside the stair on every floor; machine-room-less lift, approvals separate."})
     if cand["layout"]["dropped"]:
         decisions.append({"field": "dropped_rooms", "value": ", ".join(cand["layout"]["dropped"]), "source": "generator",
                           "reason": "These optional rooms didn't fit at code-minimum sizes."})

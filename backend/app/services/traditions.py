@@ -91,3 +91,37 @@ def evaluate(cand: Dict[str, Any], facing: str, chosen: Dict[str, str]) -> Dict[
     if active:
         result["score"] = round(result["score"] / len(active), 3)
     return result
+
+
+SECTOR_VEC = {"N": (0, 1), "NE": (1, 1), "E": (1, 0), "SE": (1, -1), "S": (0, -1), "SW": (-1, -1), "W": (-1, 0), "NW": (-1, 1)}
+
+
+def placement(sector: str, facing: str) -> tuple:
+    """Compass sector -> (row, side) on this plot. Rows run front (road) to rear; sides as seen from the road."""
+    if sector == "CENTRE":
+        return "middle", "centre"
+    f = {"N": (0, 1), "E": (1, 0), "S": (0, -1), "W": (-1, 0)}[facing]
+    into, sx = (-f[0], -f[1]), SECTOR_VEC[sector]
+    right = (into[1], -into[0])
+    depth = sx[0] * into[0] + sx[1] * into[1]
+    lat = sx[0] * right[0] + sx[1] * right[1]
+    return ("rear" if depth > 0 else "front" if depth < 0 else "middle"), ("right" if lat > 0 else "left" if lat < 0 else "centre")
+
+
+def arrangement_for(facing: str, chosen: Dict[str, str]) -> Dict[str, Any]:
+    """An arrangement that puts rooms in their preferred tradition sectors (strict packs first)."""
+    zones: Dict[str, str] = {}
+    sides: Dict[str, str] = {}
+    order = sorted((k for k, v in chosen.items() if v != "off" and k in packs()), key=lambda k: chosen[k] != "strict")
+    for name in order:
+        for rule in packs()[name]["rules"]:
+            if rule["kind"] not in ("zone", "avoid_zone") or not rule["value"].get("preferred"):
+                continue
+            sector = next((x for x in rule["value"]["preferred"] if x in SECTOR_VEC or x == "CENTRE"), None)
+            if not sector:
+                continue
+            for t in _types(rule["applies_to"]):
+                if t in zones or t in ("stair", "porch", "entrance"):
+                    continue
+                zones[t], sides[t] = placement(sector, facing)
+    return {"id": "tradition_" + "_".join(order) if order else "tradition", "zones": zones, "sides": sides}
