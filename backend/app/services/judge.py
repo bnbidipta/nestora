@@ -1,10 +1,16 @@
 """
-Pure Python Judge - Section 7 of Nestora Brief.
-Pure Python, NO ML, NO SLM.
-Enforces non-negotiable safety, building code, structural integrity, MEP flow, and ergonomics.
+Judge: pure-Python rule engine. No ML. Every threshold comes from the city code pack (services/pack.py),
+and every geometric check reads the actual room rectangles in the House Twin.
+Rule ids: A_ area/geometry, B_ law, C_ structure, D_ MEP, E_ ergonomics.
 """
-from typing import Dict, Any, List, Tuple
-from backend.app.models.twin import HouseTwin, Floor, Room, Beam, Column
+from typing import Any, Dict, List
+
+from backend.app.models.twin import HouseTwin
+from backend.app.services import pack
+
+FT = pack.FT
+SQFT = FT * FT
+TOL = 0.02  # 2% numeric tolerance on areas
 
 
 class JudgeResult:
@@ -21,298 +27,232 @@ class JudgeResult:
         self.warnings.append({"rule_id": rule_id, "message": message})
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
-            "pass": self.passed,
-            "failures": self.failures,
-            "warnings": self.warnings
-        }
+        return {"pass": self.passed, "failures": self.failures, "warnings": self.warnings}
+
+
+def _rules(twin: HouseTwin) -> Dict[str, Any]:
+    p = twin.plot
+    road_m = twin.metadata.get("road_width_m", p.road_width_ft * FT)
+    return pack.rules(p.plot_width_ft * FT, p.plot_depth_ft * FT, road_m, twin.metadata.get("city", "mumbai"))
+
+
+def _kind(name: str, rtype: str = None) -> str:
+    n = (rtype or name).lower()
+    for k in ("bedroom", "living", "lounge", "study", "kitchen", "toilet", "stair", "passage", "porch", "puja", "dining", "balcony"):
+        if k in n:
+            return k
+    if "bath" in n:
+        return "toilet"
+    return "other"
+
+
+HABITABLE = ("bedroom", "living", "lounge", "study")
 
 
 class JudgeService:
     @staticmethod
     def validate_house(twin: HouseTwin) -> JudgeResult:
         result = JudgeResult()
-        
-        # Run all 5 checks
-        JudgeService.check_area(twin, result)
-        JudgeService.check_law(twin, result)
-        JudgeService.check_structure(twin, result)
-        JudgeService.check_mep(twin, result)
-        JudgeService.check_ergonomics(twin, result)
-        
+        r = _rules(twin)
+        JudgeService.check_area(twin, result, r)
+        JudgeService.check_law(twin, result, r)
+        JudgeService.check_structure(twin, result, r)
+        JudgeService.check_mep(twin, result, r)
+        JudgeService.check_ergonomics(twin, result, r)
         return result
 
-    # ----------------------------------------------------
-    # Judge A - Area Math
-    # ----------------------------------------------------
+    # ---------------------------------------------------------------- A: area & geometry
     @staticmethod
-    def check_area(twin: HouseTwin, result: JudgeResult):
-        """
-        Check that room areas + wall and circulation footprint balance the built-up area (+/- 2%).
-        """
+    def check_area(twin: HouseTwin, result: JudgeResult, r: Dict[str, Any] = None):
         if not twin.floors:
             result.add_failure("A_NO_FLOORS", "House has no floors defined.")
             return
-
+        env_w = twin.metadata.get("envelope_width_ft")
+        env_d = twin.metadata.get("envelope_depth_ft")
         for floor in twin.floors:
-            room_area_sum = sum(r.area_sqft for r in floor.rooms)
-            # Standard architectural ratio: room carpet area is 75-85% of built-up area (walls + circulation = 15-25%)
-            # Or if built-up area is explicitly stated, verify room sum does not exceed built-up area.
+            rooms = floor.rooms
+            for room in rooms:
+                exp = room.length_ft * room.width_ft
+                if abs(exp - room.area_sqft) > TOL * exp + 0.5:
+                    result.add_failure("A_ROOM_DIM_MISMATCH", f"{room.name}: area {room.area_sqft} sqft ≠ {room.length_ft} × {room.width_ft} ft.")
+                if env_w and env_d:
+                    if room.x < -0.05 or room.y < -0.05 or room.x + room.length_ft > env_w + 0.05 or room.y + room.width_ft > env_d + 0.05:
+                        result.add_failure("A_OUTSIDE_ENVELOPE", f"Floor {floor.floor_no} {room.name} extends outside the buildable area left by the setbacks.")
+            for i, a in enumerate(rooms):
+                for b in rooms[i + 1:]:
+                    ox = min(a.x + a.length_ft, b.x + b.length_ft) - max(a.x, b.x)
+                    oy = min(a.y + a.width_ft, b.y + b.width_ft) - max(a.y, b.y)
+                    if ox > 0.1 and oy > 0.1:
+                        result.add_failure("A_ROOMS_OVERLAP", f"Floor {floor.floor_no}: {a.name} and {b.name} overlap by {ox * oy:.0f} sqft.")
+            room_sum = sum(x.area_sqft for x in rooms)
             if floor.area_sqft <= 0:
                 result.add_failure("A_INVALID_FLOOR_AREA", f"Floor {floor.floor_no} area must be positive.")
-                continue
+            elif room_sum > floor.area_sqft * (1 + TOL):
+                result.add_failure("A_AREA_OVERFLOW", f"Floor {floor.floor_no}: rooms total {room_sum:.0f} sqft, more than the floor's {floor.area_sqft:.0f} sqft.")
 
-            # Check individual room length * width == area_sqft (+/- 2%)
-            for room in floor.rooms:
-                expected_dim_area = room.length_ft * room.width_ft
-                if abs(expected_dim_area - room.area_sqft) > (0.05 * expected_dim_area):
-                    result.add_failure(
-                        "A_ROOM_DIM_MISMATCH",
-                        f"Room {room.name} area {room.area_sqft} sqft does not match length {room.length_ft} * width {room.width_ft} sqft."
-                    )
-
-            # Carpet area cannot exceed gross floor area
-            if room_area_sum > floor.area_sqft * 1.02:
-                result.add_failure(
-                    "A_AREA_OVERFLOW",
-                    f"Floor {floor.floor_no} carpet rooms sum {room_area_sum} sqft exceeds built-up {floor.area_sqft} sqft by > 2%."
-                )
-
-    # ----------------------------------------------------
-    # Judge B - Law (Mumbai DCR / NBC 2016)
-    # ----------------------------------------------------
+    # ---------------------------------------------------------------- B: law
     @staticmethod
-    def check_law(twin: HouseTwin, result: JudgeResult):
-        """
-        Setbacks per Mumbai pack: Front 3m, Side 1.5m, Rear 3m for 30x40.
-        FSI <= 1.5 for Mumbai pilot.
-        Min room: Bedroom >= 100 sqft, Living >= 150 sqft, Kitchen >= 60 sqft, Toilet >= 35 sqft.
-        Ventilation: Window area >= 10% of room area.
-        Stair width >= 900mm.
-        Door: Main >= 1000mm, Bedroom >= 900mm, Toilet >= 750mm.
-        No toilet under stair, No toilet sharing puja wall.
-        """
-        plot = twin.plot
-        # FSI check
-        total_builtup_sqft = sum(f.area_sqft for f in twin.floors)
-        max_allowed_builtup = plot.plot_area_sqft * 1.5
-        if total_builtup_sqft > max_allowed_builtup * 1.02:
-            result.add_failure(
-                "B_FSI_VIOLATION",
-                f"Total built-up area {total_builtup_sqft} sqft exceeds Mumbai FSI 1.5 limit of {max_allowed_builtup} sqft."
-            )
+    def check_law(twin: HouseTwin, result: JudgeResult, r: Dict[str, Any] = None):
+        r = r or _rules(twin)
+        md = twin.metadata
+        src = f" ({r['setback_source']}, unverified)"
+        for side, key in (("FRONT", "front"), ("SIDE", "side"), ("REAR", "rear")):
+            have = md.get(f"setback_{key}_m", r[f"setback_{key}_m"])
+            need = r[f"setback_{key}_m"]
+            if have < need - 1e-6:
+                result.add_failure(f"B_SETBACK_{side}", f"{key.title()} setback {have} m is less than the required {need} m{src}.")
 
-        # Setback footprint check on 30x40 plot
-        # Front 3m (~9.84 ft), Rear 3m (~9.84 ft), Sides 1.5m (~4.92 ft) each side
-        # Max buildable width = 30 - 2*(4.92) = ~20.16 ft
-        # Max buildable depth = 40 - (9.84 + 9.84) = ~20.32 ft
-        max_buildable_footprint = 20.16 * 20.32  # ~409-450 sqft per floor for tight setback, or standard Mumbai cluster
-        # In Mumbai DCR, for small plots <= 1200 sqft, open spaces have specific concessions, but ground floor footprint cannot exceed plot minus setbacks.
-        front_setback_m = twin.metadata.get("setback_front_m", 3.0)
-        side_setback_m = twin.metadata.get("setback_side_m", 1.5)
-        rear_setback_m = twin.metadata.get("setback_rear_m", 3.0)
+        plot_sqft = twin.plot.plot_width_ft * twin.plot.plot_depth_ft
+        built = md.get("fsi_built_up_sqft", sum(f.area_sqft for f in twin.floors))
+        if built > plot_sqft * r["fsi_max"] * (1 + TOL):
+            result.add_failure("B_FSI_VIOLATION", f"Built-up {built:.0f} sqft exceeds FSI {r['fsi_max']} ({plot_sqft * r['fsi_max']:.0f} sqft) — {r['fsi_source']}.")
+        elif built > plot_sqft * r["fsi_base"] * (1 + TOL):
+            result.add_warning("B_FSI_PREMIUM", f"Built-up {built:.0f} sqft uses more than base FSI {r['fsi_base']}; premium FSI/TDR must be purchased.")
 
-        if front_setback_m < 3.0:
-            result.add_failure("B_SETBACK_FRONT", f"Front setback {front_setback_m}m is less than mandatory 3.0m.")
-        if side_setback_m < 1.5:
-            result.add_failure("B_SETBACK_SIDE", f"Side setback {side_setback_m}m is less than mandatory 1.5m.")
-        if rear_setback_m < 3.0:
-            result.add_failure("B_SETBACK_REAR", f"Rear setback {rear_setback_m}m is less than mandatory 3.0m.")
+        height_m = sum(f.floor_height_ft for f in twin.floors) * FT
+        if height_m > r["max_height_m"] + 0.01:
+            result.add_failure("B_HEIGHT", f"Building height {height_m:.1f} m exceeds {r['max_height_m']} m.")
 
-        # Check room sizes and doors across floors
+        hab_min = r["habitable_min_m2"] / SQFT
+        hab_w = r["habitable_min_width_m"] / FT
         has_elder = twin.family.elders > 0
-        has_puja = any("puja" in r.name.lower() for f in twin.floors for r in f.rooms)
-
         for floor in twin.floors:
             for room in floor.rooms:
-                r_name = room.name.lower()
-                
-                # Min room size checks
-                if "bedroom" in r_name and room.area_sqft < 99.5:
-                    result.add_failure("B_MIN_BEDROOM_SIZE", f"Bedroom '{room.name}' area {room.area_sqft} sqft is under 100 sqft minimum.")
-                elif "living" in r_name and room.area_sqft < 149.5:
-                    result.add_failure("B_MIN_LIVING_SIZE", f"Living room '{room.name}' area {room.area_sqft} sqft is under 150 sqft minimum.")
-                elif "kitchen" in r_name and room.area_sqft < 59.5:
-                    result.add_failure("B_MIN_KITCHEN_SIZE", f"Kitchen '{room.name}' area {room.area_sqft} sqft is under 60 sqft minimum.")
-                elif ("toilet" in r_name or "bath" in r_name) and room.area_sqft < 34.5:
-                    result.add_failure("B_MIN_TOILET_SIZE", f"Toilet '{room.name}' area {room.area_sqft} sqft is under 35 sqft minimum.")
-
-                # Ventilation: Window area >= 10% room area (except small toilets where 10% or min 3 sqft)
-                min_window_required = room.area_sqft * 0.10
-                if room.window_area_sqft < (min_window_required - 0.05) and "toilet" not in r_name:
-                    result.add_failure(
-                        "B_VENTILATION",
-                        f"Room '{room.name}' window area {room.window_area_sqft} sqft is less than 10% of room area ({min_window_required:.1f} sqft)."
-                    )
-
-                # Door widths: Main >= 1000mm, Bedroom >= 900mm, Toilet >= 750mm
-                if "main" in r_name or "entrance" in r_name:
-                    if room.door_width_mm < 1000:
-                        result.add_failure("B_DOOR_MAIN", f"Main door width {room.door_width_mm}mm must be >= 1000mm.")
-                elif "bedroom" in r_name:
+                k = _kind(room.name, room.type)
+                short = min(room.length_ft, room.width_ft)
+                if k in HABITABLE and k != "study":
+                    if room.area_sqft < hab_min * (1 - TOL):
+                        result.add_failure("B_MIN_HABITABLE_AREA", f"{room.name} is {room.area_sqft:.0f} sqft; habitable rooms need {hab_min:.0f} sqft.")
+                    if short < hab_w * (1 - TOL):
+                        result.add_failure("B_MIN_HABITABLE_WIDTH", f"{room.name} is {short:.1f} ft wide; habitable rooms need {hab_w:.1f} ft.")
+                if k == "kitchen" and room.area_sqft < r["kitchen_min_m2"] / SQFT * (1 - TOL):
+                    result.add_failure("B_MIN_KITCHEN_SIZE", f"{room.name} is {room.area_sqft:.0f} sqft; kitchens need {r['kitchen_min_m2'] / SQFT:.0f} sqft.")
+                if k == "toilet" and room.area_sqft < r["toilet_min_m2"] / SQFT * (1 - TOL):
+                    result.add_failure("B_MIN_TOILET_SIZE", f"{room.name} is {room.area_sqft:.0f} sqft; toilets need {r['toilet_min_m2'] / SQFT:.0f} sqft.")
+                if k in HABITABLE or k == "kitchen":
+                    if room.exterior is False:
+                        result.add_failure("B_NO_OUTSIDE_WALL", f"{room.name} has no outside wall, so it can't have the required window.")
+                    need = room.area_sqft * r["window_ratio"]
+                    if room.window_area_sqft < need - 0.05:
+                        result.add_failure("B_VENTILATION", f"{room.name} window {room.window_area_sqft:.1f} sqft is under {need:.1f} sqft ({r['window_ratio']:.0%} of floor area).")
+                if k == "toilet" and room.exterior is False:
+                    result.add_warning("B_TOILET_DUCT", f"{room.name} is internal; it needs a ventilation shaft or mechanical exhaust.")
+                main = "main" in room.name.lower() or "entrance" in room.name.lower()
+                if main and room.door_width_mm < r["door_main_mm"]:
+                    result.add_failure("B_DOOR_MAIN", f"Main door {room.door_width_mm} mm is under {r['door_main_mm']} mm.")
+                elif k == "bedroom" and room.door_width_mm < r["door_habitable_mm"]:
+                    result.add_failure("B_DOOR_BEDROOM", f"{room.name} door {room.door_width_mm} mm is under {r['door_habitable_mm']} mm.")
+                elif k == "toilet" and room.door_width_mm < r["door_toilet_mm"]:
+                    result.add_failure("B_DOOR_TOILET", f"{room.name} door {room.door_width_mm} mm is under {r['door_toilet_mm']} mm.")
+                if has_elder and "elder" in room.name.lower() and k == "bedroom":
+                    if floor.floor_no != 0 or room.is_ground_floor is False:
+                        result.add_failure("B_ELDER_GROUND_FLOOR", "The elder's bedroom must be on the ground floor.")
                     if room.door_width_mm < 900:
-                        result.add_failure("B_DOOR_BEDROOM", f"Bedroom '{room.name}' door width {room.door_width_mm}mm must be >= 900mm.")
-                elif "toilet" in r_name or "bath" in r_name:
-                    if room.door_width_mm < 750:
-                        result.add_failure("B_DOOR_TOILET", f"Toilet '{room.name}' door width {room.door_width_mm}mm must be >= 750mm.")
+                        result.add_failure("B_ELDER_DOOR_WIDTH", f"Elder bedroom door {room.door_width_mm} mm must be at least 900 mm.")
+                if k == "porch":
+                    sw, sl = r["car_stall_m"][0] / FT, r["car_stall_m"][1] / FT
+                    if short < sw * (1 - TOL) or max(room.length_ft, room.width_ft) < sl * (1 - TOL):
+                        result.add_failure("B_PARKING_STALL", f"Car porch {room.length_ft:.1f}×{room.width_ft:.1f} ft is smaller than a {sw:.1f}×{sl:.1f} ft stall.")
 
-                # Elder rule: If elder present, ground floor bedroom mandatory and door >= 900mm
-                if has_elder and "elder" in r_name and "bedroom" in r_name:
-                    if not room.is_ground_floor and floor.floor_no != 0:
-                        result.add_failure("B_ELDER_GROUND_FLOOR", "Elder bedroom must be on the ground floor (Floor 0).")
-                    if room.door_width_mm < 900:
-                        result.add_failure("B_ELDER_DOOR_WIDTH", f"Elder bedroom door width {room.door_width_mm}mm must be >= 900mm for wheelchair/mobility accessibility.")
+        stairs = [(f.floor_no, x) for f in twin.floors for x in f.rooms if _kind(x.name, x.type) == "stair"]
+        if len(twin.floors) > 1 and len({fn for fn, _ in stairs}) < len(twin.floors):
+            result.add_failure("B_STAIR_MISSING", "A multi-storey house needs a stair on every floor.")
+        if stairs:
+            x0, y0 = stairs[0][1].x, stairs[0][1].y
+            if any(abs(s.x - x0) > 0.1 or abs(s.y - y0) > 0.1 for _, s in stairs):
+                result.add_failure("B_STAIR_NOT_STACKED", "Stairs on different floors don't line up.")
+        stair_w = md.get("stair_width_mm", r["stair_min_width_m"] * 1000)
+        if stair_w < r["stair_min_width_m"] * 1000:
+            result.add_failure("B_STAIR_WIDTH", f"Stair width {stair_w} mm is under {r['stair_min_width_m'] * 1000:.0f} mm.")
+        if md.get("toilet_under_stair", False):
+            result.add_failure("B_TOILET_UNDER_STAIR", "A toilet under the stair is not allowed (NBC 2016 headroom/ventilation).")
+        if md.get("toilet_shares_puja_wall", False):
+            result.add_warning("B_TOILET_PUJA_WALL", "A toilet shares a wall with the puja room (tradition, not law).")
 
-        # Stair width check
-        stair_width_mm = twin.metadata.get("stair_width_mm", 950)
-        if stair_width_mm < 900:
-            result.add_failure("B_STAIR_WIDTH", f"Stair width {stair_width_mm}mm is under mandatory 900mm.")
-
-        # Special restrictions:
-        # No toilet under stair
-        if twin.metadata.get("toilet_under_stair", False):
-            result.add_failure("B_TOILET_UNDER_STAIR", "Toilet placed under stair is prohibited by Mumbai DCR / NBC.")
-
-        # No toilet sharing puja wall
-        if twin.metadata.get("toilet_shares_puja_wall", False):
-            result.add_failure("B_TOILET_PUJA_WALL", "Toilet sharing wall with Puja room is prohibited by Vaastu / health guidelines.")
-
-    # ----------------------------------------------------
-    # Judge C - Structure (IS 456:2000)
-    # ----------------------------------------------------
+    # ---------------------------------------------------------------- C: structure
     @staticmethod
-    def check_structure(twin: HouseTwin, result: JudgeResult):
-        """
-        Beam span > 6m without column = FAIL.
-        Column not on load path = FAIL.
-        Safety factor < 1.5 = FAIL.
-        Wall thickness: Load-bearing 200-230mm, Partition 100-115mm.
-        """
-        struct = twin.structure
-
-        # Safety factor check
-        if struct.safety_factor < 1.49:
-            result.add_failure("C_SAFETY_FACTOR", f"Structural safety factor {struct.safety_factor} is below mandatory 1.5.")
-
-        # Beam span check: max 6.0 meters without column
-        for idx, beam in enumerate(struct.beams):
-            if beam.span_m > 6.0:
-                result.add_failure(
-                    "C_BEAM_SPAN_EXCEEDED",
-                    f"Beam #{idx} span is {beam.span_m}m, which exceeds maximum unsupported span of 6.0m without column."
-                )
-            # Beam depth check: thumb rule span/16 minimum for deflection
-            min_depth_mm = int((beam.span_m * 1000) / 16.0)
-            if beam.depth_mm < min_depth_mm - 10:
-                result.add_failure(
-                    "C_BEAM_DEPTH_DEFICIENT",
-                    f"Beam #{idx} depth {beam.depth_mm}mm is insufficient for span {beam.span_m}m (min {min_depth_mm}mm per IS 456)."
-                )
-
-        # Columns check: size and continuous load path
-        if not struct.columns:
-            result.add_failure("C_NO_COLUMNS", "No structural columns defined for building framework.")
-        else:
-            for idx, col in enumerate(struct.columns):
-                if col.size_mm < 230:
-                    result.add_failure("C_COLUMN_MIN_SIZE", f"Column #{idx} size {col.size_mm}mm is below minimum 230mm for G+1.")
-                if col.load_tons <= 0:
-                    result.add_failure("C_COLUMN_LOAD_INVALID", f"Column #{idx} has invalid axial load: {col.load_tons} tons.")
-
-        # Column on load path validation
+    def check_structure(twin: HouseTwin, result: JudgeResult, r: Dict[str, Any] = None):
+        r = r or _rules(twin)
+        s = twin.structure
+        if s.safety_factor < r["min_safety_factor"] - 0.01:
+            result.add_failure("C_SAFETY_FACTOR", f"Safety factor {s.safety_factor} is below {r['min_safety_factor']}.")
+        for i, beam in enumerate(s.beams):
+            if beam.span_m > r["max_beam_span_m"]:
+                result.add_failure("C_BEAM_SPAN_EXCEEDED", f"Beam {i + 1} spans {beam.span_m} m; maximum without an extra column is {r['max_beam_span_m']} m.")
+            need = int(beam.span_m * 1000 / r["span_depth_ratio"])
+            if beam.depth_mm < need - 10:
+                result.add_failure("C_BEAM_DEPTH_DEFICIENT", f"Beam {i + 1} depth {beam.depth_mm} mm is under span/{r['span_depth_ratio']:.0f} = {need} mm.")
+        if not s.columns:
+            result.add_failure("C_NO_COLUMNS", "No structural columns defined.")
+        for i, c in enumerate(s.columns):
+            if c.size_mm < r["min_column_mm"]:
+                result.add_failure("C_COLUMN_MIN_SIZE", f"Column {i + 1} is {c.size_mm} mm; minimum is {r['min_column_mm']} mm.")
+            if c.load_tons <= 0:
+                result.add_failure("C_COLUMN_LOAD_INVALID", f"Column {i + 1} has no load assigned.")
+        env_w, env_d = twin.metadata.get("envelope_width_ft"), twin.metadata.get("envelope_depth_ft")
+        if env_w and env_d and s.columns:
+            for cx, cy in ((0, 0), (env_w, 0), (0, env_d), (env_w, env_d)):
+                if not any(abs(c.x - cx) < 0.5 and abs(c.y - cy) < 0.5 for c in s.columns):
+                    result.add_failure("C_CORNER_COLUMN", f"No column at building corner ({cx:.0f}, {cy:.0f}) ft.")
         if twin.metadata.get("floating_column_detected", False):
-            result.add_failure("C_COLUMN_LOAD_PATH", "Floating column detected with no continuous direct load path to foundation.")
+            result.add_failure("C_COLUMN_LOAD_PATH", "Floating column with no direct load path to the foundation.")
+        if s.wall_load_bearing_mm < 200:
+            result.add_failure("C_WALL_LOAD_BEARING", f"External wall {s.wall_load_bearing_mm} mm is under 200 mm.")
+        if s.wall_partition_mm < 100:
+            result.add_failure("C_WALL_PARTITION", f"Partition wall {s.wall_partition_mm} mm is under 100 mm.")
 
-        # Wall thickness checks
-        if struct.wall_load_bearing_mm < 200:
-            result.add_failure(
-                "C_WALL_LOAD_BEARING",
-                f"Load-bearing wall thickness {struct.wall_load_bearing_mm}mm is under minimum 200mm."
-            )
-        if struct.wall_partition_mm < 100:
-            result.add_failure(
-                "C_WALL_PARTITION",
-                f"Partition wall thickness {struct.wall_partition_mm}mm is under minimum 100mm."
-            )
-
-    # ----------------------------------------------------
-    # Judge D - MEP Flow (IS 1742 / NBC Part 9)
-    # ----------------------------------------------------
+    # ---------------------------------------------------------------- D: MEP
     @staticmethod
-    def check_mep(twin: HouseTwin, result: JudgeResult):
-        """
-        Drainage slope must be 1:60 to 1:100.
-        Electrical crossing water = FAIL.
-        Pump head insufficient for floor height = FAIL.
-        Electrical separation from water >= 300mm.
-        """
+    def check_mep(twin: HouseTwin, result: JudgeResult, r: Dict[str, Any] = None):
         mep = twin.mep
-
-        # Drainage slope parsing
-        valid_slopes = ["1:60", "1:70", "1:80", "1:90", "1:100"]
-        for idx, pipe in enumerate(mep.waste_pipes):
-            slope_str = pipe.slope.strip()
-            is_valid = False
-            if ":" in slope_str:
-                try:
-                    parts = slope_str.split(":")
-                    ratio = float(parts[1]) / float(parts[0])
-                    # 1:60 = 60, 1:100 = 100. Ratio must be between 60 and 100 inclusive.
-                    if 59.9 <= ratio <= 100.1:
-                        is_valid = True
-                except Exception:
-                    is_valid = False
-            
-            if not is_valid:
-                result.add_failure(
-                    "D_DRAINAGE_SLOPE",
-                    f"Waste pipe #{idx} slope '{pipe.slope}' violates hydraulic gradient limits (must be 1:60 to 1:100 per IS 1742)."
-                )
-
-        # Electrical crossing water check
+        for i, pipe in enumerate(mep.waste_pipes):
+            ok = False
+            try:
+                a, b = pipe.slope.strip().split(":")
+                ok = 59.9 <= float(b) / float(a) <= 100.1
+            except (ValueError, ZeroDivisionError):
+                pass
+            if not ok:
+                result.add_failure("D_DRAINAGE_SLOPE", f"Pipe {i + 1} slope '{pipe.slope}' must be between 1:60 and 1:100 (IS 1742).")
         if twin.metadata.get("electrical_crosses_water", False):
-            result.add_failure("D_ELEC_CROSS_WATER", "Electrical conduit directly crosses unshielded water plumbing run.")
-
-        # Electrical separation from water >= 300mm
+            result.add_failure("D_ELEC_CROSS_WATER", "Electrical conduit crosses an unshielded water line.")
         if mep.electrical_water_separation_mm < 300:
-            result.add_failure(
-                "D_ELEC_WATER_SEPARATION",
-                f"Electrical separation from water {mep.electrical_water_separation_mm}mm is under minimum 300mm."
-            )
+            result.add_failure("D_ELEC_WATER_SEPARATION", f"Electrical–water separation {mep.electrical_water_separation_mm} mm is under 300 mm.")
+        need = required_pump_head_m(twin)
+        if mep.pump_head_m < need - 0.05:
+            result.add_failure("D_PUMP_HEAD_INSUFFICIENT", f"Pump head {mep.pump_head_m} m is under the {need:.1f} m needed for this height.")
+        wet_x = {}
+        for f in twin.floors:
+            for x in f.rooms:
+                if _kind(x.name, x.type) in ("toilet", "kitchen"):
+                    wet_x.setdefault(f.floor_no, []).append(x)
+        for fn, wets in wet_x.items():
+            if fn == 0:
+                continue
+            below = wet_x.get(fn - 1, [])
+            for w in wets:
+                if below and not any(abs((w.x + w.length_ft / 2) - (b.x + b.length_ft / 2)) < 6 and abs((w.y + w.width_ft / 2) - (b.y + b.width_ft / 2)) < 6 for b in below):
+                    result.add_warning("D_WET_NOT_STACKED", f"{w.name} isn't above a wet room; its drain runs through a ceiling below.")
 
-        # Pump head vs building total height
-        # G+1 height = floor 0 height + floor 1 height + overhead tank head (approx 3m) + friction (~2m)
-        total_building_height_m = sum(f.floor_height_ft * 0.3048 for f in twin.floors)
-        required_pump_head_m = total_building_height_m + 5.0  # static + dynamic losses
-        if mep.pump_head_m < required_pump_head_m:
-            result.add_failure(
-                "D_PUMP_HEAD_INSUFFICIENT",
-                f"Pump head {mep.pump_head_m}m is insufficient for building height {total_building_height_m:.1f}m (min {required_pump_head_m:.1f}m required)."
-            )
-
-    # ----------------------------------------------------
-    # Judge E - Ergonomics
-    # ----------------------------------------------------
+    # ---------------------------------------------------------------- E: ergonomics
     @staticmethod
-    def check_ergonomics(twin: HouseTwin, result: JudgeResult):
-        """
-        Circulation < 900mm = FAIL.
-        Furniture blocks door = FAIL.
-        Kitchen triangle > 22ft = WARN.
-        """
-        circulation_width_mm = twin.metadata.get("circulation_width_mm", 1000)
-        if circulation_width_mm < 900:
-            result.add_failure(
-                "E_CIRCULATION_TOO_NARROW",
-                f"Clear corridor/circulation width {circulation_width_mm}mm is under minimum 900mm."
-            )
-
+    def check_ergonomics(twin: HouseTwin, result: JudgeResult, r: Dict[str, Any] = None):
+        widths = [min(x.length_ft, x.width_ft) * FT * 1000 for f in twin.floors for x in f.rooms if _kind(x.name, x.type) == "passage"]
+        circ = twin.metadata.get("circulation_width_mm", min(widths) if widths else 1000)
+        if circ < 900:
+            result.add_failure("E_CIRCULATION_TOO_NARROW", f"Passage width {circ:.0f} mm is under 900 mm.")
         if twin.metadata.get("furniture_blocks_door", False):
-            result.add_failure("E_FURNITURE_BLOCKS_DOOR", "Placed furniture obstructs required 90-degree door swing clearance.")
+            result.add_failure("E_FURNITURE_BLOCKS_DOOR", "Furniture blocks a door swing.")
+        for f in twin.floors:
+            for x in f.rooms:
+                if _kind(x.name, x.type) == "kitchen":
+                    run = max(x.length_ft, x.width_ft)
+                    if run > 15:  # sink-stove-fridge spread along a run this long exceeds the ~22-26 ft triangle guideline
+                        result.add_warning("E_KITCHEN_TRIANGLE_HIGH", f"{x.name} is {run:.0f} ft long; keep sink, stove and fridge within a 22–26 ft triangle.")
+                    if min(x.length_ft, x.width_ft) < 6:
+                        result.add_warning("E_KITCHEN_NARROW", f"{x.name} is under 6 ft wide: single-counter galley only.")
 
-        kitchen_triangle_ft = twin.metadata.get("kitchen_triangle_perimeter_ft", 18.0)
-        if kitchen_triangle_ft > 22.0:
-            result.add_warning(
-                "E_KITCHEN_TRIANGLE_HIGH",
-                f"Kitchen work triangle perimeter {kitchen_triangle_ft:.1f}ft exceeds recommended 22ft ergonomics limit."
-            )
+
+def required_pump_head_m(twin: HouseTwin) -> float:
+    """Static lift to the overhead tank plus losses. Shared by the MEP stage and the Judge."""
+    return round(sum(f.floor_height_ft for f in twin.floors) * FT + 1.5 + 5.0, 1)

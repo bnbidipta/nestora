@@ -1,115 +1,78 @@
-"""
-Integration Tests for FastAPI Endpoints (Section 5 & 13).
-Validates all routes, Pydantic serialization, and health endpoints.
-"""
-import pytest
+"""End-to-end API flow: create -> brief -> swipe -> 4 options -> keep/replace -> choose -> edit -> export."""
 from fastapi.testclient import TestClient
+
 from backend.app.main import app
 
 client = TestClient(app)
+BRIEF = {"plot_width_ft": 30, "plot_depth_ft": 50, "road_width_m": 12, "floors_wanted": 2, "parking": "two_wheeler",
+         "adults": 2, "elders": 1, "elder_mobility_issue": True, "kids": 1, "puja": "nook", "traditions": {"vaastu": "soft"},
+         "styles": ["konkan"], "budget_inr": 6_000_000}
 
 
-def test_root_health():
-    res = client.get("/health")
-    assert res.status_code == 200
-    data = res.json()
-    assert data["status"] == "healthy"
-    assert "Mumbai 30x40" in data["pilot"]
-
-
-def test_house_crud_and_generate_flow():
-    # 1. Create House
+def _new():
     res = client.post("/api/v1/house", json={})
     assert res.status_code == 200
-    house_id = res.json()["house_id"]
-    assert house_id.startswith("nest_")
-
-    # 2. Get House
-    res = client.get(f"/api/v1/house/{house_id}")
-    assert res.status_code == 200
-    assert res.json()["data"]["house_id"] == house_id
-
-    # 3. Submit Questionnaire
-    q_payload = {
-        "user_prompt": "Designing a home for my mother who has knee pain, 2 year old toddler, and Labrador dog.",
-        "plot_width_ft": 30.0,
-        "plot_depth_ft": 40.0,
-        "target_budget_inr": 2000000.0,
-        "adults": 3,
-        "elders": 1,
-        "toddlers": 1,
-        "has_pets": True,
-        "pet_breed": "Labrador",
-        "elder_knee_pain": True,
-        "wfh_hours_per_day": 8,
-        "cooking_style": "wet_and_dry",
-        "vaastu_faith": "vaastu_soft",
-        "preferred_styles": ["japanese", "forest"]
-    }
-    res = client.post(f"/api/v1/house/{house_id}/questionnaire", json=q_payload)
-    assert res.status_code == 200
-    cg = res.json()["constraint_graph"]
-    assert cg["elder_present"] is True
-    assert cg["ground_floor_bedroom_required"] is True
-
-    # 4. Swipe cards
-    res = client.get("/api/v1/swipe/decks")
-    assert res.status_code == 200
-    decks = res.json()["decks"]
-    assert len(decks["structure"]) == 10
-
-    swipe_payload = {
-        "card_id": "s_01",
-        "deck": "structure",
-        "direction": "right",
-        "dwell_ms": 3500
-    }
-    res = client.post(f"/api/v1/house/{house_id}/swipe", json=swipe_payload)
-    assert res.status_code == 200
-    assert res.json()["total_swipes"] == 1
-
-    # 5. Generate DAG
-    res = client.post(f"/api/v1/house/{house_id}/generate")
-    assert res.status_code == 200
-    assert res.json()["success"] is True
-    assert res.json()["status"] == "ready"
-
-    # 6. Mode Renders
-    res = client.get(f"/api/v1/house/{house_id}/modes/blueprint")
-    assert res.status_code == 200
-    assert "rooms" in res.json()["data"]
-
-    res = client.get(f"/api/v1/house/{house_id}/modes/structure")
-    assert res.status_code == 200
-    assert "columns" in res.json()["data"]["structure_3d"]
-
-    # 7. Mock Review & Export
-    res = client.post(f"/api/v1/house/{house_id}/review")
-    assert res.status_code == 200
-    assert res.json()["data"]["status"] == "requested"
-
-    res = client.post(f"/api/v1/house/{house_id}/export/dwg")
-    assert res.status_code == 200
-    assert "dxf" in res.json()["data"]["filename"]
+    return res.json()["house_id"], {"X-Edit-Token": res.json()["edit_token"]}
 
 
-def test_all_model_health_endpoints():
-    endpoints = [
-        "/api/v1/plot/health",
-        "/api/v1/layout/health",
-        "/api/v1/structure/health",
-        "/api/v1/mep/health",
-        "/api/v1/color/health",
-        "/api/v1/material/health",
-        "/api/v1/style/health",
-        "/api/v1/climate/health",
-        "/api/v1/sound/health",
-        "/api/v1/budget/health",
-        "/api/v1/land/health",
-        "/api/v1/render/health",
-        "/api/v1/orchestrator/health"
-    ]
-    for ep in endpoints:
-        res = client.get(ep)
-        assert res.status_code == 200, f"Health check failed on {ep}"
-        assert res.json()["status"] == "healthy"
+def test_health():
+    assert client.get("/health").json()["status"] == "healthy"
+
+
+def test_full_flow():
+    hid, auth = _new()
+    r = client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    assert r.status_code == 200 and r.json()["waitlist"] is None
+    assert any("ground floor" in s for s in r.json()["understood"])
+
+    cards = client.get("/api/v1/swipe/cards", params={"seed": 1}).json()["cards"]
+    for c in cards[:3]:
+        assert client.post(f"/api/v1/house/{hid}/swipe", json={"card_id": c["id"], "direction": "right", "dwell_ms": 3500}, headers=auth).status_code == 200
+
+    r = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()
+    assert r["success"] and len(r["options"]) == 4
+    assert all(o["judge"]["pass"] for o in r["options"])
+    ids = [o["id"] for o in r["options"]]
+
+    r = client.post(f"/api/v1/house/{hid}/options/select", json={"keep": ids[:1], "discard": ids[1:]}, headers=auth).json()
+    assert r["options"][0]["id"] == ids[0] and len(r["options"]) >= 2
+    assert any(v != 0 for v in r["prefs"].values())
+
+    r = client.post(f"/api/v1/house/{hid}/options/choose", json={"id": ids[0]}, headers=auth).json()
+    assert r["status"] == "ready", r["judge_summary"]
+    twin = client.get(f"/api/v1/house/{hid}").json()["data"]
+    elder = [x for f in twin["floors"] for x in f["rooms"] if x["name"] == "bedroom_elder"]
+    assert elder and twin["floors"][0]["rooms"] and any(x["name"] == "bedroom_elder" for x in twin["floors"][0]["rooms"])
+    assert twin["metadata"]["boq"]["tiers"]["standard"]["expected"]["total"] > 0
+
+    r = client.post(f"/api/v1/house/{hid}/edit", json={"action": "mirror"}, headers=auth)
+    assert r.status_code == 200 and r.json()["status"] == "ready"
+
+    dxf = client.get(f"/api/v1/house/{hid}/export/dxf")
+    assert dxf.status_code == 200 and "ENTITIES" in dxf.text and "bedroom_elder" in dxf.text
+
+
+def test_writes_need_the_edit_token():
+    hid, _ = _new()
+    assert client.post(f"/api/v1/house/{hid}/brief", json=BRIEF).status_code == 403
+    assert client.post(f"/api/v1/house/{hid}/options").status_code == 403
+
+
+def test_waitlist_for_flats_and_other_cities():
+    hid, auth = _new()
+    assert client.post(f"/api/v1/house/{hid}/brief", json={**BRIEF, "build_type": "flat_interior"}, headers=auth).json()["waitlist"] == "flat_interior"
+    assert client.post(f"/api/v1/house/{hid}/brief", json={**BRIEF, "city": "pune"}, headers=auth).json()["waitlist"] == "city"
+
+
+def test_tiny_plot_is_reported_infeasible_not_faked():
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json={**BRIEF, "plot_width_ft": 18, "plot_depth_ft": 25, "road_width_m": 6}, headers=auth)
+    r = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()
+    assert r["status"] == "infeasible" and "setbacks" in r["reason"]
+
+
+def test_catalogues_and_extract():
+    assert len(client.get("/api/v1/styles").json()["styles"]) >= 40
+    assert len(client.get("/api/v1/traditions").json()["traditions"]) == 7
+    f = client.post("/api/v1/brief/extract", json={"text": "My mother has knee pain and we have a dog"}).json()["fields"]
+    assert f.get("elder_mobility_issue") is True and f.get("pets") is True

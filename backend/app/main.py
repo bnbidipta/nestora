@@ -9,11 +9,7 @@ from fastapi.responses import JSONResponse
 import os
 import logging
 
-from backend.app.api import (
-    house, questionnaire, swipe, plot, layout, structure,
-    mep, color, material, style, climate, sound, budget,
-    land, render, orchestrator_api
-)
+from backend.app.api import house, swipe, orchestrator_api, design, stages
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -61,25 +57,14 @@ def root_health_check():
     return {
         "status": "healthy",
         "service": "nestora_backend",
-        "pilot": "Mumbai 30x40 G+1",
+        "pilot": "Mumbai",
         "version": "1.0.0"
     }
 
 
 # Mount all public and internal task routers
 app.include_router(house.router)
-app.include_router(questionnaire.router)
 app.include_router(swipe.router)
-app.include_router(plot.router)
-app.include_router(layout.router)
-app.include_router(structure.router)
-app.include_router(mep.router)
-app.include_router(color.router)
-app.include_router(material.router)
-app.include_router(style.router)
-app.include_router(climate.router)
-app.include_router(sound.router)
-app.include_router(budget.router)
-app.include_router(land.router)
-app.include_router(render.router)
 app.include_router(orchestrator_api.router)
+app.include_router(design.router)
+app.include_router(stages.router)

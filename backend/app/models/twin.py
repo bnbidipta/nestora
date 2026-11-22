@@ -57,6 +57,9 @@ class Room(BaseModel):
     y: Optional[float] = Field(default=0.0, description="Offset y in ft on floor plan")
     has_attached_bath: Optional[bool] = False
     is_ground_floor: Optional[bool] = True
+    type: Optional[str] = None
+    exterior: Optional[bool] = None
+    compass: Optional[str] = None
 
 
 class Floor(BaseModel):

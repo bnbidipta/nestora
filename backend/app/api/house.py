@@ -103,24 +103,3 @@ def claim_house(house_id: str, user_id: Optional[str] = Depends(require_edit)):
         raise HTTPException(status_code=401, detail="Sign in to save this house.")
     HouseTwinRepository.claim(house_id, user_id)
     return {"success": True, "house_id": house_id}
-
-
-@router.post("/{house_id}/export/dwg", response_model=Dict[str, Any])
-def export_dwg(house_id: str):
-    """
-    Mock CAD DXF/DWG file export.
-    """
-    twin = HouseTwinRepository.get(house_id)
-    if not twin:
-        raise HTTPException(status_code=404, detail=f"House '{house_id}' not found.")
-        
-    return {
-        "success": True,
-        "data": {
-            "house_id": house_id,
-            "filename": f"{house_id}_mumbai_sanction.dxf",
-            "download_url": f"/api/v1/house/{house_id}/download/cad",
-            "format": "AutoCAD 2018 DXF",
-            "layers": ["WALLS_230MM", "COLUMNS_230X230", "BEAMS_IS456", "PLUMBING_1_60", "ELECTRICAL_CONDUITS"]
-        }
-    }

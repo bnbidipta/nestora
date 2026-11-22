@@ -63,6 +63,9 @@ class HouseTwinRepository:
         """First save of a new house. The edit token lets an anonymous creator modify it."""
         hid = cls._sanitize_id(twin.house_id)
         if not USE_SUPABASE:
+            if edit_token:  # same access model as Supabase: hash in a sidecar file
+                with open(os.path.join(STORAGE_DIR, f"{hid}.access"), "w", encoding="utf-8") as f:
+                    json.dump({"owner_id": None, "edit_token_hash": hash_token(edit_token)}, f)
             return cls._file_save(twin)
         row = {"id": hid, "status": twin.status, "twin": json.loads(twin.model_dump_json())}
         if edit_token:
@@ -108,7 +111,11 @@ class HouseTwinRepository:
         """{'owner_id', 'edit_token_hash'} for a house, or None in file mode / when missing."""
         hid = cls._sanitize_id(house_id)
         if not USE_SUPABASE:
-            return None
+            path = os.path.join(STORAGE_DIR, f"{hid}.access")
+            if not os.path.exists(path):
+                return None
+            with open(path, encoding="utf-8") as f:
+                return json.load(f)
         with _rest() as c:
             rows = c.get(
                 "/houses", params={"id": f"eq.{hid}", "select": "owner_id,edit_token_hash"}
