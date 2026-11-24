@@ -16,6 +16,7 @@ from backend.app.models.twin import (
 from backend.app.services import generator, pack
 from backend.app.services.engines import acoustics, climate, finishes, furniture, land, mep as mep_routes
 from backend.app.services.judge import required_pump_head_m
+from backend.app.services.names import display
 
 FT = pack.FT
 SQFT = FT * FT
@@ -285,7 +286,7 @@ def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], engines: bool = T
         decisions.append({"field": "two_wheelers", "value": f"{brief.two_wheelers} in the front open space", "source": "user",
                           "reason": "Scooters and bikes park in the open front setback (about 1 × 2 m each), so they don't use built-up area."})
     if cand["layout"]["dropped"]:
-        decisions.append({"field": "dropped_rooms", "value": ", ".join(cand["layout"]["dropped"]), "source": "generator",
+        decisions.append({"field": "dropped_rooms", "value": ", ".join(display(d) for d in cand["layout"]["dropped"]), "source": "generator",
                           "reason": "These optional rooms didn't fit at code-minimum sizes."})
     if engines:  # skipped while scoring candidates; run for the chosen design
         run_engines(twin, brief, st, boq)

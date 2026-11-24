@@ -12,6 +12,7 @@ from typing import Any, Dict, List
 
 from backend.app.models.twin import HouseTwin
 from backend.app.services.engines.geometry import AZ, walls
+from backend.app.services.names import display
 
 CITY_LAT = {"mumbai": 19.07}
 SHGC = 0.6  # clear single glazing, typical
@@ -107,11 +108,11 @@ def suggestions(c: Dict[str, Any]) -> List[Dict[str, Any]]:
     hot = [n for n, r in c["rooms"].items() if r.get("rating") == "hot" and not n.startswith(("stair", "toilet", "passage", "utility"))]
     if hot:
         deepest = max((d for n in hot for d in c["rooms"][n]["overhang_m"].values()), default=0.6)
-        out.append({"kind": "climate", "title": f"Shade {', '.join(h.replace('_', ' ') for h in hot[:3])}",
+        out.append({"kind": "climate", "title": f"Shade {', '.join(display(h) for h in hot[:3])}",
                     "detail": f"These rooms take the most summer sun. Add chajjas/overhangs about {deepest:.1f} m deep over west and south windows, "
                               "and use a light, high-reflectance roof coating.", "auto_applied": False})
     stuffy = [n for n, r in c["rooms"].items() if r.get("rating") != "interior" and not r.get("cross_ventilation") and n.startswith(("bedroom", "living"))]
     if stuffy:
-        out.append({"kind": "climate", "title": "Improve airflow", "detail": f"{', '.join(s.replace('_', ' ') for s in stuffy[:3])} have windows on one side only: "
+        out.append({"kind": "climate", "title": "Improve airflow", "detail": f"{', '.join(display(s) for s in stuffy[:3])} have windows on one side only: "
                     "add a high-level ventilator or transom over the door to get cross-ventilation.", "auto_applied": False})
     return out

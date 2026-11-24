@@ -1,0 +1,3783 @@
+{
+  "house_id": "nest_7b48b02df6",
+  "version": "1.0",
+  "status": "ready",
+  "created_at": null,
+  "plot": {
+    "address": "Mumbai, 19.07, 72.87",
+    "plot_width_ft": 30.0,
+    "plot_depth_ft": 40.0,
+    "plot_area_sqft": 1200.0,
+    "orientation": "East",
+    "road_width_ft": 29.5,
+    "soil_type": "black_cotton",
+    "water_table_m": 4.5
+  },
+  "family": {
+    "adults": 2,
+    "elders": 0,
+    "toddlers": 0,
+    "pets": [],
+    "wfh_members": 0,
+    "joint_family": false,
+    "disabilities": [],
+    "faith": "vaastu:soft"
+  },
+  "budget": {
+    "total_budget_inr": 4000000.0,
+    "contingency_pct": 10.0,
+    "construction_cost_sqft_inr": 1800.0
+  },
+  "floors": [
+    {
+      "floor_no": 0,
+      "floor_height_ft": 9.84,
+      "clear_height_ft": 9.02,
+      "area_sqft": 508.5,
+      "rooms": [
+        {
+          "name": "kitchen",
+          "length_ft": 7.62,
+          "width_ft": 14.9,
+          "area_sqft": 113.5,
+          "window_area_sqft": 13.6,
+          "door_width_mm": 900,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "244,246,246",
+            "cmyk": "1,0,0,4",
+            "lrv": 92,
+            "hex": "#F4F6F6"
+          },
+          "color_accent": null,
+          "material_floor": "anti_skid_ceramic",
+          "x": 0.0,
+          "y": 0.0,
+          "has_attached_bath": false,
+          "is_ground_floor": true,
+          "type": "kitchen",
+          "exterior": true,
+          "compass": "SE"
+        },
+        {
+          "name": "living",
+          "length_ft": 12.54,
+          "width_ft": 14.9,
+          "area_sqft": 186.8,
+          "window_area_sqft": 22.4,
+          "door_width_mm": 1000,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "242,237,228",
+            "cmyk": "0,2,6,5",
+            "lrv": 85,
+            "hex": "#F2EDE4"
+          },
+          "color_accent": {
+            "name": "Indian Contemporary accent",
+            "rgb": "181,101,29",
+            "cmyk": "0,44,84,29",
+            "lrv": 19,
+            "hex": "#B5651D"
+          },
+          "material_floor": "kota_stone",
+          "x": 7.62,
+          "y": 0.0,
+          "has_attached_bath": false,
+          "is_ground_floor": true,
+          "type": "living",
+          "exterior": true,
+          "compass": "NE"
+        },
+        {
+          "name": "stair_0",
+          "length_ft": 6.23,
+          "width_ft": 10.33,
+          "area_sqft": 64.4,
+          "window_area_sqft": 0.0,
+          "door_width_mm": 900,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "242,237,228",
+            "cmyk": "0,2,6,5",
+            "lrv": 85,
+            "hex": "#F2EDE4"
+          },
+          "color_accent": null,
+          "material_floor": "granite",
+          "x": 0.0,
+          "y": 14.9,
+          "has_attached_bath": false,
+          "is_ground_floor": true,
+          "type": "stair",
+          "exterior": true,
+          "compass": "SW"
+        },
+        {
+          "name": "passage_0",
+          "length_ft": 7.67,
+          "width_ft": 10.33,
+          "area_sqft": 79.2,
+          "window_area_sqft": 0.0,
+          "door_width_mm": 900,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "242,237,228",
+            "cmyk": "0,2,6,5",
+            "lrv": 85,
+            "hex": "#F2EDE4"
+          },
+          "color_accent": null,
+          "material_floor": "kota_stone",
+          "x": 6.23,
+          "y": 14.9,
+          "has_attached_bath": false,
+          "is_ground_floor": true,
+          "type": "passage",
+          "exterior": true,
+          "compass": "W"
+        },
+        {
+          "name": "toilet_common",
+          "length_ft": 6.25,
+          "width_ft": 10.33,
+          "area_sqft": 64.6,
+          "window_area_sqft": 4.0,
+          "door_width_mm": 750,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "244,246,246",
+            "cmyk": "1,0,0,4",
+            "lrv": 92,
+            "hex": "#F4F6F6"
+          },
+          "color_accent": null,
+          "material_floor": "anti_skid_vitrified",
+          "x": 13.91,
+          "y": 14.9,
+          "has_attached_bath": false,
+          "is_ground_floor": true,
+          "type": "toilet",
+          "exterior": true,
+          "compass": "NW"
+        }
+      ]
+    },
+    {
+      "floor_no": 1,
+      "floor_height_ft": 9.84,
+      "clear_height_ft": 9.02,
+      "area_sqft": 508.7,
+      "rooms": [
+        {
+          "name": "bedroom_master",
+          "length_ft": 20.16,
+          "width_ft": 14.9,
+          "area_sqft": 300.4,
+          "window_area_sqft": 36.0,
+          "door_width_mm": 900,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "242,237,228",
+            "cmyk": "0,2,6,5",
+            "lrv": 85,
+            "hex": "#F2EDE4"
+          },
+          "color_accent": {
+            "name": "Indian Contemporary accent",
+            "rgb": "181,101,29",
+            "cmyk": "0,44,84,29",
+            "lrv": 19,
+            "hex": "#B5651D"
+          },
+          "material_floor": "wood_look_tiles",
+          "x": 0.0,
+          "y": 0.0,
+          "has_attached_bath": true,
+          "is_ground_floor": false,
+          "type": "bedroom_master",
+          "exterior": true,
+          "compass": "E"
+        },
+        {
+          "name": "stair_1",
+          "length_ft": 6.23,
+          "width_ft": 10.33,
+          "area_sqft": 64.4,
+          "window_area_sqft": 0.0,
+          "door_width_mm": 900,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "242,237,228",
+            "cmyk": "0,2,6,5",
+            "lrv": 85,
+            "hex": "#F2EDE4"
+          },
+          "color_accent": null,
+          "material_floor": "granite",
+          "x": 0.0,
+          "y": 14.9,
+          "has_attached_bath": false,
+          "is_ground_floor": false,
+          "type": "stair",
+          "exterior": true,
+          "compass": "SW"
+        },
+        {
+          "name": "passage_1",
+          "length_ft": 3.9,
+          "width_ft": 10.33,
+          "area_sqft": 40.3,
+          "window_area_sqft": 0.0,
+          "door_width_mm": 900,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "242,237,228",
+            "cmyk": "0,2,6,5",
+            "lrv": 85,
+            "hex": "#F2EDE4"
+          },
+          "color_accent": null,
+          "material_floor": "kota_stone",
+          "x": 6.23,
+          "y": 14.9,
+          "has_attached_bath": false,
+          "is_ground_floor": false,
+          "type": "passage",
+          "exterior": true,
+          "compass": "W"
+        },
+        {
+          "name": "toilet_1",
+          "length_ft": 5.01,
+          "width_ft": 10.33,
+          "area_sqft": 51.8,
+          "window_area_sqft": 4.0,
+          "door_width_mm": 750,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "244,246,246",
+            "cmyk": "1,0,0,4",
+            "lrv": 92,
+            "hex": "#F4F6F6"
+          },
+          "color_accent": null,
+          "material_floor": "anti_skid_vitrified",
+          "x": 10.13,
+          "y": 14.9,
+          "has_attached_bath": false,
+          "is_ground_floor": false,
+          "type": "toilet",
+          "exterior": true,
+          "compass": "W"
+        },
+        {
+          "name": "toilet_master",
+          "length_ft": 5.01,
+          "width_ft": 10.33,
+          "area_sqft": 51.8,
+          "window_area_sqft": 4.0,
+          "door_width_mm": 750,
+          "color_wall_A": {
+            "name": "Indian Contemporary wall",
+            "rgb": "244,246,246",
+            "cmyk": "1,0,0,4",
+            "lrv": 92,
+            "hex": "#F4F6F6"
+          },
+          "color_accent": null,
+          "material_floor": "anti_skid_vitrified",
+          "x": 15.15,
+          "y": 14.9,
+          "has_attached_bath": false,
+          "is_ground_floor": false,
+          "type": "toilet",
+          "exterior": true,
+          "compass": "NW"
+        }
+      ]
+    }
+  ],
+  "structure": {
+    "columns": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 10.0,
+        "reason": "Tributary 4.1 m² × 12 kN/m² × 2 floor(s) = 98 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 0.0,
+        "y": 12.62,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 19.9,
+        "reason": "Tributary 8.2 m² × 12 kN/m² × 2 floor(s) = 196 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 0.0,
+        "y": 25.24,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 10.0,
+        "reason": "Tributary 4.1 m² × 12 kN/m² × 2 floor(s) = 98 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 13.91,
+        "y": 0.0,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 14.5,
+        "reason": "Tributary 5.9 m² × 12 kN/m² × 2 floor(s) = 142 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 13.91,
+        "y": 12.62,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 28.9,
+        "reason": "Tributary 11.8 m² × 12 kN/m² × 2 floor(s) = 284 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 13.91,
+        "y": 25.24,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 14.5,
+        "reason": "Tributary 5.9 m² × 12 kN/m² × 2 floor(s) = 142 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 20.16,
+        "y": 0.0,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 4.5,
+        "reason": "Tributary 1.8 m² × 12 kN/m² × 2 floor(s) = 44 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 20.16,
+        "y": 12.62,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 9.0,
+        "reason": "Tributary 3.7 m² × 12 kN/m² × 2 floor(s) = 88 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      },
+      {
+        "x": 20.16,
+        "y": 25.24,
+        "size_mm": 230,
+        "size_y_mm": 230,
+        "load_tons": 4.5,
+        "reason": "Tributary 1.8 m² × 12 kN/m² × 2 floor(s) = 44 kN; factored 1.5×, IS 456 cl. 39.3 short column at 1% steel → 230×230 mm (preliminary)."
+      }
+    ],
+    "beams": [
+      {
+        "span_m": 3.85,
+        "depth_mm": 300,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 3.85 m ÷ 16 = 241 mm + 50 mm cover margin → 300 mm."
+      },
+      {
+        "span_m": 3.85,
+        "depth_mm": 300,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 3.85 m ÷ 16 = 241 mm + 50 mm cover margin → 300 mm."
+      },
+      {
+        "span_m": 3.85,
+        "depth_mm": 300,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 3.85 m ÷ 16 = 241 mm + 50 mm cover margin → 300 mm."
+      },
+      {
+        "span_m": 3.85,
+        "depth_mm": 300,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 3.85 m ÷ 16 = 241 mm + 50 mm cover margin → 300 mm."
+      },
+      {
+        "span_m": 3.85,
+        "depth_mm": 300,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 3.85 m ÷ 16 = 241 mm + 50 mm cover margin → 300 mm."
+      },
+      {
+        "span_m": 3.85,
+        "depth_mm": 300,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 3.85 m ÷ 16 = 241 mm + 50 mm cover margin → 300 mm."
+      },
+      {
+        "span_m": 4.24,
+        "depth_mm": 325,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 4.24 m ÷ 16 = 265 mm + 50 mm cover margin → 325 mm."
+      },
+      {
+        "span_m": 4.24,
+        "depth_mm": 325,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 4.24 m ÷ 16 = 265 mm + 50 mm cover margin → 325 mm."
+      },
+      {
+        "span_m": 4.24,
+        "depth_mm": 325,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 4.24 m ÷ 16 = 265 mm + 50 mm cover margin → 325 mm."
+      },
+      {
+        "span_m": 1.91,
+        "depth_mm": 230,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 1.91 m ÷ 16 = 119 mm + 50 mm cover margin → 230 mm."
+      },
+      {
+        "span_m": 1.91,
+        "depth_mm": 230,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 1.91 m ÷ 16 = 119 mm + 50 mm cover margin → 230 mm."
+      },
+      {
+        "span_m": 1.91,
+        "depth_mm": 230,
+        "width_mm": 230,
+        "start_col_idx": null,
+        "end_col_idx": null,
+        "reason": "Span 1.91 m ÷ 16 = 119 mm + 50 mm cover margin → 230 mm."
+      }
+    ],
+    "foundation": {
+      "type": "isolated",
+      "depth_ft": 5.9,
+      "bearing_capacity_kn_m2": 120.0,
+      "reason": "Largest column 284 kN on 120 kN/m² soil needs a 1.6 m footing; footings would cover 22% of the footprint → isolated footings. Depth 1.8 m for black cotton soil. Needs a soil test."
+    },
+    "safety_factor": 1.5,
+    "wall_load_bearing_mm": 230,
+    "wall_partition_mm": 115
+  },
+  "mep": {
+    "electrical_points": 54,
+    "waste_pipes": [
+      {
+        "type": "soil",
+        "dia_mm": 110,
+        "slope": "1:60"
+      },
+      {
+        "type": "waste",
+        "dia_mm": 75,
+        "slope": "1:80"
+      }
+    ],
+    "pump_head_m": 12.5,
+    "electrical_water_separation_mm": 350,
+    "ac_units": [
+      {
+        "type": "split",
+        "tonnage": 1.5,
+        "room": "living"
+      },
+      {
+        "type": "split",
+        "tonnage": 2.0,
+        "room": "bedroom_master"
+      }
+    ]
+  },
+  "style": {
+    "primary_style": "indian_contemporary",
+    "secondary_style": "tropical_modernism",
+    "mix_pct": "70/30",
+    "taste_vector": [
+      0.12,
+      -0.03
+    ]
+  },
+  "boq": {
+    "cement_bags": 407,
+    "steel_kg": 4069,
+    "sand_tons": 92.1,
+    "aggregate_tons": 62.6,
+    "bricks_count": 13732,
+    "cost_breakdown": {
+      "foundation": 109293.0,
+      "structure": 1181435.0,
+      "masonry_plaster": 369498.0,
+      "finishing": 494359.0,
+      "mep": 265489.0,
+      "contingency": 242007.0
+    },
+    "total_cost_inr": 2662082.0,
+    "monthly_emi_inr": 18482.0
+  },
+  "swipe_history": [],
+  "climate": {
+    "latitude": 19.07,
+    "sun_path": {
+      "summer": [
+        {
+          "hour": 6.0,
+          "alt": 7.5,
+          "az": 67.7
+        },
+        {
+          "hour": 7.0,
+          "alt": 20.8,
+          "az": 71.4
+        },
+        {
+          "hour": 8.0,
+          "alt": 34.3,
+          "az": 74.1
+        },
+        {
+          "hour": 9.0,
+          "alt": 48.0,
+          "az": 75.8
+        },
+        {
+          "hour": 10.0,
+          "alt": 61.8,
+          "az": 75.8
+        },
+        {
+          "hour": 11.0,
+          "alt": 75.4,
+          "az": 70.0
+        },
+        {
+          "hour": 12.0,
+          "alt": 85.6,
+          "az": 0.0
+        },
+        {
+          "hour": 13.0,
+          "alt": 75.4,
+          "az": 290.0
+        },
+        {
+          "hour": 14.0,
+          "alt": 61.8,
+          "az": 284.2
+        },
+        {
+          "hour": 15.0,
+          "alt": 48.0,
+          "az": 284.2
+        },
+        {
+          "hour": 16.0,
+          "alt": 34.3,
+          "az": 285.9
+        },
+        {
+          "hour": 17.0,
+          "alt": 20.8,
+          "az": 288.6
+        },
+        {
+          "hour": 18.0,
+          "alt": 7.5,
+          "az": 292.3
+        }
+      ],
+      "equinox": [
+        {
+          "hour": 7.0,
+          "alt": 14.0,
+          "az": 95.4
+        },
+        {
+          "hour": 8.0,
+          "alt": 28.1,
+          "az": 101.1
+        },
+        {
+          "hour": 9.0,
+          "alt": 41.8,
+          "az": 108.6
+        },
+        {
+          "hour": 10.0,
+          "alt": 54.7,
+          "az": 120.1
+        },
+        {
+          "hour": 11.0,
+          "alt": 65.6,
+          "az": 141.2
+        },
+        {
+          "hour": 12.0,
+          "alt": 70.5,
+          "az": 180.0
+        },
+        {
+          "hour": 13.0,
+          "alt": 65.6,
+          "az": 218.8
+        },
+        {
+          "hour": 14.0,
+          "alt": 54.7,
+          "az": 239.9
+        },
+        {
+          "hour": 15.0,
+          "alt": 41.8,
+          "az": 251.4
+        },
+        {
+          "hour": 16.0,
+          "alt": 28.1,
+          "az": 258.9
+        },
+        {
+          "hour": 17.0,
+          "alt": 14.0,
+          "az": 264.6
+        }
+      ],
+      "winter": [
+        {
+          "hour": 7.0,
+          "alt": 5.4,
+          "az": 117.1
+        },
+        {
+          "hour": 8.0,
+          "alt": 17.7,
+          "az": 123.5
+        },
+        {
+          "hour": 9.0,
+          "alt": 28.9,
+          "az": 132.2
+        },
+        {
+          "hour": 10.0,
+          "alt": 38.4,
+          "az": 144.2
+        },
+        {
+          "hour": 11.0,
+          "alt": 45.0,
+          "az": 160.4
+        },
+        {
+          "hour": 12.0,
+          "alt": 47.5,
+          "az": 180.0
+        },
+        {
+          "hour": 13.0,
+          "alt": 45.0,
+          "az": 199.6
+        },
+        {
+          "hour": 14.0,
+          "alt": 38.4,
+          "az": 215.8
+        },
+        {
+          "hour": 15.0,
+          "alt": 28.9,
+          "az": 227.8
+        },
+        {
+          "hour": 16.0,
+          "alt": 17.7,
+          "az": 236.5
+        },
+        {
+          "hour": 17.0,
+          "alt": 5.4,
+          "az": 242.9
+        }
+      ]
+    },
+    "wall_insolation_may": {
+      "N": {
+        "kwh_m2": 2.12,
+        "peak_hour": 7.0,
+        "profile_deg": 56.3,
+        "source": "measured TMYx 2007-2021"
+      },
+      "E": {
+        "kwh_m2": 3.2,
+        "peak_hour": 8.0,
+        "profile_deg": 33.9,
+        "source": "measured TMYx 2007-2021"
+      },
+      "S": {
+        "kwh_m2": 1.57,
+        "peak_hour": 12.0,
+        "profile_deg": 89.7,
+        "source": "measured TMYx 2007-2021"
+      },
+      "W": {
+        "kwh_m2": 3.5,
+        "peak_hour": 16.0,
+        "profile_deg": 33.9,
+        "source": "measured TMYx 2007-2021"
+      }
+    },
+    "rooms": {
+      "kitchen": {
+        "floor": 0,
+        "outside_walls": [
+          "E",
+          "S"
+        ],
+        "solar_gain_kwh": 1.61,
+        "gain_per_m2": 0.153,
+        "rating": "warm",
+        "cross_ventilation": true,
+        "windward": true,
+        "overhang_m": {
+          "E": 1.2,
+          "S": 0.3
+        }
+      },
+      "living": {
+        "floor": 0,
+        "outside_walls": [
+          "E",
+          "N"
+        ],
+        "solar_gain_kwh": 3.26,
+        "gain_per_m2": 0.188,
+        "rating": "warm",
+        "cross_ventilation": true,
+        "windward": false,
+        "overhang_m": {
+          "E": 1.2
+        }
+      },
+      "stair_0": {
+        "floor": 0,
+        "outside_walls": [],
+        "solar_gain_kwh": 0.0,
+        "rating": "interior",
+        "cross_ventilation": false
+      },
+      "passage_0": {
+        "floor": 0,
+        "outside_walls": [],
+        "solar_gain_kwh": 0.0,
+        "rating": "interior",
+        "cross_ventilation": false
+      },
+      "toilet_common": {
+        "floor": 0,
+        "outside_walls": [
+          "N",
+          "W"
+        ],
+        "solar_gain_kwh": 0.59,
+        "gain_per_m2": 0.098,
+        "rating": "cool",
+        "cross_ventilation": true,
+        "windward": true,
+        "overhang_m": {
+          "W": 1.2
+        }
+      },
+      "bedroom_master": {
+        "floor": 1,
+        "outside_walls": [
+          "E",
+          "N",
+          "S"
+        ],
+        "solar_gain_kwh": 4.8,
+        "gain_per_m2": 0.172,
+        "rating": "warm",
+        "cross_ventilation": true,
+        "windward": true,
+        "overhang_m": {
+          "E": 1.2,
+          "S": 0.3
+        }
+      },
+      "stair_1": {
+        "floor": 1,
+        "outside_walls": [],
+        "solar_gain_kwh": 0.0,
+        "rating": "interior",
+        "cross_ventilation": false
+      },
+      "passage_1": {
+        "floor": 1,
+        "outside_walls": [],
+        "solar_gain_kwh": 0.0,
+        "rating": "interior",
+        "cross_ventilation": false
+      },
+      "toilet_1": {
+        "floor": 1,
+        "outside_walls": [
+          "W"
+        ],
+        "solar_gain_kwh": 0.78,
+        "gain_per_m2": 0.162,
+        "rating": "warm",
+        "cross_ventilation": false,
+        "windward": true,
+        "overhang_m": {
+          "W": 1.2
+        }
+      },
+      "toilet_master": {
+        "floor": 1,
+        "outside_walls": [
+          "N",
+          "W"
+        ],
+        "solar_gain_kwh": 0.57,
+        "gain_per_m2": 0.119,
+        "rating": "cool",
+        "cross_ventilation": true,
+        "windward": true,
+        "overhang_m": {
+          "W": 1.2
+        }
+      }
+    },
+    "prevailing_wind": "South-west (monsoon) and west/north-west sea breeze",
+    "method": "Solar geometry + clear-sky air-mass model; relative ratings, not temperatures."
+  },
+  "sound": {
+    "outside_db": 60,
+    "rooms": {
+      "kitchen": {
+        "floor": 0,
+        "outside_db": 60,
+        "indoor_db": 20,
+        "target_db": 50,
+        "glazing": "single",
+        "rt60_s": 1.47,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "living": {
+        "floor": 0,
+        "outside_db": 60,
+        "indoor_db": 21,
+        "target_db": 40,
+        "glazing": "single",
+        "rt60_s": 0.61,
+        "target_rt60_s": 0.7,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "stair_0": {
+        "floor": 0,
+        "outside_db": 54,
+        "indoor_db": 4,
+        "target_db": null,
+        "glazing": "single",
+        "rt60_s": 0.97,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "passage_0": {
+        "floor": 0,
+        "outside_db": 54,
+        "indoor_db": 4,
+        "target_db": null,
+        "glazing": "single",
+        "rt60_s": 1.12,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "toilet_common": {
+        "floor": 0,
+        "outside_db": 54,
+        "indoor_db": 10,
+        "target_db": null,
+        "glazing": "single",
+        "rt60_s": 0.95,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "bedroom_master": {
+        "floor": 1,
+        "outside_db": 58,
+        "indoor_db": 19,
+        "target_db": 35,
+        "glazing": "single",
+        "rt60_s": 1.2,
+        "target_rt60_s": 0.6,
+        "echo_risk": true,
+        "noisy_neighbours": [
+          [
+            "stair_1",
+            1.9
+          ],
+          [
+            "toilet_1",
+            1.5
+          ],
+          [
+            "toilet_master",
+            1.5
+          ]
+        ],
+        "partition_stc": 43
+      },
+      "stair_1": {
+        "floor": 1,
+        "outside_db": 52,
+        "indoor_db": 2,
+        "target_db": null,
+        "glazing": "single",
+        "rt60_s": 0.97,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "passage_1": {
+        "floor": 1,
+        "outside_db": 52,
+        "indoor_db": 2,
+        "target_db": null,
+        "glazing": "single",
+        "rt60_s": 0.63,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "toilet_1": {
+        "floor": 1,
+        "outside_db": 52,
+        "indoor_db": 13,
+        "target_db": null,
+        "glazing": "single",
+        "rt60_s": 0.79,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      },
+      "toilet_master": {
+        "floor": 1,
+        "outside_db": 52,
+        "indoor_db": 9,
+        "target_db": null,
+        "glazing": "single",
+        "rt60_s": 0.79,
+        "target_rt60_s": null,
+        "echo_risk": false,
+        "noisy_neighbours": [],
+        "partition_stc": 43
+      }
+    },
+    "method": "Composite STC (230 mm brick Rw 50, single glazing 29, DGU 34, laminated DGU 39 per NBC 2016 Part 8) and Sabine RT60; unverified."
+  },
+  "paint": {
+    "kitchen": {
+      "floor": 0,
+      "walls": [
+        {
+          "side": "front",
+          "faces": "E",
+          "length_m": 2.32,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "rear",
+          "faces": "W",
+          "length_m": 2.32,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "left",
+          "faces": "S",
+          "length_m": 4.54,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "right",
+          "faces": "N",
+          "length_m": 4.54,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        }
+      ],
+      "ceiling": {
+        "hex": "#F7F6F2",
+        "lrv": 92
+      },
+      "harmony": "analogous (calm)",
+      "dim": true,
+      "why": "Dim room: walls kept above LRV 70 to bounce daylight. The rear wall faces the window and stays light to reflect it."
+    },
+    "living": {
+      "floor": 0,
+      "walls": [
+        {
+          "side": "front",
+          "faces": "E",
+          "length_m": 3.82,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        },
+        {
+          "side": "rear",
+          "faces": "W",
+          "length_m": 3.82,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        },
+        {
+          "side": "left",
+          "faces": "S",
+          "length_m": 4.54,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        },
+        {
+          "side": "right",
+          "faces": "N",
+          "length_m": 4.54,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        }
+      ],
+      "ceiling": {
+        "hex": "#F7F6F2",
+        "lrv": 92
+      },
+      "harmony": "analogous (calm)",
+      "dim": true,
+      "why": "Dim room: walls kept above LRV 70 to bounce daylight. The rear wall faces the window and stays light to reflect it."
+    },
+    "toilet_common": {
+      "floor": 0,
+      "walls": [
+        {
+          "side": "front",
+          "faces": "E",
+          "length_m": 1.91,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "rear",
+          "faces": "W",
+          "length_m": 1.91,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "left",
+          "faces": "S",
+          "length_m": 3.15,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "right",
+          "faces": "N",
+          "length_m": 3.15,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        }
+      ],
+      "ceiling": {
+        "hex": "#F7F6F2",
+        "lrv": 92
+      },
+      "harmony": "analogous (calm)",
+      "dim": true,
+      "why": "Dim room: walls kept above LRV 70 to bounce daylight. The front wall faces the window and stays light to reflect it."
+    },
+    "bedroom_master": {
+      "floor": 1,
+      "walls": [
+        {
+          "side": "front",
+          "faces": "E",
+          "length_m": 6.14,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        },
+        {
+          "side": "rear",
+          "faces": "W",
+          "length_m": 6.14,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        },
+        {
+          "side": "left",
+          "faces": "S",
+          "length_m": 4.54,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        },
+        {
+          "side": "right",
+          "faces": "N",
+          "length_m": 4.54,
+          "role": "main",
+          "hex": "#F2EDE4",
+          "lrv": 85,
+          "lab": [
+            93.9,
+            0.1,
+            4.9
+          ]
+        }
+      ],
+      "ceiling": {
+        "hex": "#F7F6F2",
+        "lrv": 92
+      },
+      "harmony": "analogous (calm)",
+      "dim": true,
+      "why": "Dim room: walls kept above LRV 70 to bounce daylight. The rear wall faces the window and stays light to reflect it."
+    },
+    "toilet_1": {
+      "floor": 1,
+      "walls": [
+        {
+          "side": "front",
+          "faces": "E",
+          "length_m": 1.53,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "rear",
+          "faces": "W",
+          "length_m": 1.53,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "left",
+          "faces": "S",
+          "length_m": 3.15,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "right",
+          "faces": "N",
+          "length_m": 3.15,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        }
+      ],
+      "ceiling": {
+        "hex": "#F7F6F2",
+        "lrv": 92
+      },
+      "harmony": "analogous (calm)",
+      "dim": true,
+      "why": "Dim room: walls kept above LRV 70 to bounce daylight. The front wall faces the window and stays light to reflect it."
+    },
+    "toilet_master": {
+      "floor": 1,
+      "walls": [
+        {
+          "side": "front",
+          "faces": "E",
+          "length_m": 1.53,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "rear",
+          "faces": "W",
+          "length_m": 1.53,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "left",
+          "faces": "S",
+          "length_m": 3.15,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        },
+        {
+          "side": "right",
+          "faces": "N",
+          "length_m": 3.15,
+          "role": "main",
+          "hex": "#F4F6F6",
+          "lrv": 92,
+          "lab": [
+            96.7,
+            -0.7,
+            -0.2
+          ]
+        }
+      ],
+      "ceiling": {
+        "hex": "#F7F6F2",
+        "lrv": 92
+      },
+      "harmony": "analogous (calm)",
+      "dim": true,
+      "why": "Dim room: walls kept above LRV 70 to bounce daylight. The front wall faces the window and stays light to reflect it."
+    }
+  },
+  "materials": {
+    "rooms": {
+      "kitchen": {
+        "floor": 0,
+        "chosen": {
+          "id": "anti_skid_ceramic",
+          "name": "Anti-skid ceramic tiles",
+          "score": 14.9,
+          "cost_sqft": [
+            50,
+            90
+          ],
+          "benefits": "Cheap, grippy when wet",
+          "risks": "Chips if heavy things drop",
+          "maintenance": "Mop"
+        },
+        "alternatives": [
+          {
+            "id": "anti_skid_vitrified",
+            "name": "Matt anti-skid vitrified tiles",
+            "score": 14.4,
+            "cost_sqft": [
+              80,
+              140
+            ],
+            "benefits": "Grippy for elders and wet feet",
+            "risks": "Matt surface shows dirt sooner",
+            "maintenance": "Mop"
+          },
+          {
+            "id": "granite",
+            "name": "Granite",
+            "score": 13.4,
+            "cost_sqft": [
+              180,
+              300
+            ],
+            "benefits": "Heat and scratch proof, 25-year life",
+            "risks": "Heavy, cold, echoes",
+            "maintenance": "Wipe only"
+          }
+        ]
+      },
+      "living": {
+        "floor": 0,
+        "chosen": {
+          "id": "kota_stone",
+          "name": "Kota stone",
+          "score": 7.4,
+          "cost_sqft": [
+            70,
+            110
+          ],
+          "benefits": "Cheap, very durable, cool",
+          "risks": "Dull look; oil stains",
+          "maintenance": "Polish occasionally"
+        },
+        "alternatives": [
+          {
+            "id": "granite",
+            "name": "Granite",
+            "score": 5.4,
+            "cost_sqft": [
+              180,
+              300
+            ],
+            "benefits": "Heat and scratch proof, 25-year life",
+            "risks": "Heavy, cold, echoes",
+            "maintenance": "Wipe only"
+          },
+          {
+            "id": "epoxy_flooring",
+            "name": "Epoxy flooring",
+            "score": 5.4,
+            "cost_sqft": [
+              120,
+              200
+            ],
+            "benefits": "Pet-proof, easy to clean, seamless",
+            "risks": "Yellows in direct sun; glossy finish is slippery",
+            "maintenance": "Mop only"
+          }
+        ]
+      },
+      "passage_0": {
+        "floor": 0,
+        "chosen": {
+          "id": "kota_stone",
+          "name": "Kota stone",
+          "score": 7.4,
+          "cost_sqft": [
+            70,
+            110
+          ],
+          "benefits": "Cheap, very durable, cool",
+          "risks": "Dull look; oil stains",
+          "maintenance": "Polish occasionally"
+        },
+        "alternatives": [
+          {
+            "id": "epoxy_flooring",
+            "name": "Epoxy flooring",
+            "score": 5.4,
+            "cost_sqft": [
+              120,
+              200
+            ],
+            "benefits": "Pet-proof, easy to clean, seamless",
+            "risks": "Yellows in direct sun; glossy finish is slippery",
+            "maintenance": "Mop only"
+          },
+          {
+            "id": "anti_skid_vitrified",
+            "name": "Matt anti-skid vitrified tiles",
+            "score": 5.4,
+            "cost_sqft": [
+              80,
+              140
+            ],
+            "benefits": "Grippy for elders and wet feet",
+            "risks": "Matt surface shows dirt sooner",
+            "maintenance": "Mop"
+          }
+        ]
+      },
+      "toilet_common": {
+        "floor": 0,
+        "chosen": {
+          "id": "anti_skid_vitrified",
+          "name": "Matt anti-skid vitrified tiles",
+          "score": 11.4,
+          "cost_sqft": [
+            80,
+            140
+          ],
+          "benefits": "Grippy for elders and wet feet",
+          "risks": "Matt surface shows dirt sooner",
+          "maintenance": "Mop"
+        },
+        "alternatives": [
+          {
+            "id": "anti_skid_ceramic",
+            "name": "Anti-skid ceramic tiles",
+            "score": 10.9,
+            "cost_sqft": [
+              50,
+              90
+            ],
+            "benefits": "Cheap, grippy when wet",
+            "risks": "Chips if heavy things drop",
+            "maintenance": "Mop"
+          },
+          {
+            "id": "kota_stone",
+            "name": "Kota stone",
+            "score": 8.4,
+            "cost_sqft": [
+              70,
+              110
+            ],
+            "benefits": "Cheap, very durable, cool",
+            "risks": "Dull look; oil stains",
+            "maintenance": "Polish occasionally"
+          }
+        ]
+      },
+      "bedroom_master": {
+        "floor": 1,
+        "chosen": {
+          "id": "wood_look_tiles",
+          "name": "Wood-look vitrified tiles",
+          "score": 6.1,
+          "cost_sqft": [
+            90,
+            180
+          ],
+          "benefits": "Wood look without warping or pet scratches",
+          "risks": "Cold underfoot; looks less natural",
+          "maintenance": "Mop"
+        },
+        "alternatives": [
+          {
+            "id": "vitrified_tiles",
+            "name": "Vitrified tiles",
+            "score": 5.6,
+            "cost_sqft": [
+              60,
+              120
+            ],
+            "benefits": "Cheap, easy to clean, kid-proof",
+            "risks": "Cold; grout lines collect dirt",
+            "maintenance": "Mop"
+          },
+          {
+            "id": "kota_stone",
+            "name": "Kota stone",
+            "score": 4.4,
+            "cost_sqft": [
+              70,
+              110
+            ],
+            "benefits": "Cheap, very durable, cool",
+            "risks": "Dull look; oil stains",
+            "maintenance": "Polish occasionally"
+          }
+        ]
+      },
+      "passage_1": {
+        "floor": 1,
+        "chosen": {
+          "id": "kota_stone",
+          "name": "Kota stone",
+          "score": 7.4,
+          "cost_sqft": [
+            70,
+            110
+          ],
+          "benefits": "Cheap, very durable, cool",
+          "risks": "Dull look; oil stains",
+          "maintenance": "Polish occasionally"
+        },
+        "alternatives": [
+          {
+            "id": "epoxy_flooring",
+            "name": "Epoxy flooring",
+            "score": 5.4,
+            "cost_sqft": [
+              120,
+              200
+            ],
+            "benefits": "Pet-proof, easy to clean, seamless",
+            "risks": "Yellows in direct sun; glossy finish is slippery",
+            "maintenance": "Mop only"
+          },
+          {
+            "id": "anti_skid_vitrified",
+            "name": "Matt anti-skid vitrified tiles",
+            "score": 5.4,
+            "cost_sqft": [
+              80,
+              140
+            ],
+            "benefits": "Grippy for elders and wet feet",
+            "risks": "Matt surface shows dirt sooner",
+            "maintenance": "Mop"
+          }
+        ]
+      },
+      "toilet_1": {
+        "floor": 1,
+        "chosen": {
+          "id": "anti_skid_vitrified",
+          "name": "Matt anti-skid vitrified tiles",
+          "score": 11.4,
+          "cost_sqft": [
+            80,
+            140
+          ],
+          "benefits": "Grippy for elders and wet feet",
+          "risks": "Matt surface shows dirt sooner",
+          "maintenance": "Mop"
+        },
+        "alternatives": [
+          {
+            "id": "anti_skid_ceramic",
+            "name": "Anti-skid ceramic tiles",
+            "score": 10.9,
+            "cost_sqft": [
+              50,
+              90
+            ],
+            "benefits": "Cheap, grippy when wet",
+            "risks": "Chips if heavy things drop",
+            "maintenance": "Mop"
+          },
+          {
+            "id": "kota_stone",
+            "name": "Kota stone",
+            "score": 8.4,
+            "cost_sqft": [
+              70,
+              110
+            ],
+            "benefits": "Cheap, very durable, cool",
+            "risks": "Dull look; oil stains",
+            "maintenance": "Polish occasionally"
+          }
+        ]
+      },
+      "toilet_master": {
+        "floor": 1,
+        "chosen": {
+          "id": "anti_skid_vitrified",
+          "name": "Matt anti-skid vitrified tiles",
+          "score": 11.4,
+          "cost_sqft": [
+            80,
+            140
+          ],
+          "benefits": "Grippy for elders and wet feet",
+          "risks": "Matt surface shows dirt sooner",
+          "maintenance": "Mop"
+        },
+        "alternatives": [
+          {
+            "id": "anti_skid_ceramic",
+            "name": "Anti-skid ceramic tiles",
+            "score": 10.9,
+            "cost_sqft": [
+              50,
+              90
+            ],
+            "benefits": "Cheap, grippy when wet",
+            "risks": "Chips if heavy things drop",
+            "maintenance": "Mop"
+          },
+          {
+            "id": "kota_stone",
+            "name": "Kota stone",
+            "score": 8.4,
+            "cost_sqft": [
+              70,
+              110
+            ],
+            "benefits": "Cheap, very durable, cool",
+            "risks": "Dull look; oil stains",
+            "maintenance": "Polish occasionally"
+          }
+        ]
+      }
+    },
+    "warnings": [],
+    "walls": [
+      {
+        "id": "red_clay_brick",
+        "name": "Red clay brick",
+        "cost_note": "₹10-14 per brick",
+        "benefits": "Proven, good thermal mass",
+        "risks": "Heavy"
+      },
+      {
+        "id": "fly_ash_brick",
+        "name": "Fly ash brick",
+        "cost_note": "₹8-12 per brick",
+        "benefits": "Lighter, cheaper, eco",
+        "risks": "Less strength than red brick"
+      },
+      {
+        "id": "aac_block",
+        "name": "AAC block",
+        "cost_note": "₹45-70 per block",
+        "benefits": "Light, fast to lay, insulating",
+        "risks": "Brittle; needs proper plaster"
+      },
+      {
+        "id": "laterite",
+        "name": "Laterite stone",
+        "cost_note": "₹80-130 per sqft",
+        "benefits": "Breathable, local to Konkan",
+        "risks": "Needs plaster or sealer for monsoon"
+      }
+    ],
+    "finishes": [
+      {
+        "id": "putty_primer",
+        "name": "Putty + primer",
+        "cost": [
+          15,
+          25
+        ],
+        "benefits": "Smooth base for paint",
+        "risks": "Peels if the wall is damp"
+      },
+      {
+        "id": "emulsion",
+        "name": "Washable emulsion",
+        "cost": [
+          25,
+          45
+        ],
+        "benefits": "Washable, wide colour range",
+        "risks": "Peels in persistent humidity"
+      },
+      {
+        "id": "plywood_bwp",
+        "name": "BWP plywood (kitchen carcass)",
+        "cost": [
+          90,
+          140
+        ],
+        "benefits": "Waterproof, strong",
+        "risks": "Costly"
+      },
+      {
+        "id": "mdf",
+        "name": "MDF",
+        "cost": [
+          60,
+          100
+        ],
+        "benefits": "Smooth, cheap",
+        "risks": "Swells with water: keep out of kitchens and baths"
+      },
+      {
+        "id": "laminate",
+        "name": "Decorative laminate",
+        "cost": [
+          80,
+          150
+        ],
+        "benefits": "Cheap wood look",
+        "risks": "Edges peel in humidity"
+      },
+      {
+        "id": "glass",
+        "name": "Glass",
+        "cost": [
+          300,
+          600
+        ],
+        "benefits": "Light, modern",
+        "risks": "Heat gain and privacy"
+      },
+      {
+        "id": "steel",
+        "name": "Steel (grills, structure)",
+        "cost_note": "₹70/kg",
+        "benefits": "Strong",
+        "risks": "Rusts in coastal air: galvanise or powder-coat"
+      },
+      {
+        "id": "upvc_pipes",
+        "name": "PVC pipes (cold water, drainage)",
+        "cost_note": "₹40-80/m",
+        "benefits": "Cheap, no rust",
+        "risks": "Heat sensitive"
+      },
+      {
+        "id": "cpvc_pipes",
+        "name": "CPVC pipes (hot water)",
+        "cost_note": "₹80-140/m",
+        "benefits": "Heat-proof",
+        "risks": "Costly"
+      },
+      {
+        "id": "brass_fittings",
+        "name": "Brass fittings",
+        "cost_note": "varies",
+        "benefits": "Durable, premium",
+        "risks": "Costly; tarnishes"
+      }
+    ]
+  },
+  "furniture": {
+    "rooms": {
+      "kitchen": {
+        "door_wall": "rear",
+        "items": [
+          {
+            "item": "sink",
+            "x": 0.0,
+            "y": 6.46,
+            "w": 1.97,
+            "d": 1.97
+          },
+          {
+            "item": "stove",
+            "x": 5.65,
+            "y": 6.46,
+            "w": 1.97,
+            "d": 1.97
+          },
+          {
+            "item": "fridge",
+            "x": 5.32,
+            "y": 0.0,
+            "w": 2.3,
+            "d": 2.3
+          }
+        ],
+        "did_not_fit": [],
+        "triangle_ft": 20.3,
+        "floor": 0
+      },
+      "living": {
+        "door_wall": "rear",
+        "door_zone": [
+          7.72,
+          10.63,
+          3.58,
+          4.27
+        ],
+        "items": [
+          {
+            "item": "sofa",
+            "x": 7.62,
+            "y": 0.0,
+            "w": 2.95,
+            "d": 6.89,
+            "wall": "left"
+          },
+          {
+            "item": "tv unit",
+            "x": 18.85,
+            "y": 0.0,
+            "w": 1.31,
+            "d": 5.91,
+            "wall": "right"
+          },
+          {
+            "item": "armchair",
+            "x": 7.62,
+            "y": 6.89,
+            "w": 2.62,
+            "d": 2.62,
+            "wall": "left"
+          }
+        ],
+        "did_not_fit": [],
+        "floor": 0
+      },
+      "toilet_common": {
+        "door_wall": "left",
+        "door_zone": [
+          13.91,
+          15.0,
+          3.44,
+          2.76
+        ],
+        "items": [
+          {
+            "item": "wc",
+            "x": 17.86,
+            "y": 14.9,
+            "w": 2.3,
+            "d": 1.48,
+            "wall": "right"
+          },
+          {
+            "item": "basin",
+            "x": 13.91,
+            "y": 23.92,
+            "w": 1.64,
+            "d": 1.31,
+            "wall": "rear"
+          },
+          {
+            "item": "shower",
+            "x": 17.21,
+            "y": 17.85,
+            "w": 2.95,
+            "d": 2.95,
+            "wall": "right"
+          }
+        ],
+        "did_not_fit": [],
+        "floor": 0
+      },
+      "bedroom_master": {
+        "door_wall": "rear",
+        "door_zone": [
+          0.1,
+          10.96,
+          3.25,
+          3.94
+        ],
+        "items": [
+          {
+            "item": "bed",
+            "x": 0.0,
+            "y": 4.43,
+            "w": 6.56,
+            "d": 5.91,
+            "wall": "left"
+          },
+          {
+            "item": "wardrobe",
+            "x": 18.19,
+            "y": 0.0,
+            "w": 1.97,
+            "d": 5.91,
+            "wall": "right"
+          },
+          {
+            "item": "side table",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 1.31,
+            "d": 1.48,
+            "wall": "left"
+          },
+          {
+            "item": "desk",
+            "x": 1.48,
+            "y": 0.0,
+            "w": 3.28,
+            "d": 1.64,
+            "wall": "front"
+          }
+        ],
+        "did_not_fit": [],
+        "floor": 1
+      },
+      "toilet_1": {
+        "door_wall": "left",
+        "door_zone": [
+          10.13,
+          15.0,
+          3.44,
+          2.76
+        ],
+        "items": [
+          {
+            "item": "wc",
+            "x": 12.84,
+            "y": 17.85,
+            "w": 2.3,
+            "d": 1.48,
+            "wall": "right"
+          },
+          {
+            "item": "basin",
+            "x": 10.13,
+            "y": 23.92,
+            "w": 1.64,
+            "d": 1.31,
+            "wall": "rear"
+          },
+          {
+            "item": "shower",
+            "x": 12.19,
+            "y": 19.33,
+            "w": 2.95,
+            "d": 2.95,
+            "wall": "right"
+          }
+        ],
+        "did_not_fit": [],
+        "floor": 1
+      },
+      "toilet_master": {
+        "door_wall": "front",
+        "door_zone": [
+          15.25,
+          14.9,
+          2.76,
+          3.44
+        ],
+        "items": [
+          {
+            "item": "wc",
+            "x": 15.15,
+            "y": 18.34,
+            "w": 2.3,
+            "d": 1.48,
+            "wall": "left"
+          },
+          {
+            "item": "basin",
+            "x": 15.15,
+            "y": 23.92,
+            "w": 1.64,
+            "d": 1.31,
+            "wall": "rear"
+          },
+          {
+            "item": "shower",
+            "x": 17.21,
+            "y": 19.82,
+            "w": 2.95,
+            "d": 2.95,
+            "wall": "right"
+          }
+        ],
+        "did_not_fit": [],
+        "floor": 1
+      }
+    },
+    "kitchen_triangle_ft": 20.3,
+    "method": "Greedy wall placement with door swing + 0.6 m clearances; standard Indian furniture sizes."
+  },
+  "mep_routes": {
+    "stacks": [
+      [
+        3.81,
+        7.45
+      ],
+      [
+        17.04,
+        20.07
+      ]
+    ],
+    "overhead_tank": [
+      3.12,
+      20.07
+    ],
+    "distribution_board": [
+      8.62,
+      1.0
+    ],
+    "floors": {
+      "0": {
+        "drains": [
+          {
+            "room": "kitchen",
+            "kind": "waste",
+            "dia_mm": 75,
+            "slope": "1:80",
+            "path": [
+              [
+                3.81,
+                7.45
+              ],
+              [
+                3.81,
+                7.45
+              ],
+              [
+                3.81,
+                7.45
+              ]
+            ]
+          },
+          {
+            "room": "toilet_common",
+            "kind": "soil",
+            "dia_mm": 110,
+            "slope": "1:60",
+            "path": [
+              [
+                17.04,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ]
+            ]
+          }
+        ],
+        "water": [
+          {
+            "room": "kitchen",
+            "dia_mm": 20,
+            "path": [
+              [
+                3.12,
+                20.07
+              ],
+              [
+                3.81,
+                20.07
+              ],
+              [
+                3.81,
+                7.45
+              ]
+            ]
+          },
+          {
+            "room": "toilet_common",
+            "dia_mm": 20,
+            "path": [
+              [
+                3.12,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ]
+            ]
+          }
+        ],
+        "conduits": [
+          {
+            "room": "kitchen",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                3.81,
+                1.0
+              ],
+              [
+                3.81,
+                7.45
+              ]
+            ]
+          },
+          {
+            "room": "living",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                13.89,
+                1.0
+              ],
+              [
+                13.89,
+                7.45
+              ]
+            ]
+          },
+          {
+            "room": "stair_0",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                3.12,
+                1.0
+              ],
+              [
+                3.12,
+                20.07
+              ]
+            ]
+          },
+          {
+            "room": "passage_0",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                10.07,
+                1.0
+              ],
+              [
+                10.07,
+                20.07
+              ]
+            ]
+          },
+          {
+            "room": "toilet_common",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                17.04,
+                1.0
+              ],
+              [
+                17.04,
+                20.07
+              ]
+            ]
+          }
+        ]
+      },
+      "1": {
+        "drains": [
+          {
+            "room": "toilet_1",
+            "kind": "soil",
+            "dia_mm": 110,
+            "slope": "1:60",
+            "path": [
+              [
+                12.64,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ]
+            ]
+          },
+          {
+            "room": "toilet_master",
+            "kind": "soil",
+            "dia_mm": 110,
+            "slope": "1:60",
+            "path": [
+              [
+                17.66,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ],
+              [
+                17.04,
+                20.07
+              ]
+            ]
+          }
+        ],
+        "water": [
+          {
+            "room": "toilet_1",
+            "dia_mm": 20,
+            "path": [
+              [
+                3.12,
+                20.07
+              ],
+              [
+                12.64,
+                20.07
+              ],
+              [
+                12.64,
+                20.07
+              ]
+            ]
+          },
+          {
+            "room": "toilet_master",
+            "dia_mm": 20,
+            "path": [
+              [
+                3.12,
+                20.07
+              ],
+              [
+                17.66,
+                20.07
+              ],
+              [
+                17.66,
+                20.07
+              ]
+            ]
+          }
+        ],
+        "conduits": [
+          {
+            "room": "bedroom_master",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                10.08,
+                1.0
+              ],
+              [
+                10.08,
+                7.45
+              ]
+            ]
+          },
+          {
+            "room": "stair_1",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                3.12,
+                1.0
+              ],
+              [
+                3.12,
+                20.07
+              ]
+            ]
+          },
+          {
+            "room": "passage_1",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                8.18,
+                1.0
+              ],
+              [
+                8.18,
+                20.07
+              ]
+            ]
+          },
+          {
+            "room": "toilet_1",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                12.64,
+                1.0
+              ],
+              [
+                12.64,
+                20.07
+              ]
+            ]
+          },
+          {
+            "room": "toilet_master",
+            "path": [
+              [
+                8.62,
+                1.0
+              ],
+              [
+                17.66,
+                1.0
+              ],
+              [
+                17.66,
+                20.07
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "connected_load_kw": 9.4,
+    "main_water_mm": 25,
+    "branch_water_mm": 20,
+    "method": "Wet stacks at clustered wet rooms; L-shaped runs; diagrammatic, not shop drawings."
+  },
+  "land": {
+    "risks": [
+      {
+        "level": "medium",
+        "title": "Soil",
+        "detail": "Expansive or reclaimed soil: get a soil investigation (boreholes) before finalising the foundation."
+      }
+    ],
+    "checklist": [
+      "Property Card (PR Card) / CTS extract from Superintendent of Land Records (dated within 3 months)",
+      "DP Remark (Development Plan 2034 zoning certificate from MCGM Chief Engineer DP)",
+      "City Survey demarcation map / CTSO boundary demarcation certificate",
+      "Advocate 30-year Search Report and Clear Title Certificate",
+      "AutoDCR / BPAMS digital architectural submission by an MCGM-registered Licensed Surveyor / Architect (CoA registered)",
+      "Structural Stability Certificate and design drawings by an MCGM-registered Structural Engineer",
+      "Geotechnical Soil Investigation Report from an accredited materials testing laboratory",
+      "Drainage and Water Supply remarks from MCGM Hydraulic Engineer and Sewerage Department",
+      "Tree Authority NOC (or Tree Officer tree preservation/transplantation undertaking)",
+      "CFO (Chief Fire Officer) Self-Declaration / NOC for residential building <= 15m height",
+      "Receipt of Scrutiny Fees, Development Charges, and Labour Cess payments",
+      "Intimation of Disapproval (IOD) issuance and compliance with 40+ standard pre-construction conditions",
+      "Commencement Certificate (CC) issued by MCGM Executive Engineer (BP) prior to any ground excavation"
+    ],
+    "open_questions": [
+      "Can small plots (< 100 sqm) in congested gaothans or suburban layouts utilize zero-setback dead walls on the rear or side without a formal concession under DCPR 2034 Reg 6(b)?",
+      "Does MCGM currently permit Fungible Compensatory Area (FCA) of 35% on residential independent houses on payment of premium, and is it viable on narrow access roads (< 9m)?",
+      "What is the exact boundary line setback requirement when a plot abuts a DP-designated proposed road widening reservation (Road Line under MMC Act Section 297)?",
+      "Does the local ward require a rainwater harvesting completion certificate as a mandatory precondition for water connection on plots <= 250 sqm?"
+    ],
+    "verified": false,
+    "not_covered": "Title search, land price, encumbrances and society NOCs need a property lawyer."
+  },
+  "suggestions": [
+    {
+      "kind": "sound",
+      "title": "Soften echo",
+      "detail": "bedroom master will sound echoey with hard floors: add rugs, curtains or an acoustic ceiling panel.",
+      "auto_applied": false
+    },
+    {
+      "kind": "sound",
+      "title": "Bedroom privacy",
+      "detail": "bedroom master shares a wall with stair 1: line that wall with the wardrobe, or build it 230 mm instead of 115 mm.",
+      "auto_applied": false
+    }
+  ],
+  "metadata": {
+    "brief": {
+      "build_type": "new_plot",
+      "city": "mumbai",
+      "plot_width_ft": 30.0,
+      "plot_depth_ft": 40.0,
+      "road_width_m": 9.0,
+      "facing": "E",
+      "corner_plot": false,
+      "soil": "black_cotton",
+      "floors_wanted": 2,
+      "parking": "two_wheeler",
+      "cars": 0,
+      "two_wheelers": 2,
+      "flood_prone": false,
+      "future_extra_floor": false,
+      "lift": "none",
+      "low_maintenance": false,
+      "budget_inr": 4000000.0,
+      "tier": "standard",
+      "adults": 2,
+      "elders": 0,
+      "elder_mobility_issue": false,
+      "couples": 1,
+      "singles": 0,
+      "elder_couples": 0,
+      "elder_singles": 0,
+      "bedrooms": null,
+      "kids": 0,
+      "pets": false,
+      "wfh_people": 0,
+      "joint_family": false,
+      "rental_floor": false,
+      "puja": "nook",
+      "kitchen": "closed",
+      "guest_room": false,
+      "help_room": false,
+      "laundry": false,
+      "store_room": false,
+      "master_dressing": false,
+      "terrace_garden": true,
+      "traditions": {
+        "vaastu": "soft"
+      },
+      "styles": [],
+      "styles_locked": false,
+      "free_text": ""
+    },
+    "options": [
+      {
+        "id": "cc585e6",
+        "pass": true,
+        "judge": {
+          "pass": true,
+          "failures": [],
+          "warnings": []
+        },
+        "veto": false,
+        "traditions": {
+          "vaastu": {
+            "mode": "soft",
+            "score": 0.82
+          }
+        },
+        "score": {
+          "total": 10.637,
+          "brief_fit": {
+            "floors": 1.0,
+            "parking": 1.0,
+            "bedrooms": 1.0,
+            "study": 1.0,
+            "puja": 0.0,
+            "guest": 1.0,
+            "help": 1.0,
+            "elder_ground": 1.0
+          },
+          "features": {
+            "living_share": 0.184,
+            "bedroom_size": 1.395,
+            "outside_wall_share": 1.0,
+            "open_plan": 1.0,
+            "kitchen_front": 1.0,
+            "bedrooms_front": 1.0,
+            "stair_left": 1.0,
+            "proportion": 0.53,
+            "terrace_share": 0.0,
+            "storeys": 0.667
+          },
+          "learned": 0.0,
+          "tradition": 0.821,
+          "realism": 0.655
+        },
+        "summary": {
+          "floors": 2,
+          "parking": "two_wheeler",
+          "stilt": false,
+          "arrangement": "tradition_vaastu",
+          "built_up_sqft": 1017.4,
+          "fsi_used": 0.85,
+          "bedrooms": 1,
+          "cost_inr": {
+            "low": 2071408,
+            "expected": 2662082,
+            "high": 3388776
+          },
+          "dropped": [
+            "balcony_1",
+            "dining",
+            "entrance",
+            "lounge_1",
+            "puja"
+          ],
+          "envelope_ft": [
+            20.16,
+            25.24
+          ]
+        },
+        "preview": [
+          {
+            "f": 0,
+            "id": "kitchen",
+            "t": "kitchen",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 7.6,
+            "d": 14.9
+          },
+          {
+            "f": 0,
+            "id": "living",
+            "t": "living",
+            "x": 7.6,
+            "y": 0.0,
+            "w": 12.5,
+            "d": 14.9
+          },
+          {
+            "f": 0,
+            "id": "stair_0",
+            "t": "stair",
+            "x": 0.0,
+            "y": 14.9,
+            "w": 6.2,
+            "d": 10.3
+          },
+          {
+            "f": 0,
+            "id": "passage_0",
+            "t": "passage",
+            "x": 6.2,
+            "y": 14.9,
+            "w": 7.7,
+            "d": 10.3
+          },
+          {
+            "f": 0,
+            "id": "toilet_common",
+            "t": "toilet",
+            "x": 13.9,
+            "y": 14.9,
+            "w": 6.2,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "bedroom_master",
+            "t": "bedroom_master",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 20.2,
+            "d": 14.9
+          },
+          {
+            "f": 1,
+            "id": "stair_1",
+            "t": "stair",
+            "x": 0.0,
+            "y": 14.9,
+            "w": 6.2,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "passage_1",
+            "t": "passage",
+            "x": 6.2,
+            "y": 14.9,
+            "w": 3.9,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "toilet_1",
+            "t": "toilet",
+            "x": 10.1,
+            "y": 14.9,
+            "w": 5.0,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "toilet_master",
+            "t": "toilet",
+            "x": 15.1,
+            "y": 14.9,
+            "w": 5.0,
+            "d": 10.3
+          }
+        ]
+      },
+      {
+        "id": "caae846",
+        "pass": true,
+        "judge": {
+          "pass": true,
+          "failures": [],
+          "warnings": []
+        },
+        "veto": false,
+        "traditions": {
+          "vaastu": {
+            "mode": "soft",
+            "score": 0.77
+          }
+        },
+        "score": {
+          "total": 10.14,
+          "brief_fit": {
+            "floors": 1.0,
+            "parking": 1.0,
+            "bedrooms": 1.0,
+            "study": 1.0,
+            "puja": 0.0,
+            "guest": 1.0,
+            "help": 1.0,
+            "elder_ground": 1.0
+          },
+          "features": {
+            "living_share": 0.377,
+            "bedroom_size": 1.276,
+            "outside_wall_share": 1.0,
+            "open_plan": 0.0,
+            "kitchen_front": 1.0,
+            "bedrooms_front": 1.0,
+            "stair_left": 0.0,
+            "proportion": 0.57,
+            "terrace_share": 0.0,
+            "storeys": 0.667
+          },
+          "learned": 0.0,
+          "tradition": 0.768,
+          "realism": 0.517
+        },
+        "summary": {
+          "floors": 2,
+          "parking": "two_wheeler",
+          "stilt": false,
+          "arrangement": "learned_2",
+          "built_up_sqft": 1017.4,
+          "fsi_used": 0.85,
+          "bedrooms": 1,
+          "cost_inr": {
+            "low": 2072094,
+            "expected": 2662980,
+            "high": 3389937
+          },
+          "dropped": [
+            "balcony_1",
+            "entrance",
+            "passage_0",
+            "passage_1",
+            "puja",
+            "toilet_1"
+          ],
+          "envelope_ft": [
+            20.16,
+            25.24
+          ]
+        },
+        "preview": [
+          {
+            "f": 0,
+            "id": "kitchen",
+            "t": "kitchen",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 7.6,
+            "d": 13.6
+          },
+          {
+            "f": 0,
+            "id": "living",
+            "t": "living",
+            "x": 7.6,
+            "y": 0.0,
+            "w": 12.5,
+            "d": 13.6
+          },
+          {
+            "f": 0,
+            "id": "dining",
+            "t": "dining",
+            "x": 0.0,
+            "y": 13.6,
+            "w": 9.0,
+            "d": 11.6
+          },
+          {
+            "f": 0,
+            "id": "toilet_common",
+            "t": "toilet",
+            "x": 9.0,
+            "y": 13.6,
+            "w": 4.9,
+            "d": 11.6
+          },
+          {
+            "f": 0,
+            "id": "stair_0",
+            "t": "stair",
+            "x": 13.9,
+            "y": 13.6,
+            "w": 6.2,
+            "d": 11.6
+          },
+          {
+            "f": 1,
+            "id": "bedroom_master",
+            "t": "bedroom_master",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 20.2,
+            "d": 13.6
+          },
+          {
+            "f": 1,
+            "id": "lounge_1",
+            "t": "lounge",
+            "x": 0.0,
+            "y": 13.6,
+            "w": 9.3,
+            "d": 11.6
+          },
+          {
+            "f": 1,
+            "id": "toilet_master",
+            "t": "toilet",
+            "x": 9.3,
+            "y": 13.6,
+            "w": 4.6,
+            "d": 11.6
+          },
+          {
+            "f": 1,
+            "id": "stair_1",
+            "t": "stair",
+            "x": 13.9,
+            "y": 13.6,
+            "w": 6.2,
+            "d": 11.6
+          }
+        ]
+      },
+      {
+        "id": "c3fee00",
+        "pass": true,
+        "judge": {
+          "pass": true,
+          "failures": [],
+          "warnings": []
+        },
+        "veto": false,
+        "traditions": {
+          "vaastu": {
+            "mode": "soft",
+            "score": 0.2
+          }
+        },
+        "score": {
+          "total": 10.138,
+          "brief_fit": {
+            "floors": 1.0,
+            "parking": 1.0,
+            "bedrooms": 1.0,
+            "study": 1.0,
+            "puja": 0.0,
+            "guest": 1.0,
+            "help": 1.0,
+            "elder_ground": 1.0
+          },
+          "features": {
+            "living_share": 0.381,
+            "bedroom_size": 0.763,
+            "outside_wall_share": 1.0,
+            "open_plan": 0.0,
+            "kitchen_front": 0.0,
+            "bedrooms_front": 1.0,
+            "stair_left": 1.0,
+            "proportion": 0.516,
+            "terrace_share": 0.0,
+            "storeys": 0.667
+          },
+          "learned": 0.0,
+          "tradition": 0.196,
+          "realism": 0.685
+        },
+        "summary": {
+          "floors": 2,
+          "parking": "two_wheeler",
+          "stilt": false,
+          "arrangement": "learned_0",
+          "built_up_sqft": 1017.4,
+          "fsi_used": 0.85,
+          "bedrooms": 1,
+          "cost_inr": {
+            "low": 2071408,
+            "expected": 2662082,
+            "high": 3388776
+          },
+          "dropped": [
+            "balcony_1",
+            "entrance",
+            "puja"
+          ],
+          "envelope_ft": [
+            20.16,
+            25.24
+          ]
+        },
+        "preview": [
+          {
+            "f": 0,
+            "id": "living",
+            "t": "living",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 9.0,
+            "d": 14.9
+          },
+          {
+            "f": 0,
+            "id": "passage_0",
+            "t": "passage",
+            "x": 9.0,
+            "y": 0.0,
+            "w": 3.3,
+            "d": 14.9
+          },
+          {
+            "f": 0,
+            "id": "dining",
+            "t": "dining",
+            "x": 12.2,
+            "y": 0.0,
+            "w": 7.9,
+            "d": 14.9
+          },
+          {
+            "f": 0,
+            "id": "stair_0",
+            "t": "stair",
+            "x": 0.0,
+            "y": 14.9,
+            "w": 6.2,
+            "d": 10.3
+          },
+          {
+            "f": 0,
+            "id": "toilet_common",
+            "t": "toilet",
+            "x": 6.2,
+            "y": 14.9,
+            "w": 5.0,
+            "d": 10.3
+          },
+          {
+            "f": 0,
+            "id": "kitchen",
+            "t": "kitchen",
+            "x": 11.3,
+            "y": 14.9,
+            "w": 8.9,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "bedroom_master",
+            "t": "bedroom_master",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 11.0,
+            "d": 14.9
+          },
+          {
+            "f": 1,
+            "id": "lounge_1",
+            "t": "lounge",
+            "x": 11.0,
+            "y": 0.0,
+            "w": 9.1,
+            "d": 14.9
+          },
+          {
+            "f": 1,
+            "id": "stair_1",
+            "t": "stair",
+            "x": 0.0,
+            "y": 14.9,
+            "w": 6.2,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "passage_1",
+            "t": "passage",
+            "x": 6.2,
+            "y": 14.9,
+            "w": 3.9,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "toilet_master",
+            "t": "toilet",
+            "x": 10.1,
+            "y": 14.9,
+            "w": 5.0,
+            "d": 10.3
+          },
+          {
+            "f": 1,
+            "id": "toilet_1",
+            "t": "toilet",
+            "x": 15.1,
+            "y": 14.9,
+            "w": 5.0,
+            "d": 10.3
+          }
+        ]
+      },
+      {
+        "id": "c4854c6",
+        "pass": true,
+        "judge": {
+          "pass": true,
+          "failures": [],
+          "warnings": [
+            {
+              "rule_id": "D_WET_NOT_STACKED",
+              "message": "toilet_1 isn't above a wet room; its drain runs through a ceiling below."
+            }
+          ]
+        },
+        "veto": false,
+        "traditions": {
+          "vaastu": {
+            "mode": "soft",
+            "score": 0.29
+          }
+        },
+        "score": {
+          "total": 10.096,
+          "brief_fit": {
+            "floors": 1.0,
+            "parking": 1.0,
+            "bedrooms": 1.0,
+            "study": 1.0,
+            "puja": 0.0,
+            "guest": 1.0,
+            "help": 1.0,
+            "elder_ground": 1.0
+          },
+          "features": {
+            "living_share": 0.367,
+            "bedroom_size": 0.718,
+            "outside_wall_share": 1.0,
+            "open_plan": 0.0,
+            "kitchen_front": 1.0,
+            "bedrooms_front": 1.0,
+            "stair_left": 1.0,
+            "proportion": 0.501,
+            "terrace_share": 0.0,
+            "storeys": 0.667
+          },
+          "learned": 0.0,
+          "tradition": 0.286,
+          "realism": 0.682
+        },
+        "summary": {
+          "floors": 2,
+          "parking": "two_wheeler",
+          "stilt": false,
+          "arrangement": "learned_4",
+          "built_up_sqft": 1017.4,
+          "fsi_used": 0.85,
+          "bedrooms": 1,
+          "cost_inr": {
+            "low": 2072138,
+            "expected": 2663030,
+            "high": 3389996
+          },
+          "dropped": [
+            "balcony_1",
+            "entrance",
+            "puja"
+          ],
+          "envelope_ft": [
+            20.16,
+            25.24
+          ]
+        },
+        "preview": [
+          {
+            "f": 0,
+            "id": "living",
+            "t": "living",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 10.2,
+            "d": 14.0
+          },
+          {
+            "f": 0,
+            "id": "passage_0",
+            "t": "passage",
+            "x": 10.2,
+            "y": 0.0,
+            "w": 3.4,
+            "d": 14.0
+          },
+          {
+            "f": 0,
+            "id": "kitchen",
+            "t": "kitchen",
+            "x": 13.6,
+            "y": 0.0,
+            "w": 6.5,
+            "d": 14.0
+          },
+          {
+            "f": 0,
+            "id": "stair_0",
+            "t": "stair",
+            "x": 0.0,
+            "y": 14.0,
+            "w": 6.2,
+            "d": 11.2
+          },
+          {
+            "f": 0,
+            "id": "toilet_common",
+            "t": "toilet",
+            "x": 6.2,
+            "y": 14.0,
+            "w": 4.8,
+            "d": 11.2
+          },
+          {
+            "f": 0,
+            "id": "dining",
+            "t": "dining",
+            "x": 11.1,
+            "y": 14.0,
+            "w": 9.1,
+            "d": 11.2
+          },
+          {
+            "f": 1,
+            "id": "lounge_1",
+            "t": "lounge",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 9.1,
+            "d": 14.0
+          },
+          {
+            "f": 1,
+            "id": "bedroom_master",
+            "t": "bedroom_master",
+            "x": 9.1,
+            "y": 0.0,
+            "w": 11.0,
+            "d": 14.0
+          },
+          {
+            "f": 1,
+            "id": "stair_1",
+            "t": "stair",
+            "x": 0.0,
+            "y": 14.0,
+            "w": 6.2,
+            "d": 11.2
+          },
+          {
+            "f": 1,
+            "id": "passage_1",
+            "t": "passage",
+            "x": 6.2,
+            "y": 14.0,
+            "w": 3.7,
+            "d": 11.2
+          },
+          {
+            "f": 1,
+            "id": "toilet_master",
+            "t": "toilet",
+            "x": 10.0,
+            "y": 14.0,
+            "w": 5.1,
+            "d": 11.2
+          },
+          {
+            "f": 1,
+            "id": "toilet_1",
+            "t": "toilet",
+            "x": 15.1,
+            "y": 14.0,
+            "w": 5.1,
+            "d": 11.2
+          }
+        ]
+      }
+    ],
+    "round": 1,
+    "seed": 960086420,
+    "prefs": {},
+    "labels": [],
+    "seen": [
+      "cc585e6",
+      "caae846",
+      "c3fee00",
+      "c4854c6"
+    ],
+    "city": "mumbai",
+    "road_width_m": 9.0,
+    "setback_front_m": 3.0,
+    "setback_side_m": 1.5,
+    "setback_rear_m": 1.5,
+    "envelope_width_ft": 20.16,
+    "envelope_depth_ft": 25.24,
+    "fsi_built_up_sqft": 1017.4,
+    "fsi_used": 0.85,
+    "fsi_base": 1.0,
+    "fsi_max": 1.0,
+    "stair_width_mm": 900,
+    "pack_verified": false,
+    "boq": {
+      "tiers": {
+        "economy": {
+          "low": {
+            "foundation": 94054,
+            "structure": 987999,
+            "masonry_plaster": 282782,
+            "finishing": 176993,
+            "mep": 176993,
+            "contingency": 171882,
+            "total": 1890702
+          },
+          "expected": {
+            "foundation": 109293,
+            "structure": 1181435,
+            "masonry_plaster": 369498,
+            "finishing": 241178,
+            "mep": 265489,
+            "contingency": 216689,
+            "total": 2383583
+          },
+          "high": {
+            "foundation": 125281,
+            "structure": 1412637,
+            "masonry_plaster": 479305,
+            "finishing": 334659,
+            "mep": 386536,
+            "contingency": 273842,
+            "total": 3012259
+          }
+        },
+        "standard": {
+          "low": {
+            "foundation": 94054,
+            "structure": 987999,
+            "masonry_plaster": 282782,
+            "finishing": 341271,
+            "mep": 176993,
+            "contingency": 188310,
+            "total": 2071408
+          },
+          "expected": {
+            "foundation": 109293,
+            "structure": 1181435,
+            "masonry_plaster": 369498,
+            "finishing": 494359,
+            "mep": 265489,
+            "contingency": 242007,
+            "total": 2662082
+          },
+          "high": {
+            "foundation": 125281,
+            "structure": 1412637,
+            "masonry_plaster": 479305,
+            "finishing": 676947,
+            "mep": 386536,
+            "contingency": 308071,
+            "total": 3388776
+          }
+        },
+        "premium": {
+          "low": {
+            "foundation": 94054,
+            "structure": 987999,
+            "masonry_plaster": 282782,
+            "finishing": 766460,
+            "mep": 176993,
+            "contingency": 230829,
+            "total": 2539117
+          },
+          "expected": {
+            "foundation": 109293,
+            "structure": 1181435,
+            "masonry_plaster": 369498,
+            "finishing": 1232846,
+            "mep": 265489,
+            "contingency": 315856,
+            "total": 3474418
+          },
+          "high": {
+            "foundation": 125281,
+            "structure": 1412637,
+            "masonry_plaster": 479305,
+            "finishing": 1988117,
+            "mep": 386536,
+            "contingency": 439188,
+            "total": 4831064
+          }
+        }
+      },
+      "rates_as_of": "2026-02",
+      "rates_verified": false,
+      "gst_note": "Material basic rates are exclusive of 18% GST for cement, steel, RMC, and MEP items, and 12% for bricks and stone. Works contract composite labour and material services attract 18% GST under SAC 9954.",
+      "built_up_sqft": 1017,
+      "quantities": {
+        "cement_bags": 406.9,
+        "steel_kg": 4068.8,
+        "sand_tons": 92.1,
+        "aggregate_tons": 62.6,
+        "bricks": 13732.2
+      }
+    },
+    "candidate_id": "cc585e6",
+    "strategy": {
+      "floors": 2,
+      "parking": "two_wheeler",
+      "stilt": false
+    },
+    "dropped_rooms": [
+      "balcony_1",
+      "dining",
+      "entrance",
+      "lounge_1",
+      "puja"
+    ],
+    "water": {
+      "daily_litres": 270,
+      "overhead_tank_litres": 500,
+      "sump_litres": 500,
+      "rainwater_harvesting": false
+    },
+    "kitchen_triangle_perimeter_ft": 20.3,
+    "decisions": [
+      {
+        "field": "setbacks",
+        "value": "3.0/1.5/1.5 m",
+        "source": "pack",
+        "rule": "DCPR 2034, Reg. 41(1), Table 15 & Reg. 41(4)",
+        "reason": "Plot 111 m² → buildable 6.14 × 7.69 m."
+      },
+      {
+        "field": "fsi",
+        "value": "1017 sqft (0.85)",
+        "source": "pack",
+        "rule": "DCPR 2034, Reg. 30(1), Table 12 (Suburbs / Extended Suburbs base Zonal FSI)",
+        "reason": "Cap 1.0 for a 9 m road; base 1.0."
+      },
+      {
+        "field": "floors",
+        "value": 2,
+        "source": "user",
+        "reason": "As requested."
+      },
+      {
+        "field": "parking",
+        "value": "two_wheeler",
+        "source": "user",
+        "reason": "As requested."
+      },
+      {
+        "field": "style",
+        "value": "Indian Contemporary",
+        "source": "default",
+        "reason": "Deep overhangs and jaalis suit monsoon rain and glare."
+      },
+      {
+        "field": "foundation",
+        "value": "isolated",
+        "source": "derived",
+        "reason": "Largest column 284 kN on 120 kN/m² soil needs a 1.6 m footing; footings would cover 22% of the footprint → isolated footings. Depth 1.8 m for black cotton soil. Needs a soil test."
+      },
+      {
+        "field": "budget",
+        "value": "₹2,662,082 (standard)",
+        "source": "rates",
+        "reason": "Rates as of 2026-02, unverified, excl. GST. Your budget ₹4,000,000."
+      },
+      {
+        "field": "water",
+        "value": "500 L overhead, 500 L sump",
+        "source": "derived",
+        "reason": "2 people × 135 L/day. Rainwater harvesting is recommended."
+      },
+      {
+        "field": "plinth",
+        "value": "0.45 m above road",
+        "source": "default",
+        "reason": "Standard plinth; tell us if your street floods."
+      },
+      {
+        "field": "two_wheelers",
+        "value": "2 in the front open space",
+        "source": "user",
+        "reason": "Scooters and bikes park in the open front setback (about 1 × 2 m each), so they don't use built-up area."
+      },
+      {
+        "field": "dropped_rooms",
+        "value": "balcony_1, dining, entrance, lounge_1, puja",
+        "source": "generator",
+        "reason": "These optional rooms didn't fit at code-minimum sizes."
+      }
+    ],
+    "final_judge": {
+      "pass": true,
+      "failures": [],
+      "warnings": []
+    },
+    "traditions": {
+      "vaastu": {
+        "mode": "soft",
+        "score": 0.82,
+        "verified": false,
+        "findings": [
+          {
+            "rule": "vaastu.kitchen.zone",
+            "status": "satisfied",
+            "why": "Governed by Agni (Fire deity); placing fire in water (NE) causes family conflict, while in earth (SW) causes instability."
+          },
+          {
+            "rule": "vaastu.bedroom_master.zone",
+            "status": "neutral",
+            "why": "Governed by Nairutya (Earth/Stability); grounds the primary decision-maker and family head."
+          },
+          {
+            "rule": "vaastu.puja.zone",
+            "status": "not_checked",
+            "why": "Needs fixture-level detail or a room this plan doesn't have."
+          },
+          {
+            "rule": "vaastu.centre.brahmasthana",
+            "status": "satisfied",
+            "why": "Brahmasthana (central 1/9th of mandala) must remain open, unweighted, and unpunctured to allow cosmic energy circulation."
+          },
+          {
+            "rule": "vaastu.toilet.zone",
+            "status": "satisfied",
+            "why": "Eliminative functions in NE corrupt divine energy; in SW drain health and financial grounding."
+          },
+          {
+            "rule": "vaastu.entrance.main",
+            "status": "not_checked",
+            "why": "Needs fixture-level detail or a room this plan doesn't have."
+          },
+          {
+            "rule": "vaastu.water_underground.zone",
+            "status": "not_checked",
+            "why": "Needs fixture-level detail or a room this plan doesn't have."
+          },
+          {
+            "rule": "vaastu.water_overhead.zone",
+            "status": "not_checked",
+            "why": "Needs fixture-level detail or a room this plan doesn't have."
+          },
+          {
+            "rule": "vaastu.staircase.zone",
+            "status": "satisfied",
+            "why": "Stairs constitute heavy structural loading that must anchor the southern/western quadrant."
+          },
+          {
+            "rule": "vaastu.staircase.ascent",
+            "status": "not_checked",
+            "why": "Needs fixture-level detail or a room this plan doesn't have."
+          },
+          {
+            "rule": "vaastu.avoid_kitchen_toilet_adj",
+            "status": "satisfied",
+            "why": "Kitchen prep must never share common walls, doors, or drainage stacks with waste facilities."
+          },
+          {
+            "rule": "vaastu.septic.zone",
+            "status": "not_checked",
+            "why": "Needs fixture-level detail or a room this plan doesn't have."
+          }
+        ]
+      }
+    },
+    "chosen": "cc585e6",
+    "chosen_candidate": {
+      "id": "cc585e6",
+      "strategy": {
+        "floors": 2,
+        "parking": "two_wheeler",
+        "stilt": false
+      },
+      "arrangement": "tradition_vaastu",
+      "jitter": 0.15,
+      "layout": {
+        "rooms": [
+          {
+            "id": "kitchen",
+            "type": "kitchen",
+            "floor": 0,
+            "prio": 1,
+            "zone": "front",
+            "min_w": 1.8,
+            "min_d": 0,
+            "min_area": 5.5,
+            "weight": 1.4,
+            "hab": false,
+            "ext": true,
+            "wet": true,
+            "side": "left",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 2.323,
+            "d": 4.542,
+            "exterior": true,
+            "compass": "SE"
+          },
+          {
+            "id": "living",
+            "type": "living",
+            "floor": 0,
+            "prio": 1,
+            "zone": "front",
+            "min_w": 2.7,
+            "min_d": 0,
+            "min_area": 9.5,
+            "weight": 3.0,
+            "hab": true,
+            "ext": true,
+            "wet": false,
+            "side": null,
+            "x": 2.323,
+            "y": 0.0,
+            "w": 3.821,
+            "d": 4.542,
+            "exterior": true,
+            "compass": "NE"
+          },
+          {
+            "id": "stair_0",
+            "type": "stair",
+            "floor": 0,
+            "prio": 1,
+            "zone": "middle",
+            "min_w": 0,
+            "min_d": 0,
+            "min_area": 0,
+            "weight": 0,
+            "hab": false,
+            "ext": false,
+            "wet": false,
+            "side": null,
+            "x": 0.0,
+            "y": 4.542,
+            "w": 1.9,
+            "d": 3.15,
+            "exterior": true,
+            "compass": "SW"
+          },
+          {
+            "id": "passage_0",
+            "type": "passage",
+            "floor": 0,
+            "prio": 2,
+            "zone": "middle",
+            "min_w": 1.0,
+            "min_d": 0,
+            "min_area": 2.0,
+            "weight": 0.3,
+            "hab": false,
+            "ext": false,
+            "wet": false,
+            "side": null,
+            "x": 1.9,
+            "y": 4.542,
+            "w": 2.339,
+            "d": 3.15,
+            "exterior": true,
+            "compass": "W"
+          },
+          {
+            "id": "toilet_common",
+            "type": "toilet",
+            "floor": 0,
+            "prio": 1,
+            "zone": "middle",
+            "min_w": 1.2,
+            "min_d": 0,
+            "min_area": 2.6,
+            "weight": 0.5,
+            "hab": false,
+            "ext": false,
+            "wet": true,
+            "side": "right",
+            "x": 4.239,
+            "y": 4.542,
+            "w": 1.905,
+            "d": 3.15,
+            "exterior": true,
+            "compass": "NW"
+          },
+          {
+            "id": "bedroom_master",
+            "type": "bedroom_master",
+            "floor": 1,
+            "prio": 1,
+            "zone": "front",
+            "min_w": 2.7,
+            "min_d": 0,
+            "min_area": 9.5,
+            "weight": 2.4,
+            "hab": true,
+            "ext": true,
+            "wet": false,
+            "side": "left",
+            "x": 0.0,
+            "y": 0.0,
+            "w": 6.144,
+            "d": 4.542,
+            "exterior": true,
+            "compass": "E"
+          },
+          {
+            "id": "stair_1",
+            "type": "stair",
+            "floor": 1,
+            "prio": 1,
+            "zone": "middle",
+            "min_w": 0,
+            "min_d": 0,
+            "min_area": 0,
+            "weight": 0,
+            "hab": false,
+            "ext": false,
+            "wet": false,
+            "side": null,
+            "x": 0.0,
+            "y": 4.542,
+            "w": 1.9,
+            "d": 3.15,
+            "exterior": true,
+            "compass": "SW"
+          },
+          {
+            "id": "passage_1",
+            "type": "passage",
+            "floor": 1,
+            "prio": 2,
+            "zone": "middle",
+            "min_w": 1.0,
+            "min_d": 0,
+            "min_area": 2.0,
+            "weight": 0.3,
+            "hab": false,
+            "ext": false,
+            "wet": false,
+            "side": null,
+            "x": 1.9,
+            "y": 4.542,
+            "w": 1.189,
+            "d": 3.15,
+            "exterior": true,
+            "compass": "W"
+          },
+          {
+            "id": "toilet_1",
+            "type": "toilet",
+            "floor": 1,
+            "prio": 2,
+            "zone": "middle",
+            "min_w": 1.2,
+            "min_d": 0,
+            "min_area": 2.6,
+            "weight": 0.5,
+            "hab": false,
+            "ext": false,
+            "wet": true,
+            "side": "right",
+            "x": 3.089,
+            "y": 4.542,
+            "w": 1.527,
+            "d": 3.15,
+            "exterior": true,
+            "compass": "W"
+          },
+          {
+            "id": "toilet_master",
+            "type": "toilet",
+            "floor": 1,
+            "prio": 1,
+            "zone": "middle",
+            "min_w": 1.2,
+            "min_d": 0,
+            "min_area": 2.6,
+            "weight": 0.5,
+            "hab": false,
+            "ext": false,
+            "wet": true,
+            "side": "right",
+            "x": 4.617,
+            "y": 4.542,
+            "w": 1.527,
+            "d": 3.15,
+            "exterior": true,
+            "compass": "NW"
+          }
+        ],
+        "dropped": [
+          "balcony_1",
+          "dining",
+          "entrance",
+          "lounge_1",
+          "puja"
+        ],
+        "depths": {
+          "front": 4.542,
+          "middle": 3.15,
+          "rear": 0.0
+        },
+        "stair_left": true,
+        "collapse": true,
+        "stilt": false
+      },
+      "envelope": {
+        "width_m": 6.144,
+        "depth_m": 7.692,
+        "area_m2": 47.259648
+      },
+      "rules": {
+        "city": "Mumbai",
+        "verified": false,
+        "setback_front_m": 3.0,
+        "setback_side_m": 1.5,
+        "setback_rear_m": 1.5,
+        "setback_source": "DCPR 2034, Reg. 41(1), Table 15 & Reg. 41(4)",
+        "fsi_base": 1.0,
+        "fsi_max": 1.0,
+        "fsi_source": "DCPR 2034, Reg. 30(1), Table 12 (Suburbs / Extended Suburbs base Zonal FSI)",
+        "max_height_m": 10.0,
+        "habitable_min_m2": 9.5,
+        "habitable_min_width_m": 2.4,
+        "kitchen_min_m2": 5.5,
+        "toilet_min_m2": 2.6,
+        "window_ratio": 0.1,
+        "door_main_mm": 1000,
+        "door_habitable_mm": 900,
+        "door_toilet_mm": 750,
+        "stair_min_width_m": 0.9,
+        "stair_max_riser_mm": 175,
+        "stair_min_tread_mm": 250,
+        "car_stall_m": [
+          2.5,
+          5.0
+        ],
+        "min_column_mm": 230,
+        "span_depth_ratio": 16.0,
+        "soil_bearing_kn_m2": 120.0,
+        "max_beam_span_m": 6.0,
+        "min_safety_factor": 1.5
+      },
+      "floors": 2
+    }
+  }
+}

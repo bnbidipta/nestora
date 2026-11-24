@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 
 from backend.app.models.twin import HouseTwin
 from backend.app.services.engines.geometry import FT, neighbours, walls
+from backend.app.services.names import display
 
 # Rw/STC per NBC 2016 Part 8 Sec 4 tables as compiled in docs/research/data/physics-simulation.md (unverified)
 STC = {"wall_230_brick": 50, "wall_115_brick": 43, "window_single": 29, "window_double": 34, "window_laminated": 39, "door_solid": 30}
@@ -84,15 +85,15 @@ def suggestions(s: Dict[str, Any]) -> List[Dict[str, Any]]:
     dbl = [n for n, r in s["rooms"].items() if r["glazing"] != "single"]
     if dbl:
         out.append({"kind": "sound", "title": "Double glazing on the road side",
-                    "detail": f"Road noise about {s['outside_db']} dB: {', '.join(d.replace('_', ' ') for d in dbl[:3])} need double-glazed windows to reach quiet-room levels.",
+                    "detail": f"Road noise about {s['outside_db']} dB: {', '.join(display(d) for d in dbl[:3])} need double-glazed windows to reach quiet-room levels.",
                     "auto_applied": False})
     echo = [n for n, r in s["rooms"].items() if r["echo_risk"]]
     if echo:
-        out.append({"kind": "sound", "title": "Soften echo", "detail": f"{', '.join(e.replace('_', ' ') for e in echo[:3])} will sound echoey with hard floors: add rugs, curtains or an acoustic ceiling panel.",
+        out.append({"kind": "sound", "title": "Soften echo", "detail": f"{', '.join(display(e) for e in echo[:3])} will sound echoey with hard floors: add rugs, curtains or an acoustic ceiling panel.",
                     "auto_applied": False})
     priv = [(n, r["noisy_neighbours"]) for n, r in s["rooms"].items() if r["noisy_neighbours"]]
     if priv:
         n, nb = priv[0]
-        out.append({"kind": "sound", "title": "Bedroom privacy", "detail": f"{n.replace('_', ' ')} shares a wall with {nb[0][0].replace('_', ' ')}: line that wall with the wardrobe, or build it 230 mm instead of 115 mm.",
+        out.append({"kind": "sound", "title": "Bedroom privacy", "detail": f"{display(n)} shares a wall with the {display(nb[0][0])}: line that wall with the wardrobe, or build it 230 mm instead of 115 mm.",
                     "auto_applied": False})
     return out

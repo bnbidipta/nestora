@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, Check, Loader2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Heart, Loader2, RefreshCw } from 'lucide-react';
 import { Option, OptionsResponse, chooseOption, selectOptions, startOptions } from '@/lib/api';
 import { formatINR } from '@/lib/twin';
 import { track } from '@/lib/analytics';
@@ -76,21 +76,21 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
     <div>
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-white">Pick what you like</h1>
-          <p className="text-sm text-slate-400">Round {res.round ?? 1}. Tick the layouts worth keeping, and we&apos;ll replace the rest with new ones like them. Every option has passed all automated checks.</p>
+          <h1 className="text-2xl font-bold text-white">Your options</h1>
+          <p className="text-sm text-slate-400">Like the ones you&apos;re drawn to and we&apos;ll show more like them, or pick one to open it.</p>
         </div>
         <button type="button" onClick={replace} disabled={busy !== null || keep.size === res.options.length}
           className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-50">
           {busy === 'replace' ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-          Replace {res.options.length - keep.size} unticked
+          {keep.size ? 'Show more like my liked ones' : 'Show different options'}
         </button>
       </div>
       {res.exhausted && <p className="mb-4 text-sm text-amber-300">That&apos;s every distinct layout this plot allows with your brief.</p>}
       {!res.exhausted && res.options.length < 4 && (
         <p className="mb-4 text-sm text-amber-300">
           Only {res.options.length} layout{res.options.length === 1 ? '' : 's'} pass every check
-          {res.options.some((o) => Object.values(o.traditions).some((t) => t.mode === 'strict')) ? ' and your strict tradition rules' : ''} on this plot.
-          Relaxing a strict tradition to &ldquo;Prefer&rdquo;, or allowing another floor, opens up more options.
+          {res.options.some((o) => Object.values(o.traditions).some((t) => t.mode === 'strict')) ? ' and your strict cultural preferences' : ''} on this plot.
+          Relaxing a strict cultural preference to &ldquo;Follow where it fits&rdquo;, or allowing another floor, opens up more options.
         </p>
       )}
       {error && <p role="alert" className="mb-4 text-sm text-red-400">{error}</p>}
@@ -112,7 +112,7 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: numb
   const s = o.summary;
   const misses = Object.entries(o.score.brief_fit).filter(([, v]) => v < 1).map(([k]) => FIT_LABEL[k] ?? k);
   return (
-    <article className={`rounded-2xl border bg-ivory-50 p-4 text-slate-900 ${kept ? 'border-emerald-500 ring-2 ring-emerald-500' : 'border-transparent'}`}>
+    <article className={`rounded-2xl border bg-ivory-50 p-4 text-slate-900 ${kept ? 'border-rose-400 ring-2 ring-rose-400' : 'border-transparent'}`}>
       <header className="flex items-center justify-between">
         <h2 className="font-bold">Option {n}</h2>
         <div className="flex gap-1" role="tablist" aria-label="Floors">
@@ -131,9 +131,9 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: numb
         <dt className="text-slate-500">Estimated cost</dt><dd className="text-right font-semibold">{formatINR(s.cost_inr.low)}–{formatINR(s.cost_inr.high)}</dd>
         <dt className="text-slate-500">Built-up</dt><dd className="text-right">{area(s.built_up_sqft, u)} · FSI {s.fsi_used}</dd>
         <dt className="text-slate-500">Bedrooms · floors</dt><dd className="text-right">{s.bedrooms} · {s.floors}{s.stilt ? ' (stilt parking)' : ''}</dd>
-        <dt className="text-slate-500">Parking</dt><dd className="text-right">{s.parking.replace('_', '-')}</dd>
+        <dt className="text-slate-500">Parking</dt><dd className="text-right">{s.parking === 'none' ? 'None' : s.parking === 'car' ? (s.stilt ? 'Car (under the house)' : 'Car') : 'Two-wheeler'}</dd>
         {Object.entries(o.traditions).map(([k, v]) => (
-          <div key={k} className="contents"><dt className="text-slate-500">{k.replace('_', ' ')} ({v.mode})</dt><dd className="text-right">{Math.round((v.score + 1) * 50)}% aligned</dd></div>
+          <div key={k} className="contents"><dt className="text-slate-500">{k.replace('_', ' ')}</dt><dd className="text-right">{Math.round((v.score + 1) * 50)}% aligned</dd></div>
         ))}
       </dl>
       {(misses.length > 0 || s.dropped.length > 0) && (
@@ -142,14 +142,14 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: numb
           {s.dropped.length > 0 && <>Left out to fit: {s.dropped.map((d) => d.replace(/_\d+$/, '').replace(/_/g, ' ')).join(', ')}.</>}
         </p>
       )}
-      {o.tradition_relaxed && <p className="mt-1 text-xs text-amber-800">Your strict tradition rules can&apos;t all be met on this plot; this is the closest code-compliant layout.</p>}
+      {o.tradition_relaxed && <p className="mt-1 text-xs text-amber-800">Your strict cultural preferences can&apos;t all be met on this plot; this is the closest code-compliant layout.</p>}
       <div className="mt-3 flex gap-2">
-        <button type="button" aria-pressed={kept} onClick={onKeep} disabled={busy}
-          className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold ${kept ? 'border-emerald-600 bg-emerald-50 text-emerald-800' : 'border-slate-300 bg-white text-slate-800'}`}>
-          {kept ? <><Check className="mr-1 inline h-4 w-4" />Keeping</> : 'Keep'}
+        <button type="button" aria-pressed={kept} onClick={onKeep} disabled={busy} aria-label={kept ? 'Liked' : 'Like'}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-semibold ${kept ? 'border-rose-300 bg-rose-50 text-rose-700' : 'border-slate-300 bg-white text-slate-800 hover:border-slate-400'}`}>
+          <Heart className={`h-4 w-4 ${kept ? 'fill-rose-500 text-rose-500' : ''}`} aria-hidden />{kept ? 'Liked' : 'Like'}
         </button>
         <button type="button" onClick={onChoose} disabled={busy} className="flex-1 rounded-lg bg-sage-800 px-3 py-2 text-sm font-semibold text-white hover:bg-sage-900">
-          Choose this one
+          Use this design
         </button>
       </div>
     </article>

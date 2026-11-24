@@ -9,19 +9,25 @@ import { canEditLocally, dxfUrl, editHouse, getHouse } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { track } from '@/lib/analytics';
 import { area, len, lenShort, loadRegional, plotArea, useLengthUnit } from '@/lib/units';
+import { FILL, fitLabel, roomName } from '@/lib/rooms';
 
 type ViewMode = 'plan' | 'structure' | '3d' | LayerMode;
 const LAYERS: string[] = ['paint', 'decor', 'mep', 'climate', 'sound'];
 type Decision = { field: string; value: string | number; source: string; reason: string; rule?: string };
 type TraditionPack = { mode: string; score: number; verified: boolean; findings: { rule: string; status: string; why: string }[] };
 
-const FILL: Record<string, string> = {
-  living: '#E8DCC4', lounge: '#E8DCC4', dining: '#EFE3CB', kitchen: '#F3C9A5', bedroom: '#C9D8C5', bedroom_master: '#B7CDB2',
-  bedroom_elder: '#A9C7B8', study: '#D4DCE8', toilet: '#BFD9E6', stair: '#9CA3AF', lift: '#7C8594', passage: '#F1F1EE', porch: '#D6D3CC',
-  entrance: '#E4E0D6', puja: '#F4D47A', balcony: '#DCE9D5', utility: '#E5E5E2', help: '#D9D2E6', laundry: '#CFE3EC', store: '#E2DED7',
-};
 const NORTH_ROT: Record<string, number> = { South: 0, East: 90, North: 180, West: 270 };
 const label = (s: string) => s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+const FIELD: Record<string, string> = {
+  fsi: 'Built-up area', two_wheelers: 'Two-wheelers', dropped_rooms: 'Left out to fit', future_floor: 'Future floor', setbacks: 'Setbacks (front/side/rear)',
+};
+const PARKING: Record<string, string> = { none: 'None', two_wheeler: 'Two-wheeler', car: 'Car', 'car (stilt)': 'Car, under the house (stilt)' };
+function decisionValue(d: Decision, u: 'ft' | 'm', builtUp: number, plot: number): string {
+  if (d.field === 'fsi') return `${area(builtUp, u)} (FSI ${(builtUp / plot).toFixed(2)})`;
+  if (d.field === 'parking') return PARKING[String(d.value)] ?? String(d.value).replace(/_/g, ' ');
+  return String(d.value);
+}
+const SITE_FILL = { garden: '#DDEBCF', open: '#ECEAE3', parking: '#D6D3CC' };
 
 export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const [twin, setTwin] = useState(initial);
@@ -48,11 +54,30 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const PD = twin.plot.plot_depth_ft;
   const judge = getJudge(twin);
   const builtUp = Number(md.fsi_built_up_sqft ?? builtUpSqft(twin));
-  const floor = twin.floors.find((f) => f.floor_no === floorNo) ?? twin.floors[0];
+  const floor = twin.floors.find((f) => f.floor_no === floorNo) ?? (floorNo >= twin.floors.length ? undefined : twin.floors[0]);
   const room = floor?.rooms.find((r) => r.name === selected) ?? null;
   const decisions = (md.decisions ?? []) as Decision[];
   const trads = (md.traditions ?? {}) as Record<string, TraditionPack>;
   // Plan coordinates: plot origin top-left on screen, road at the bottom.
+  const brief = (md.brief ?? {}) as { two_wheelers?: number; terrace_garden?: boolean };
+  const twoWheelers = Number(brief.two_wheelers ?? 0);
+  const roofNo = brief.terrace_garden ? twin.floors.length : -1;
+  const siteFloor = twin.floors[0]?.floor_no ?? 0;
+  // Open ground around the house (setbacks), named: parking and front garden at the road, garden behind, open space at the sides.
+  const front = { y: PD - sbFront, h: sbFront }, rearH = PD - sbFront - D;
+  const parkW = twoWheelers ? Math.min(W, 0.6 + twoWheelers * 3.6) : 0;
+  const site = ([
+    parkW > 0 && sbFront > 1 ? { id: 'park', kind: 'parking', name: 'Two-wheeler parking', x: sbSide, y: front.y, w: parkW, h: front.h } : null,
+    sbFront > 1 && W - parkW > 1 ? { id: 'fg', kind: 'garden', name: 'Front garden', x: sbSide + parkW, y: front.y, w: W - parkW, h: front.h } : null,
+    rearH > 1 ? { id: 'rg', kind: 'garden', name: 'Back garden', x: 0, y: 0, w: PW, h: rearH } : null,
+    sbSide > 0.5 ? { id: 'sl', kind: 'open', name: 'Open space', x: 0, y: rearH, w: sbSide, h: PD - rearH } : null,
+    PW - sbSide - W > 0.5 ? { id: 'sr', kind: 'open', name: 'Open space', x: sbSide + W, y: rearH, w: PW - sbSide - W, h: PD - rearH } : null,
+  ].filter(Boolean) as { id: string; kind: keyof typeof SITE_FILL; name: string; x: number; y: number; w: number; h: number }[]);
+  // terrace garden on the half of the roof away from the stair/lift core
+  const core = (twin.floors[0]?.rooms ?? []).filter((r) => r.type === 'stair' || r.type === 'lift');
+  const coreRear = core.length > 0 && core.reduce((t, r) => t + r.y + r.width_ft / 2, 0) / core.length > D / 2;
+  const roofGardenY = coreRear ? PD - sbFront - D / 2 + 0.5 : PD - sbFront - D + 1;
+  const tags = (floor?.rooms ?? []).filter((r) => fitLabel(roomName(r.name, r.type ?? undefined), r.length_ft, r.width_ft, 1.3, 0.7) === null).map((r) => r.name);
   const px = (x: number) => sbSide + x;
   const py = (y: number, d: number) => PD - sbFront - y - d;
 
@@ -149,11 +174,11 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   };
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row print:block">
+    <div className="flex flex-col gap-6 print:block">
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
           <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
-            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'MEP', Zap], ['paint', 'Paint', Palette], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
+            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'MEP', Zap], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
               <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${mode === id ? 'bg-blue-600 text-white' : 'border border-slate-700 text-slate-300 hover:text-white'}`}>
                 <Icon className="h-3.5 w-3.5" aria-hidden />{text}
@@ -168,6 +193,10 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
                   {f.floor_no === 0 ? 'Ground' : `Floor ${f.floor_no}`}
                 </button>
               ))}
+              {roofNo > 0 && (
+                <button type="button" role="tab" aria-selected={floorNo === roofNo} onClick={() => { setFloorNo(roofNo); setSelected(null); }}
+                  className={`rounded-lg px-3 py-1.5 font-mono text-xs ${floorNo === roofNo ? 'bg-white text-slate-900' : 'border border-slate-700 text-slate-300'}`}>Roof</button>
+              )}
             </div>
           )}
           <span className={`flex items-center gap-1 font-mono text-xs ${judge?.pass ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -183,21 +212,58 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             <svg viewBox={`-3 -3 ${PW + 10} ${PD + 8}`} className="max-h-[560px] w-full" role="img" aria-label={`Floor ${floorNo} plan`}>
               <rect x={0} y={0} width={PW} height={PD} fill="#EFEDE6" stroke="#475569" strokeWidth={0.25} strokeDasharray="1 0.6" />
               <rect x={sbSide} y={PD - sbFront - D} width={W} height={D} fill="none" stroke="#D97706" strokeWidth={0.2} strokeDasharray="0.6 0.4" />
-              {floor?.rooms.map((r) => (
-                <g key={r.name} onClick={() => setSelected(r.name)} tabIndex={0} role="button" aria-label={`${label(r.name)}, ${len(r.length_ft, u)} by ${len(r.width_ft, u)}`}
+              {floorNo === siteFloor && site.map((z) => (
+                <g key={z.id}>
+                  <rect x={z.x} y={z.y} width={z.w} height={z.h} fill={SITE_FILL[z.kind]} stroke="#94A3B8" strokeWidth={0.1} />
+                  {fitLabel(z.name, z.w, z.h, 1.1, 0.6) !== null && (
+                    <text x={z.x + z.w / 2} y={z.y + z.h / 2} textAnchor="middle" dominantBaseline="middle" fontSize={fitLabel(z.name, z.w, z.h, 1.1, 0.6)!} fill="#3F4F3A">{z.name}</text>
+                  )}
+                  {z.kind === 'parking' && Array.from({ length: twoWheelers }, (_, k) => (
+                    <rect key={k} x={z.x + 0.6 + k * 3.6} y={z.y + 0.4} width={3.0} height={Math.max(0.5, z.h - 0.8)} fill="none" stroke="#64748B" strokeWidth={0.12} strokeDasharray="0.4 0.3" />
+                  ))}
+                </g>
+              ))}
+              {floor?.rooms.map((r) => {
+                const name = roomName(r.name, r.type ?? undefined);
+                const fs = fitLabel(name, r.length_ft, r.width_ft, 1.3, 0.7);
+                const sub = fs !== null && r.width_ft > 4.2 ? Math.min(fs * 0.78, 1) : null;
+                const tag = fs === null ? tags.indexOf(r.name) + 1 : 0;
+                const cx = px(r.x) + r.length_ft / 2, cy = py(r.y, r.width_ft) + r.width_ft / 2;
+                return (
+                <g key={r.name} onClick={() => setSelected(r.name)} tabIndex={0} role="button" aria-label={`${name}, ${len(r.length_ft, u)} by ${len(r.width_ft, u)}`}
                   onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(r.name)} className="cursor-pointer focus:outline-none">
                   <rect x={px(r.x)} y={py(r.y, r.width_ft)} width={r.length_ft} height={r.width_ft} fill={(LAYERS.includes(mode) ? roomFill(mode as LayerMode, twin, r) : null) ?? FILL[r.type ?? ''] ?? '#EEE'}
                     stroke={selected === r.name ? '#1D4ED8' : '#1F2937'} strokeWidth={selected === r.name ? 0.5 : 0.25} />
-                  {r.length_ft > 4 && r.type !== 'passage' && r.type !== 'utility' && (
+                  <title>{name}</title>
+                  {fs !== null && (
+                    <text x={cx} y={sub ? cy - sub * 0.45 : cy} textAnchor="middle" dominantBaseline="middle" fontSize={fs} fontWeight={600} fill="#111827">{name}</text>
+                  )}
+                  {sub !== null && (
+                    <text x={cx} y={cy + fs! * 0.75} textAnchor="middle" dominantBaseline="middle" fontSize={sub} fill="#374151">{lenShort(r.length_ft, u)}×{lenShort(r.width_ft, u)}</text>
+                  )}
+                  {tag > 0 && (
                     <>
-                      <text x={px(r.x) + r.length_ft / 2} y={py(r.y, r.width_ft) + r.width_ft / 2 - 0.4} textAnchor="middle" fontSize={Math.min(1.3, r.length_ft / 7)} fontWeight={600} fill="#111827">{label(r.name)}</text>
-                      <text x={px(r.x) + r.length_ft / 2} y={py(r.y, r.width_ft) + r.width_ft / 2 + 1.1} textAnchor="middle" fontSize={Math.min(1.0, r.length_ft / 9)} fill="#374151">
-                        {lenShort(r.length_ft, u)}×{lenShort(r.width_ft, u)}
-                      </text>
+                      <circle cx={cx} cy={cy} r={Math.min(0.8, r.length_ft / 2.2, r.width_ft / 2.2)} fill="#111827" />
+                      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={Math.min(0.9, r.length_ft / 2.4, r.width_ft / 2.4)} fill="#fff">{tag}</text>
                     </>
                   )}
                 </g>
-              ))}
+                );
+              })}
+              {floorNo === roofNo && (
+                <g>
+                  <rect x={sbSide} y={PD - sbFront - D} width={W} height={D} fill={FILL.terrace} stroke="#1F2937" strokeWidth={0.25} />
+                  <rect x={sbSide + 1} y={roofGardenY} width={W - 2} height={D / 2 - 1.5} fill={FILL.garden} />
+                  <text x={sbSide + W / 2} y={roofGardenY + (D / 2 - 1.5) / 2} textAnchor="middle" dominantBaseline="middle" fontSize={1.3} fontWeight={600} fill="#3F4F3A">Terrace garden</text>
+                  <text x={sbSide + W * 0.62} y={coreRear ? PD - sbFront - D * 0.75 : PD - sbFront - D * 0.25} textAnchor="middle" dominantBaseline="middle" fontSize={1.1} fill="#57534E">Open terrace</text>
+                  {(twin.floors[0]?.rooms ?? []).filter((r) => r.type === 'stair' || r.type === 'lift').map((r) => (
+                    <g key={r.name}>
+                      <rect x={px(r.x)} y={py(r.y, r.width_ft)} width={r.length_ft} height={r.width_ft} fill={FILL[r.type ?? '']} stroke="#1F2937" strokeWidth={0.25} />
+                      <text x={px(r.x) + r.length_ft / 2} y={py(r.y, r.width_ft) + r.width_ft / 2} textAnchor="middle" dominantBaseline="middle" fontSize={0.9} fill="#111827">{r.type === 'lift' ? 'Lift' : 'Stair head'}</text>
+                    </g>
+                  ))}
+                </g>
+              )}
               {LAYERS.includes(mode) && <Overlay mode={mode as LayerMode} twin={twin} floor={floorNo} toScreen={(x, y) => [px(x), PD - sbFront - y]} />}
               {mode === 'structure' && twin.structure.columns.map((c, i) => (
                 <rect key={i} x={px(c.x) - 0.4} y={PD - sbFront - c.y - 0.4} width={0.8} height={((c.size_y_mm ?? 230) / 304.8)} fill="#1D4ED8">
@@ -216,13 +282,16 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             <Legend mode={mode as LayerMode} />
           )}
         </div>
+        {mode !== '3d' && tags.length > 0 && (
+          <p className="mt-2 font-mono text-[11px] text-slate-400">{tags.map((id, i) => `${i + 1} ${roomName(id, floor?.rooms.find((r) => r.name === id)?.type ?? undefined)}`).join(' · ')}</p>
+        )}
       </div>
 
-      <aside className="w-full rounded-2xl border border-slate-800 bg-[#131926] p-5 lg:w-80 print:mt-6 print:w-full print:border-0 print:bg-white print:text-black">
+      <aside className="w-full rounded-2xl border border-slate-800 bg-[#131926] p-5 print:mt-6 print:border-0 print:bg-white print:text-black">
         {room ? (
           <div className="space-y-3">
             <p className="font-mono text-[10px] uppercase text-blue-400">Selected room</p>
-            <h3 className="text-lg font-bold text-white">{label(room.name)}</h3>
+            <h3 className="text-lg font-bold text-white">{roomName(room.name, room.type ?? undefined)}</h3>
             <Row k="Size" v={`${lenShort(room.length_ft, u)} × ${lenShort(room.width_ft, u)} (${area(room.area_sqft, u)})`} />
             <Row k="Door" v={`${room.door_width_mm} mm`} />
             <Row k="Window" v={room.window_area_sqft ? area(room.window_area_sqft, u) : room.exterior ? 'Vent' : 'Internal (duct/exhaust)'} />
@@ -262,10 +331,10 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
                 ))}
               </div>
             )}
-            <ul className="mt-3 space-y-2">
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {decisions.map((d) => (
                 <li key={d.field} className="rounded-lg bg-slate-900/70 p-2.5 text-xs text-slate-300">
-                  <span className="font-semibold text-white">{label(d.field)}:</span> {String(d.value)}
+                  <span className="font-semibold text-white">{FIELD[d.field] ?? label(d.field)}:</span> {decisionValue(d, u, builtUp, twin.plot.plot_area_sqft)}
                   <span className="block text-slate-400">{d.reason}</span>
                 </li>
               ))}
@@ -285,14 +354,14 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
 
         {msg && <p role="status" className="mt-3 rounded-lg bg-slate-900 p-2 text-xs text-slate-200">{msg}</p>}
 
-        <div className="mt-5 grid grid-cols-2 gap-2 border-t border-slate-800/80 pt-4 print:hidden">
+        <div className="mt-5 grid grid-cols-2 gap-2 border-t border-slate-800/80 pt-4 sm:grid-cols-4 print:hidden">
           {canEdit && <button type="button" disabled={busy} onClick={() => edit('mirror')} className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><FlipHorizontal className="h-3.5 w-3.5" />Mirror the plan</button>}
           <a href={dxfUrl(twin.house_id)} onClick={() => track('export', { format: 'dxf' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Download className="h-3.5 w-3.5" />DXF (CAD)</a>
           <button type="button" onClick={() => { track('export', { format: 'pdf' }); window.print(); }} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Printer className="h-3.5 w-3.5" />PDF / print</button>
           <a href={`https://wa.me/?text=${encodeURIComponent('My Nestora house concept: ' + (typeof window !== 'undefined' ? window.location.href.split('?')[0] : ''))}`} target="_blank" rel="noopener noreferrer"
             onClick={() => track('design_shared', { via: 'whatsapp' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Share2 className="h-3.5 w-3.5" />WhatsApp</a>
           <button type="button" onClick={share} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Copy className="h-3.5 w-3.5" />Copy link</button>
-          <a href={`/house/${twin.house_id}/boq`} className="col-span-2 flex items-center justify-between rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500">
+          <a href={`/house/${twin.house_id}/boq`} className="col-span-2 flex items-center justify-between rounded-xl bg-blue-600 sm:col-span-4 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500">
             <span>Cost estimate (3 finish levels)</span><ChevronRight className="h-4 w-4" />
           </a>
         </div>
