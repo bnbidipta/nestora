@@ -1,6 +1,6 @@
 """
 Plan critic: a small transformer over a floor's rooms that scores how real a plan looks (0..1).
-Runs on a free Kaggle GPU. Input: /kaggle/input/nestora-plans/{resplan,swiss}.jsonl (CC BY 4.0).
+Runs on a free Kaggle GPU. Input: /kaggle/input/nestora-plans/{resplan,swiss}.jsonl (CC BY 4.0) + indian.jsonl (traced from MIT-licensed CAD plans).
 Negatives are made from real plans: room sizes shuffled, room types swapped, rooms moved, toilets dropped next to
 kitchens. Output: /kaggle/working/critic.json (weights as plain lists, for a pure-Python forward pass) + metrics.json.
 """
@@ -93,7 +93,8 @@ def main():
     train, test = [], []
     for name, fl in data.items():
         random.Random(7).shuffle(fl)
-        cut = int(0.9 * len(fl)); train += fl[:cut]; test += [(name, x) for x in fl[cut:]]
+        cut = int(0.9 * len(fl)); test += [(name, x) for x in fl[cut:]]
+        train += fl[:cut] * (20 if name == "indian" else 1)  # few traced Indian houses: weight them up
     model = Critic().to(dev)
     opt = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.01)
     lossf = nn.BCEWithLogitsLoss()
