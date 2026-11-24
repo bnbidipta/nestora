@@ -1,7 +1,7 @@
 """
 Sound engine (brief model 9). Outside noise from road class, facade sound insulation (composite STC of wall +
 window), indoor level per room, Sabine reverberation time from room volume and finishes, and privacy between
-rooms sharing a wall. STC and absorption values are textbook typicals (brief §8.6); unverified.
+rooms sharing a wall. STC and absorption values from NBC 2016 Part 8 / ISO 354 tables (research draft); unverified.
 """
 import math
 from typing import Any, Dict, List
@@ -9,13 +9,18 @@ from typing import Any, Dict, List
 from backend.app.models.twin import HouseTwin
 from backend.app.services.engines.geometry import FT, neighbours, walls
 
-STC = {"wall_230_brick": 45, "wall_115_brick": 40, "window_single": 26, "window_double": 32, "door_solid": 30}
+# Rw/STC per NBC 2016 Part 8 Sec 4 tables as compiled in docs/research/data/physics-simulation.md (unverified)
+STC = {"wall_230_brick": 50, "wall_115_brick": 43, "window_single": 29, "window_double": 34, "window_laminated": 39, "door_solid": 30}
 TARGET_DB = {"bedroom": 35, "study": 35, "living": 40, "lounge": 40, "dining": 45, "kitchen": 50}
-TARGET_RT = {"bedroom": 0.8, "study": 0.8, "living": 1.0, "lounge": 1.0, "dining": 1.0}
+TARGET_RT = {"bedroom": 0.6, "study": 0.6, "living": 0.7, "lounge": 0.7, "dining": 0.7}  # residential RT60 guidance
 ALPHA = {"marble": 0.01, "granite": 0.01, "vitrified_tiles": 0.02, "anti_skid_vitrified": 0.02, "anti_skid_ceramic": 0.02,
          "kota_stone": 0.02, "terrazzo": 0.02, "polished_concrete": 0.02, "epoxy_flooring": 0.03, "red_oxide": 0.02,
          "athangudi_tiles": 0.02, "terracotta": 0.04, "wood_look_tiles": 0.02, "teak_wood": 0.1, "engineered_wood": 0.08}
-FURNISHED_SABINS = {"bedroom": 6.0, "living": 8.0, "lounge": 6.0, "study": 4.0, "dining": 4.0}  # bed, sofa, curtains (m²)
+# Furnishing absorption at 500 Hz (m² sabins) = exposed area x ISO 354 coefficient (upholstery/bedding 0.60, pleated curtains 0.49):
+# bedroom: double bed ~6.5 m² exposed x0.6 = 3.9 + curtains ~8.6 m² x0.49 = 4.2  -> ~8
+# living:  3-seat sofa + 2 armchairs ~9 m² x0.6 = 5.4 + curtains on 2 windows ~6  -> ~11
+# study/dining: chairs, curtains, books ~5
+FURNISHED_SABINS = {"bedroom": 8.0, "living": 11.0, "lounge": 9.0, "study": 5.0, "dining": 5.0}
 NOISY = ("living", "lounge", "kitchen", "dining", "stair", "toilet")
 
 
@@ -53,7 +58,9 @@ def analyse(twin: HouseTwin) -> Dict[str, Any]:
                 indoor = level - stc
                 if k in TARGET_DB and indoor > TARGET_DB[k]:
                     stc2 = composite_stc(max(wall_m2, 1), win_m2, STC["window_double"])
-                    glazing = "double" if level - stc2 <= TARGET_DB[k] else "double + acoustic seals"
+                    stc3 = composite_stc(max(wall_m2, 1), win_m2, STC["window_laminated"])
+                    glazing = ("double" if level - stc2 <= TARGET_DB[k] else
+                               "acoustic laminated double" if level - stc3 <= TARGET_DB[k] else "acoustic laminated double + seals")
             area = r.area_sqft * 0.0929
             vol = area * h
             a_floor = area * ALPHA.get(r.material_floor, 0.02)
@@ -69,7 +76,7 @@ def analyse(twin: HouseTwin) -> Dict[str, Any]:
                 "partition_stc": STC["wall_115_brick"],
             }
     return {"outside_db": outside, "rooms": rooms,
-            "method": "Composite STC (wall 230 mm brick STC 45, single glazing STC 26) and Sabine RT60; typical values, unverified."}
+            "method": "Composite STC (230 mm brick Rw 50, single glazing 29, DGU 34, laminated DGU 39 per NBC 2016 Part 8) and Sabine RT60; unverified."}
 
 
 def suggestions(s: Dict[str, Any]) -> List[Dict[str, Any]]:
