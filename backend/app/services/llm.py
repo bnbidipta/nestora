@@ -21,6 +21,29 @@ log = logging.getLogger(__name__)
 def _has(text: str, keywords: List[str]) -> bool:
     """Whole-word match, so "dad" doesn't match "Dadar" and "car" doesn't match "cardamom"."""
     return any(re.search(r"\b" + re.escape(kw) + r"s?\b", text) for kw in keywords)
+
+
+_FTIN = r"(\d{1,3})\s*(?:'|ft|feet|’)?\s*(?:-?\s*(\d{1,2})(?:\s*\d/\d)?\s*(?:\"|in|”|''))?"
+PLOT = re.compile(_FTIN + r"\s*(?:x|×|by|\*)\s*" + _FTIN, re.I)
+DIRS = {"north": "N", "east": "E", "south": "S", "west": "W"}
+
+
+def plot_size(text: str) -> Optional[tuple]:
+    """Deterministic plot size (ft) from text like 58'-2\" x 125'-7\", 30x40, 30 by 40 ft. Never from the LLM."""
+    for m in PLOT.finditer(text.replace("\\", "")):
+        a = int(m.group(1)) + int(m.group(2) or 0) / 12
+        b = int(m.group(3)) + int(m.group(4) or 0) / 12
+        if 10 <= a <= 250 and 10 <= b <= 250:
+            return round(a, 2), round(b, 2)
+    return None
+
+
+def facing(text: str) -> Optional[str]:
+    m = re.search(r"\b(north|east|south|west)(?:[\s-]*(?:east|west))?[\s-]*(?:facing|orientation|oriented|face)\b"
+                  r"|\bfacing\s+(?:the\s+)?(north|east|south|west)\b", text, re.I)
+    return DIRS[(m.group(1) or m.group(2)).lower()] if m else None
+
+
 URL = "https://api.groq.com/openai/v1/chat/completions"
 PII = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+|\+?\d[\d\s-]{8,}\d")
 
@@ -87,9 +110,41 @@ def extract(text: str, style_ids: List[str]) -> Dict[str, Any]:
                     pass
         if "styles" in clean:
             clean["styles"] = [s for s in clean["styles"] if s in style_ids]
+        for k, v in _rooms_and_plot(text).items():
+            clean.setdefault(k, v)
         return {"fields": clean, "evidence": {k: ev[k] for k in clean if k in ev},
                 "questions": [str(q)[:200] for q in (out.get("questions") or [])][:3], "source": "groq"}
     return keyword_extract(text)
+
+
+def _rooms_and_plot(text: str) -> Dict[str, Any]:
+    """Facts stated outright in a brief: plot size and facing (regex), and rooms asked for by name."""
+    t, f = text.lower(), {}
+    ps = plot_size(text)
+    if ps:
+        f["plot_width_ft"], f["plot_depth_ft"] = ps
+    fc = facing(text)
+    if fc:
+        f["facing"] = fc
+    if _has(t, ["corner plot", "corner"]):
+        f["corner_plot"] = True
+    if _has(t, ["lift", "elevator"]):
+        f["lift"] = "lift"
+    if _has(t, ["guest room", "guest bedroom", "guest"]):
+        f["guest_room"] = True
+    if _has(t, ["servant", "servant quarter", "maid", "driver room", "driver's room", "guard room", "staff room", "help room", "domestic help"]):
+        f["help_room"] = True
+    if _has(t, ["dressing", "walk-in", "walk in wardrobe", "w.i.c", "wic"]):
+        f["master_dressing"] = True
+    if _has(t, ["store", "storage room", "kitchen store"]):
+        f["store_room"] = True
+    if _has(t, ["wash area", "washing area", "laundry", "laundary", "utility", "utility area"]):
+        f["laundry"] = True
+    if _has(t, ["puja", "pooja", "mandir", "prayer room"]) and "puja" not in f:
+        f["puja"] = "room"
+    if _has(t, ["car park", "car parking", "car porch", "garage", "porch"]):
+        f["parking"] = "car"
+    return f
 
 
 def keyword_extract(text: str) -> Dict[str, Any]:
@@ -115,6 +170,7 @@ def keyword_extract(text: str) -> Dict[str, Any]:
         f["parking"] = "car"
     if _has(t, ["strict vaastu", "vaastu strict", "100% vaastu", "strict vastu"]):
         f["traditions"] = {"vaastu": "strict"}
+    f.update(_rooms_and_plot(text))
     return {"fields": f, "evidence": {}, "questions": [], "source": "keywords"}
 
 

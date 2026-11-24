@@ -305,6 +305,8 @@ function Header({ title, sub }: { title: string; sub: string }) {
 const FIELD_LABEL: Record<string, string> = {
   elders: 'Elders', elder_mobility_issue: 'Finds stairs hard', kids: 'Children', pets: 'Pets', wfh_people: 'Work from home',
   joint_family: 'Joint family', rental_floor: 'Rental floor', puja: 'Puja', parking: 'Parking', floors_wanted: 'Floors', traditions: 'Traditions', styles: 'Styles',
+  plot_width_ft: 'Plot width (ft)', plot_depth_ft: 'Plot depth (ft)', facing: 'Plot faces', corner_plot: 'Corner plot', lift: 'Lift',
+  guest_room: 'Guest room', help_room: 'Help / servant room', master_dressing: 'Dressing room', store_room: 'Store room', laundry: 'Wash area',
 };
 
 function humanize(v: unknown): string {
