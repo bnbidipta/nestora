@@ -52,7 +52,7 @@ TYPES: Dict[str, Dict[str, Any]] = {
     "utility":        {"zone": "middle", "min_w": 0.9, "area": 0.0, "weight": 0.0, "hab": False, "ext": False, "aspect": 99},
 }
 LIFT_M = 1.6
-MAX_ASPECT = {"porch": 3.0, "kitchen": 3.0, "toilet": 2.6, "balcony": 6.0, "dining": 2.6}
+MAX_ASPECT = {"porch": 3.0, "kitchen": 3.0, "toilet": 2.6, "balcony": 6.0, "dining": 2.6, "puja": 1.8}  # puja: 90th pct of real Indian puja rooms
 # Bedroom/kitchen/stair caps = 90th percentile of real plans (backend/ml/train_plan_prior.py, ResPlan + Swiss Dwellings).
 MAX_AREA = {"bedroom": 21.0, "bedroom_elder": 21.0, "bedroom_guest": 21.0, "bedroom_master": 23.9, "stair": 11.4,
             "laundry": 5.0, "store": 5.0, "help": 9.0, "toilet": 6.0, "puja": 5.0, "passage": 12.0, "kitchen": 13.3, "entrance": 8.0, "dining": 18.0,

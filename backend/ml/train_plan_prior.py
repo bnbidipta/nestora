@@ -17,6 +17,15 @@ from collections import defaultdict
 from statistics import mean, pstdev
 
 SOURCES = {"resplan": "data/resplan/clean.jsonl", "swiss": "data/swiss/clean.jsonl"}
+INDIAN = ("data/extra/indian_houses/room_sizes.jsonl", "data/extra/indian_houses/programs.jsonl")  # printed sizes from 214 CAD plans (MIT)
+FT = 0.3048
+# Printed CAD labels -> Nestora types (first match wins; combined rooms like DRESS/TOILET are skipped)
+LABELS = [("MASTER", "bedroom_master"), ("BED", "bedroom"), ("POWDER", "toilet"), ("PWDR", "toilet"), ("PDRM", "toilet"),
+          ("TOILET", "toilet"), ("FRY", None), ("KITCHEN", "kitchen"), ("DINING", "dining"), ("POOJA", "puja"), ("PUJA", "puja"),
+          ("MANDIR", "puja"), ("SITTING", "living"), ("LOUNGE", "living"), ("DRAWING", "living"), ("LIVING", "living"),
+          ("GREAT ROOM", "living"), ("PASSAGE", "passage"), ("LOBBY", "passage"), ("STAIR", "stair"), ("STORE", "store"),
+          ("PORCH", "porch"), ("FOYER", "entrance"), ("ENTRY", "entrance"), ("BALCONY", "balcony"), ("WASH", "utility"), ("UTILITY", "utility"), ("STUDY", "study"), ("OFFICE", "study")]
+
 BUCKETS = (("small", 0, 90), ("medium", 90, 160), ("large", 160, 1e9))  # floor plate m2: 20x30 ft = 56, 40x60 ft = 223
 OUT = "backend/app/data/learned/plan_prior.json"
 TOL, MIN_SHARED = 0.15, 0.6  # metres: touching tolerance, minimum shared wall to count as adjacent
@@ -140,6 +149,36 @@ def fit(plans):
     }
 
 
+def indian_sizes():
+    """Room sizes printed on real Indian house drawings, bucketed by plot (footprint ~65% of plot)."""
+    plots = {}
+    for l in open(INDIAN[1], encoding="utf-8"):
+        p = json.loads(l)
+        if p.get("plot_w_ft") and p.get("plot_d_ft"):
+            plots[p["id"].replace("indian_house_", "")] = p["plot_w_ft"] * p["plot_d_ft"] * FT * FT * 0.65  # ponytail: rough footprint
+    area, aspect = defaultdict(list), defaultdict(list)
+    for l in open(INDIAN[0], encoding="utf-8"):
+        p = json.loads(l)
+        plate_m2 = plots.get(p["file"].rsplit(".", 1)[0])
+        if not plate_m2:
+            continue
+        for r in p["rooms"]:
+            lab = (r["label"] or "").upper()
+            if "/" in lab or not r.get("w_ft") or not r.get("d_ft"):
+                continue
+            t = next((v for k, v in LABELS if k in lab), None)
+            if not t:
+                continue
+            w, d = r["w_ft"] * FT, r["d_ft"] * FT
+            if min(w, d) < 0.6:
+                continue
+            for key in (t, f"{t}@{bucket(plate_m2)}"):
+                area[key].append(math.log(w * d))
+                aspect[key].append(math.log(max(w, d) / min(w, d)))
+    stat = lambda v: {"mu": round(mean(v), 4), "sd": round(max(pstdev(v), 0.05), 4), "n": len(v)}
+    return {t: {"log_area": stat(area[t]), "log_aspect": stat(aspect[t])} for t in area if len(area[t]) >= 30}
+
+
 def merge(primary, secondary, min_n=200):
     """ResPlan wins where it has enough data (South Asian proportions); Swiss fills stairs, passages, dining."""
     rooms = dict(secondary["rooms"])
@@ -153,7 +192,7 @@ def merge(primary, secondary, min_n=200):
 
 # Nestora room types -> the types the prior knows
 ALIAS = {"bedroom_elder": "bedroom", "bedroom_guest": "bedroom", "bedroom_kid": "bedroom", "help": "bedroom",
-         "lounge": "living", "entrance": "porch"}
+         "lounge": "living"}
 
 
 def realism(rooms, prior, plate_m2=None) -> dict:
@@ -211,9 +250,15 @@ def main():
         cut = int(len(plans) * 0.9)
         fits[name], tests[name] = fit(plans[:cut]), plans[cut:]
     prior = merge(fits["resplan"], fits["swiss"])
+    indian = indian_sizes() if os.path.exists(INDIAN[0]) else {}
+    for t, v in indian.items():  # real Indian houses win for their plot-size buckets, and for room types nobody else has
+        if "@" in t or t not in prior["rooms"]:
+            prior["rooms"][t] = v
     prior["meta"] = {
         "sources": ["ResPlan v1.0.0 (github.com/m-agour/ResPlan), CC BY 4.0",
-                    "Swiss Dwellings v3.0.0 (zenodo.org/records/7788422), CC BY 4.0"],
+                    "Swiss Dwellings v3.0.0 (zenodo.org/records/7788422), CC BY 4.0",
+                    "Indian house CAD plans (huggingface.co/datasets/umesh16071973/Floorplan_Dataset_20022024), MIT: printed room sizes only"],
+        "indian_room_types": sorted(t for t in indian if "@" not in t),
         "attribution": "Floor-plan statistics derived from ResPlan (Abouagour & Garyfallidis) and Swiss Dwellings (Archilyse), both CC BY 4.0.",
         "buckets_m2": {n: [lo, hi] for n, lo, hi in BUCKETS},
         "heldout": {name: heldout(t, prior) for name, t in tests.items()},

@@ -14,14 +14,14 @@
   },
   "bedroom@large": {
    "log_area": {
-    "mu": 2.7953,
-    "sd": 0.322,
-    "n": 6609
+    "mu": 2.9742,
+    "sd": 0.2548,
+    "n": 118
    },
    "log_aspect": {
-    "mu": 0.4382,
-    "sd": 0.3403,
-    "n": 6609
+    "mu": 0.3013,
+    "sd": 0.1313,
+    "n": 118
    }
   },
   "balcony": {
@@ -110,14 +110,14 @@
   },
   "toilet@large": {
    "log_area": {
-    "mu": 1.5835,
-    "sd": 0.3531,
-    "n": 9361
+    "mu": 1.5713,
+    "sd": 0.4461,
+    "n": 125
    },
    "log_aspect": {
-    "mu": 0.5083,
-    "sd": 0.2519,
-    "n": 9361
+    "mu": 0.2891,
+    "sd": 0.2558,
+    "n": 125
    }
   },
   "kitchen": {
@@ -134,14 +134,14 @@
   },
   "kitchen@large": {
    "log_area": {
-    "mu": 2.3931,
-    "sd": 0.3094,
-    "n": 3105
+    "mu": 2.7799,
+    "sd": 0.4588,
+    "n": 81
    },
    "log_aspect": {
-    "mu": 0.4808,
-    "sd": 0.2872,
-    "n": 3105
+    "mu": 0.2426,
+    "sd": 0.1425,
+    "n": 81
    }
   },
   "living": {
@@ -158,14 +158,14 @@
   },
   "living@large": {
    "log_area": {
-    "mu": 3.2883,
-    "sd": 0.3063,
-    "n": 12193
+    "mu": 3.2616,
+    "sd": 0.5185,
+    "n": 129
    },
    "log_aspect": {
-    "mu": 0.8618,
-    "sd": 0.5058,
-    "n": 12193
+    "mu": 0.2864,
+    "sd": 0.2241,
+    "n": 129
    }
   },
   "stair": {
@@ -230,14 +230,14 @@
   },
   "dining@large": {
    "log_area": {
-    "mu": 2.3418,
-    "sd": 0.4302,
-    "n": 448
+    "mu": 3.063,
+    "sd": 0.3623,
+    "n": 40
    },
    "log_aspect": {
-    "mu": 0.4504,
-    "sd": 0.3066,
-    "n": 448
+    "mu": 0.3462,
+    "sd": 0.1548,
+    "n": 40
    }
   },
   "bedroom_master@medium": {
@@ -254,38 +254,38 @@
   },
   "bedroom@medium": {
    "log_area": {
-    "mu": 2.6787,
-    "sd": 0.1777,
-    "n": 8720
+    "mu": 2.7932,
+    "sd": 0.1828,
+    "n": 125
    },
    "log_aspect": {
-    "mu": 0.294,
-    "sd": 0.2782,
-    "n": 8720
+    "mu": 0.293,
+    "sd": 0.1518,
+    "n": 125
    }
   },
   "toilet@medium": {
    "log_area": {
-    "mu": 1.385,
-    "sd": 0.2444,
-    "n": 14369
+    "mu": 1.5814,
+    "sd": 0.4022,
+    "n": 126
    },
    "log_aspect": {
-    "mu": 0.4944,
-    "sd": 0.21,
-    "n": 14369
+    "mu": 0.4561,
+    "sd": 0.2828,
+    "n": 126
    }
   },
   "kitchen@medium": {
    "log_area": {
-    "mu": 2.1452,
-    "sd": 0.2683,
-    "n": 6729
+    "mu": 2.5154,
+    "sd": 0.3464,
+    "n": 64
    },
    "log_aspect": {
-    "mu": 0.4609,
-    "sd": 0.2568,
-    "n": 6729
+    "mu": 0.2944,
+    "sd": 0.1978,
+    "n": 64
    }
   },
   "balcony@medium": {
@@ -371,6 +371,102 @@
     "sd": 0.244,
     "n": 326
    }
+  },
+  "living@medium": {
+   "log_area": {
+    "mu": 3.1598,
+    "sd": 0.5307,
+    "n": 82
+   },
+   "log_aspect": {
+    "mu": 0.3487,
+    "sd": 0.2542,
+    "n": 82
+   }
+  },
+  "entrance": {
+   "log_area": {
+    "mu": 2.4925,
+    "sd": 0.5695,
+    "n": 36
+   },
+   "log_aspect": {
+    "mu": 0.234,
+    "sd": 0.2056,
+    "n": 36
+   }
+  },
+  "porch": {
+   "log_area": {
+    "mu": 3.3631,
+    "sd": 0.4247,
+    "n": 76
+   },
+   "log_aspect": {
+    "mu": 0.2698,
+    "sd": 0.2371,
+    "n": 76
+   }
+  },
+  "porch@medium": {
+   "log_area": {
+    "mu": 3.1706,
+    "sd": 0.3155,
+    "n": 32
+   },
+   "log_aspect": {
+    "mu": 0.2935,
+    "sd": 0.2832,
+    "n": 32
+   }
+  },
+  "puja": {
+   "log_area": {
+    "mu": 1.5524,
+    "sd": 0.5731,
+    "n": 55
+   },
+   "log_aspect": {
+    "mu": 0.2459,
+    "sd": 0.2307,
+    "n": 55
+   }
+  },
+  "porch@large": {
+   "log_area": {
+    "mu": 3.5107,
+    "sd": 0.4534,
+    "n": 41
+   },
+   "log_aspect": {
+    "mu": 0.2565,
+    "sd": 0.2011,
+    "n": 41
+   }
+  },
+  "puja@large": {
+   "log_area": {
+    "mu": 1.6772,
+    "sd": 0.4483,
+    "n": 34
+   },
+   "log_aspect": {
+    "mu": 0.2529,
+    "sd": 0.265,
+    "n": 34
+   }
+  },
+  "entrance@large": {
+   "log_area": {
+    "mu": 2.5785,
+    "sd": 0.5429,
+    "n": 32
+   },
+   "log_aspect": {
+    "mu": 0.2419,
+    "sd": 0.215,
+    "n": 32
+   }
   }
  },
  "adjacency": {
@@ -440,7 +536,19 @@
  "meta": {
   "sources": [
    "ResPlan v1.0.0 (github.com/m-agour/ResPlan), CC BY 4.0",
-   "Swiss Dwellings v3.0.0 (zenodo.org/records/7788422), CC BY 4.0"
+   "Swiss Dwellings v3.0.0 (zenodo.org/records/7788422), CC BY 4.0",
+   "Indian house CAD plans (huggingface.co/datasets/umesh16071973/Floorplan_Dataset_20022024), MIT: printed room sizes only"
+  ],
+  "indian_room_types": [
+   "bedroom",
+   "dining",
+   "entrance",
+   "kitchen",
+   "living",
+   "porch",
+   "puja",
+   "store",
+   "toilet"
   ],
   "attribution": "Floor-plan statistics derived from ResPlan (Abouagour & Garyfallidis) and Swiss Dwellings (Archilyse), both CC BY 4.0.",
   "buckets_m2": {
@@ -459,15 +567,15 @@
   },
   "heldout": {
    "resplan": {
-    "real_mean": 0.655,
-    "shuffled_mean": 0.333,
-    "real_beats_shuffled": 0.994,
+    "real_mean": 0.61,
+    "shuffled_mean": 0.357,
+    "real_beats_shuffled": 0.98,
     "floors": 1353
    },
    "swiss": {
-    "real_mean": 0.608,
-    "shuffled_mean": 0.36,
-    "real_beats_shuffled": 0.993,
+    "real_mean": 0.512,
+    "shuffled_mean": 0.374,
+    "real_beats_shuffled": 0.95,
     "floors": 461
    }
   }
