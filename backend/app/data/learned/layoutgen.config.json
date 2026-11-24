@@ -1,0 +1,1 @@
+{"types": ["living", "kitchen", "dining", "bedroom", "bedroom_master", "toilet", "stair", "passage", "balcony", "store", "porch", "puja", "study", "utility", "entrance", "lift", "dress", "lawn", "other"], "maxr": 32, "d": 128, "layers": 4, "heads": 4, "bins": 24}

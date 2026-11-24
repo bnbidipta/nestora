@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from backend.app.models.brief import Brief
 from backend.app.models.twin import HouseTwin
-from backend.app.services import derive, generator, llm, rank, traditions
+from backend.app.services import derive, generator, layoutgen, llm, pack, rank, traditions
 from backend.app.services.judge import JudgeService
 from backend.app.services.repository import HouseTwinRepository
 
@@ -56,7 +56,23 @@ def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[s
     }
 
 
-VARIANTS = 6  # layouts tried per strategy/arrangement/mirror; the most realistic is kept
+LEARNED = True  # add the learned layout generator's arrangement to the pool
+VARIANTS = 4  # layouts tried per strategy/arrangement/mirror; the most realistic is kept
+
+
+def _learned_arrangements(brief: Brief) -> List[Dict[str, Any]]:
+    """Room types per floor for the brief's first strategy -> learned arrangement (None if the model isn't installed)."""
+    try:
+        r = pack.rules(brief.plot_width_ft * pack.FT, brief.plot_depth_ft * pack.FT, brief.road_width_m, brief.city)
+        st = generator.strategies(brief, r)[0]
+        prog = generator.program(brief, r, st["floors"], st["parking"], st["stilt"])
+        floors: Dict[int, List[str]] = {}
+        for rm in prog:
+            floors.setdefault(rm["floor"], []).append(rm["type"])
+        return layoutgen.arrangements(floors, brief.plot_width_ft / brief.plot_depth_ft)
+    except Exception:  # learned proposals are optional; never block generation
+        log.warning("learned arrangement failed", exc_info=True)
+        return []
 
 
 def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
@@ -66,6 +82,8 @@ def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[s
     proposal = llm.propose_arrangement(brief)
     if proposal:
         extra.append(proposal)
+    if LEARNED:
+        extra.extend(_learned_arrangements(brief))
     cands = generator.candidates(brief, n=24, seed=seed, extra_arrangements=extra, score=rank.realism, variants=VARIANTS)
     scored = [(c, evaluate(brief, c, prefs)) for c in cands]
     good = [x for x in scored if x[1]["pass"]]

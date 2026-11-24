@@ -51,10 +51,16 @@ def score(rooms: List[Dict[str, Any]]) -> Optional[float]:
         return None
     S, heads = M["state"], M["heads"]
     t, g = encode(rooms[:M["maxr"]], M["types"])
-    h = S["emb.weight"][t] + g @ S["geo.weight"].T + S["geo.bias"]
+    h = encoder(S["emb.weight"][t] + g @ S["geo.weight"].T + S["geo.bias"], S, M["layers"], heads)
+    z = _ln(h.mean(0), S["out.0.weight"], S["out.0.bias"]) @ S["out.1.weight"].T + S["out.1.bias"]
+    return float(1 / (1 + math.exp(-float(z[0]))))
+
+
+def encoder(h, S, layers: int, heads: int):
+    """Pre-norm torch TransformerEncoder layers (ReLU feed-forward), keys enc.layers.{i}.*; h: (rooms, d)."""
     n, d = h.shape
     hd = d // heads
-    for L in range(M["layers"]):
+    for L in range(layers):
         p = f"enc.layers.{L}."
         x = _ln(h, S[p + "norm1.weight"], S[p + "norm1.bias"])
         qkv = x @ S[p + "self_attn.in_proj_weight"].T + S[p + "self_attn.in_proj_bias"]
@@ -66,5 +72,4 @@ def score(rooms: List[Dict[str, Any]]) -> Optional[float]:
         x = _ln(h, S[p + "norm2.weight"], S[p + "norm2.bias"])
         ff = np.maximum(x @ S[p + "linear1.weight"].T + S[p + "linear1.bias"], 0)
         h = h + ff @ S[p + "linear2.weight"].T + S[p + "linear2.bias"]
-    z = _ln(h.mean(0), S["out.0.weight"], S["out.0.bias"]) @ S["out.1.weight"].T + S["out.1.bias"]
-    return float(1 / (1 + math.exp(-float(z[0]))))
+    return h
