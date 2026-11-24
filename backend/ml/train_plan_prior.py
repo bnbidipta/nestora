@@ -36,6 +36,44 @@ def touches(a, b) -> bool:
     return vertical or horizontal
 
 
+def outline(r):
+    poly = r.get("polygon")
+    if poly and len(poly) >= 3:
+        return [tuple(p) for p in poly]
+    x, y, w, d = _rect(r)
+    return [(x, y), (x + w, y), (x + w, y + d), (x, y + d)]
+
+
+def shared_wall(a, b) -> float:
+    """Length (m) of boundary two rooms share: parallel edges within TOL of each other, overlapping along their length."""
+    ax, ay, aw, ad = _rect(a)
+    bx, by, bw, bd = _rect(b)
+    if ax > bx + bw + TOL or bx > ax + aw + TOL or ay > by + bd + TOL or by > ay + ad + TOL:
+        return 0.0
+    pa, pb = outline(a), outline(b)
+    total = 0.0
+    for p1, p2 in zip(pa, pa[1:] + pa[:1]):
+        dx, dy = p2[0] - p1[0], p2[1] - p1[1]
+        L = math.hypot(dx, dy)
+        if L < 0.2:
+            continue
+        ux, uy = dx / L, dy / L
+        for q1, q2 in zip(pb, pb[1:] + pb[:1]):
+            # both ends of q within TOL of p's line, then overlap of the projections
+            d1 = abs((q1[0] - p1[0]) * uy - (q1[1] - p1[1]) * ux)
+            d2 = abs((q2[0] - p1[0]) * uy - (q2[1] - p1[1]) * ux)
+            if d1 > TOL or d2 > TOL:
+                continue
+            t1 = (q1[0] - p1[0]) * ux + (q1[1] - p1[1]) * uy
+            t2 = (q2[0] - p1[0]) * ux + (q2[1] - p1[1]) * uy
+            total += max(0.0, min(L, max(t1, t2)) - max(0.0, min(t1, t2)))
+    return total
+
+
+def adjacent(a, b) -> bool:
+    return shared_wall(a, b) >= MIN_SHARED
+
+
 def pair(a: str, b: str) -> str:
     return "|".join(sorted((a, b)))
 
@@ -88,11 +126,10 @@ def fit(plans):
             for i, a in enumerate(types):
                 for b in types[i:]:
                     both[pair(a, b)] += 1
-            square = [r for r in floor if axis_aligned(r)]
             seen = set()
-            for i, a in enumerate(square):
-                for b in square[i + 1:]:
-                    if touches(_rect(a), _rect(b)):
+            for i, a in enumerate(floor):
+                for b in floor[i + 1:]:
+                    if adjacent(a, b):
                         seen.add(pair(a["type"], b["type"]))
             for k in seen:
                 adj[k] += 1
@@ -108,7 +145,8 @@ def merge(primary, secondary, min_n=200):
     rooms = dict(secondary["rooms"])
     rooms.update({t: v for t, v in primary["rooms"].items() if v["log_area"]["n"] >= min_n})
     adjacency = dict(secondary["adjacency"])
-    adjacency.update(primary["adjacency"])
+    multi = ("stair", "passage", "dining")  # flats rarely have these; trust the multi-floor set for their neighbours
+    adjacency.update({k: v for k, v in primary["adjacency"].items() if not any(m in k.split("|") for m in multi)})
     return {"rooms": rooms, "adjacency": adjacency}
 
 
@@ -133,10 +171,12 @@ def realism(rooms, prior, plate_m2=None) -> dict:
         known.append(((t, r), math.exp(-0.5 * (za * za + zr * zr) / 2)))
     size = mean(v for _, v in known) if known else 0.5
     adj = []
-    square = [(t, r) for (t, r), _ in known if axis_aligned(r)]
-    for i, (ta, a) in enumerate(square):
-        for tb, b in square[i + 1:]:
-            if touches(_rect(a), _rect(b)):
+    rooms_t = [(t, r) for (t, r), _ in known]
+    for i, (ta, a) in enumerate(rooms_t):
+        for tb, b in rooms_t[i + 1:]:
+            if "stair" in (ta, tb):
+                continue  # ponytail: Swiss stairs are shared apartment cores; skip until we have house data with internal stairs
+            if adjacent(a, b):
                 p = prior["adjacency"].get(pair(ta, tb))
                 if p is not None:
                     adj.append(p)
