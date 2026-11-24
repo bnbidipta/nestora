@@ -1,8 +1,9 @@
 """The design brief: everything the generator reads. Questionnaire v2 and the eval briefs both produce this."""
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
+LIFT_FROM_FLOORS = 3  # storeys (incl. ground) from which a lift is mandatory
 Strictness = Literal["off", "soft", "strict"]
 TRADITIONS = ("vaastu", "sthapatya_veda", "mayamatam", "feng_shui", "islamic", "jain", "biophilic")
 
@@ -16,9 +17,10 @@ class Brief(BaseModel):
     facing: Literal["N", "E", "S", "W"] = "E"
     corner_plot: bool = False
     soil: Literal["black_cotton", "red_soil", "hard_rock", "coastal"] = "black_cotton"
-    floors_wanted: int = Field(default=2, ge=1, le=3)
+    floors_wanted: int = Field(default=2, ge=1, le=5)  # capped later by what the plot's rules allow
     parking: Literal["none", "two_wheeler", "car"] = "two_wheeler"
-    cars: int = Field(default=1, ge=1, le=2)
+    cars: int = Field(default=1, ge=0, le=4)
+    two_wheelers: int = Field(default=0, ge=0, le=6)
     flood_prone: bool = False  # street waterlogs in monsoon -> higher plinth
     future_extra_floor: bool = False  # size columns/footings for one more storey later
     lift: Literal["none", "shaft", "lift"] = "none"  # shaft = space reserved now, lift fitted later
@@ -28,6 +30,12 @@ class Brief(BaseModel):
     adults: int = Field(default=2, ge=1, le=12)
     elders: int = Field(default=0, ge=0, le=6)
     elder_mobility_issue: bool = False
+    # Household as people describe it (questionnaire v3). When given, adults/elders are derived from these.
+    couples: Optional[int] = Field(default=None, ge=0, le=6)
+    singles: Optional[int] = Field(default=None, ge=0, le=12)
+    elder_couples: Optional[int] = Field(default=None, ge=0, le=3)
+    elder_singles: Optional[int] = Field(default=None, ge=0, le=6)
+    bedrooms: Optional[int] = Field(default=None, ge=1, le=8)  # the user's own count overrides the suggestion
     kids: int = Field(default=0, ge=0, le=8)
     pets: bool = False
     wfh_people: int = Field(default=0, ge=0, le=8)
@@ -46,6 +54,18 @@ class Brief(BaseModel):
     styles_locked: bool = False  # true when the user picked styles by hand; swipes then don't override them
     free_text: str = Field(default="", max_length=2000)
 
+    @model_validator(mode="after")
+    def _derive(self):
+        if self.couples is not None or self.singles is not None:
+            self.adults = min(12, max(1, 2 * (self.couples or 0) + (self.singles or 0)))
+        if self.elder_couples is not None or self.elder_singles is not None:
+            self.elders = min(6, 2 * (self.elder_couples or 0) + (self.elder_singles or 0))
+        if self.floors_wanted >= LIFT_FROM_FLOORS and self.lift == "none":
+            self.lift = "lift"  # a lift is mandatory from 3 storeys
+        if self.parking == "car" and self.cars == 0:
+            self.cars = 1
+        return self
+
     @property
     def dining_seats(self) -> int:
         """Dining table seats, from the household (4, 6 or 8); no longer asked."""
@@ -54,6 +74,13 @@ class Brief(BaseModel):
 
     @property
     def bedrooms_needed(self) -> int:
+        """Bedrooms incl. the elders' (guest room is separate). 1 per couple, single adult, elder couple or single elder,
+        1 per 2 children; the user's own count wins."""
+        if self.bedrooms:
+            return self.bedrooms
+        if self.couples is not None or self.singles is not None:
+            n = max(1, (self.couples or 0) + (self.singles or 0)) + (self.elder_couples or 0) + (self.elder_singles or 0)
+            return min(8, n + -(-self.kids // 2))
         n = max(1, -(-self.adults // 2))  # couples share
         if self.elders:
             n += 1

@@ -12,7 +12,7 @@ import PlotSize from '@/components/PlotSize';
 
 const DEFAULT: Brief = {
   build_type: 'new_plot', city: 'mumbai', plot_width_ft: 30, plot_depth_ft: 40, road_width_m: 9, facing: 'E', corner_plot: false,
-  soil: 'black_cotton', floors_wanted: 2, parking: 'two_wheeler', cars: 1, flood_prone: false, future_extra_floor: false, lift: 'none', low_maintenance: false, budget_inr: 4000000, tier: 'standard', adults: 2, elders: 0,
+  soil: 'black_cotton', floors_wanted: 2, parking: 'two_wheeler', cars: 0, two_wheelers: 1, flood_prone: false, future_extra_floor: false, lift: 'none', low_maintenance: false, budget_inr: 4000000, tier: 'standard', adults: 2, elders: 0, couples: 1, singles: 0, elder_couples: 0, elder_singles: 0, bedrooms: null,
   elder_mobility_issue: false, kids: 0, pets: false, wfh_people: 0, joint_family: false, rental_floor: false, puja: 'nook',
   kitchen: 'closed', guest_room: false, help_room: false, laundry: false, store_room: false, master_dressing: false,
   terrace_garden: false, traditions: { vaastu: 'soft' }, styles: [], styles_locked: false, free_text: '',
@@ -26,6 +26,8 @@ const SHORT: Record<string, string> = {
   vaastu: 'Vaastu', mayamatam: 'Mayamatam (Dravidian Vastu)', sthapatya_veda: 'Sthapatya Veda', feng_shui: 'Feng Shui',
   islamic: 'Islamic home principles', jain: 'Jain home principles', biophilic: 'Nature-led (biophilic) design',
 };
+const LIFT_FROM = 3;  // storeys incl. ground; mirrors backend LIFT_FROM_FLOORS
+const parkingOf = (cars: number, tw: number): Brief['parking'] => (cars > 0 ? 'car' : tw > 0 ? 'two_wheeler' : 'none');
 const ROAD_M: Record<string, number> = { lane: 6, street: 9, main: 12, unsure: 9 };
 const SNAP: Record<string, Brief['facing']> = { N: 'N', NE: 'E', E: 'E', SE: 'S', S: 'S', SW: 'W', W: 'W', NW: 'N', unsure: 'E' };
 const lakh = (n: number) => (n >= 1e7 ? `₹${(n / 1e7).toFixed(2)} crore` : `₹${(n / 1e5).toFixed(1)} lakh`);
@@ -62,6 +64,15 @@ export default function Questionnaire() {
     track('questionnaire_start');
   }, []);
 
+  const elderCount = 2 * (b.elder_couples ?? 0) + (b.elder_singles ?? 0);
+  const suggestedBeds = Math.max(1, (b.couples ?? 0) + (b.singles ?? 0)) + (b.elder_couples ?? 0) + (b.elder_singles ?? 0) + Math.ceil(b.kids / 2) + (b.guest_room ? 1 : 0);
+  const beds = b.bedrooms ? b.bedrooms + (b.guest_room ? 1 : 0) : suggestedBeds;
+  useEffect(() => {  // keep the legacy adults/elders fields in step for the review summary and analytics
+    setB((x) => ({ ...x, adults: Math.max(1, 2 * (x.couples ?? 0) + (x.singles ?? 0)), elders: 2 * (x.elder_couples ?? 0) + (x.elder_singles ?? 0) }));
+  }, [b.couples, b.singles, b.elder_couples, b.elder_singles]);
+  // ponytail: a 2-floor house with elders defaults to a lift once; the user can still turn it off.
+  const hasElders = elderCount > 0;
+  useEffect(() => { if (hasElders && b.floors_wanted === 2) setB((x) => (x.lift === 'none' ? { ...x, lift: 'lift' } : x)); }, [hasElders, b.floors_wanted]);
   const plotOk = b.plot_width_ft >= 15 && b.plot_depth_ft >= 15 && b.plot_width_ft <= 200 && b.plot_depth_ft <= 300;
   const outsidePilot = b.build_type !== 'new_plot' || b.city !== 'mumbai';
   const groups = useMemo(() => Array.from(new Set(styles.map((s) => s.group))), [styles]);
@@ -164,9 +175,13 @@ export default function Questionnaire() {
           <div className="space-y-6">
             <Header title="Who will live here?" />
             <div className="grid gap-5 sm:grid-cols-2">
-              <NumberField label="Adults" value={b.adults} min={1} max={12} onChange={(v) => set('adults', v)} />
-              <NumberField label="Elders" value={b.elders} min={0} max={6} onChange={(v) => set('elders', v)} />
+              <NumberField label="Couples" value={b.couples ?? 0} min={0} max={6} onChange={(v) => set('couples', v)} />
+              <NumberField label="Single adults" value={b.singles ?? 0} min={0} max={12} onChange={(v) => set('singles', v)} />
+              <NumberField label="Elder couples" value={b.elder_couples ?? 0} min={0} max={3} onChange={(v) => set('elder_couples', v)} />
+              <NumberField label="Single elders" value={b.elder_singles ?? 0} min={0} max={6} onChange={(v) => set('elder_singles', v)} />
               <NumberField label="Children" value={b.kids} min={0} max={8} onChange={(v) => set('kids', v)} />
+              <NumberField label="Bedrooms" value={beds} min={1} max={9} onChange={(v) => set('bedrooms', Number.isFinite(v) ? Math.max(1, v - (b.guest_room ? 1 : 0)) : null)}
+                info={`We suggest ${suggestedBeds}: one per couple, single adult, elder couple or single elder, and one per two children${b.guest_room ? ', plus the guest room' : ''}. Change it if you like.`} />
               <NumberField label="People working or studying from home" value={b.wfh_people} min={0} max={8} onChange={(v) => set('wfh_people', v)} />
               <Toggle label="Someone has trouble with stairs" info="They get a ground-floor bedroom, wider doors and step-free access." checked={b.elder_mobility_issue} onChange={(v) => set('elder_mobility_issue', v)} />
               <Toggle label="Pets" checked={b.pets} onChange={(v) => set('pets', v)} />
@@ -179,17 +194,16 @@ export default function Questionnaire() {
           <div className="space-y-6">
             <Header title="Rooms and how you live" />
             <div className="grid gap-5 sm:grid-cols-2">
-              <NumberField label="Floors" value={b.floors_wanted} min={1} max={3} onChange={(v) => set('floors_wanted', v)}
-                info="Counting the ground floor. The building rules for your plot and road set the maximum." />
-              {b.floors_wanted > 1 ? (
-                <Select label="Lift" value={b.lift} onChange={(v) => set('lift', v)}
+              <NumberField label="Floors" value={b.floors_wanted} min={1} max={5} onChange={(v) => setB((x) => ({ ...x, floors_wanted: v, lift: v >= LIFT_FROM ? 'lift' : x.lift }))}
+                info={`Counting the ground floor. The building rules for your plot and road set the maximum. A lift is required from ${LIFT_FROM} floors.`} />
+              {b.floors_wanted >= LIFT_FROM ? (
+                <Select label="Lift" value="lift" onChange={() => {}} info={`Required from ${LIFT_FROM} floors.`} options={[{ value: 'lift', label: 'Lift (required)' }]} />
+              ) : b.floors_wanted > 1 ? (
+                <Select label="Lift" value={b.lift} onChange={(v) => set('lift', v)} info={elderCount > 0 ? 'Recommended, since elders live here.' : undefined}
                   options={[{ value: 'none', label: 'No lift' }, { value: 'shaft', label: 'Leave space for a lift later' }, { value: 'lift', label: 'Lift now' }]} />
               ) : <div className="hidden sm:block" />}
-              <Select label="Parking" value={b.parking} onChange={(v) => set('parking', v)}
-                options={[{ value: 'none', label: 'None' }, { value: 'two_wheeler', label: 'Two-wheeler' }, { value: 'car', label: 'Car' }]} />
-              {b.parking === 'car' ? (
-                <NumberField label="Cars" value={b.cars} min={1} max={2} onChange={(v) => set('cars', v)} />
-              ) : <div className="hidden sm:block" />}
+              <NumberField label="Cars" value={b.cars} min={0} max={4} onChange={(v) => setB((x) => ({ ...x, cars: v, parking: parkingOf(v, x.two_wheelers) }))} />
+              <NumberField label="Two-wheelers" value={b.two_wheelers} min={0} max={6} onChange={(v) => setB((x) => ({ ...x, two_wheelers: v, parking: parkingOf(x.cars, v) }))} />
               <Select label="Kitchen" value={b.kitchen} onChange={(v) => set('kitchen', v)}
                 options={[{ value: 'closed', label: 'Closed kitchen' }, { value: 'open', label: 'Open kitchen' }]} />
               <Select label="Puja / prayer space" value={b.puja} onChange={(v) => set('puja', v)}
@@ -297,6 +311,7 @@ function Header({ title, info }: { title: string; info?: string }) {
 }
 
 const FIELD_LABEL: Record<string, string> = {
+  couples: 'Couples', singles: 'Single adults', elder_couples: 'Elder couples', elder_singles: 'Single elders', two_wheelers: 'Two-wheelers', cars: 'Cars', bedrooms: 'Bedrooms',
   elders: 'Elders', elder_mobility_issue: 'Finds stairs hard', kids: 'Children', pets: 'Pets', wfh_people: 'Work from home',
   joint_family: 'Joint family', rental_floor: 'Rental floor', puja: 'Puja', parking: 'Parking', floors_wanted: 'Floors', traditions: 'Cultural preferences', styles: 'Styles',
   plot_width_ft: 'Plot width (ft)', plot_depth_ft: 'Plot length (ft)', facing: 'Plot faces', corner_plot: 'Corner plot', lift: 'Lift',

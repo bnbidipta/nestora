@@ -76,6 +76,7 @@ export interface Brief {
   floors_wanted: number;
   parking: 'none' | 'two_wheeler' | 'car';
   cars: number;
+  two_wheelers: number;
   flood_prone: boolean;
   future_extra_floor: boolean;
   lift: 'none' | 'shaft' | 'lift';
@@ -85,6 +86,11 @@ export interface Brief {
   adults: number;
   elders: number;
   elder_mobility_issue: boolean;
+  couples?: number;
+  singles?: number;
+  elder_couples?: number;
+  elder_singles?: number;
+  bedrooms?: number | null;
   kids: number;
   pets: boolean;
   wfh_people: number;

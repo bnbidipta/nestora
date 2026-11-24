@@ -22,7 +22,7 @@ import random
 from functools import cache
 from typing import Any, Dict, List, Optional
 
-from backend.app.models.brief import Brief
+from backend.app.models.brief import LIFT_FROM_FLOORS, Brief
 from backend.app.services import pack
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "templates", "draft")
@@ -101,13 +101,13 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
         add("entrance", "entrance", 0, 1)
     elif parking == "car":
         add("porch", "porch", 0, 1)
-        rooms[-1]["min_w"] = 2.7 * brief.cars
-    else:
+        rooms[-1]["min_w"] = 2.7 * max(1, brief.cars)  # a 2.7 m bay per car
+    else:  # two-wheelers park in the open front setback (drawn there), not inside the house
         add("entrance", "entrance", 0, 3)  # optional: the main door can open straight into the living room
     if floors > 1:
         for f in range(floors):
             add(f"stair_{f}", "stair", f, 1)
-            if brief.lift != "none":
+            if brief.lift != "none" or floors >= LIFT_FROM_FLOORS:
                 add(f"lift_{f}", "lift", f, 1)
 
     living_floors = list(range(g, floors))

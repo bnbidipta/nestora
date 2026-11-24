@@ -5,6 +5,7 @@ Rule ids: A_ area/geometry, B_ law, C_ structure, D_ MEP, E_ ergonomics.
 """
 from typing import Any, Dict, List
 
+from backend.app.models.brief import LIFT_FROM_FLOORS
 from backend.app.models.twin import HouseTwin
 from backend.app.services import pack
 
@@ -162,6 +163,8 @@ class JudgeService:
             if any(abs(s.x - x0) > 0.1 or abs(s.y - y0) > 0.1 for _, s in stairs):
                 result.add_failure("B_STAIR_NOT_STACKED", "Stairs on different floors don't line up.")
         lifts = [x for f in twin.floors for x in f.rooms if _kind(x.name, x.type) == "lift"]
+        if len(twin.floors) >= LIFT_FROM_FLOORS and len({id(f) for f in twin.floors for x in f.rooms if _kind(x.name, x.type) == "lift"}) < len(twin.floors):
+            result.add_failure("B_LIFT_MISSING", f"A house of {LIFT_FROM_FLOORS} or more storeys needs a lift on every floor.")
         if lifts and any(abs(l.x - lifts[0].x) > 0.1 or abs(l.y - lifts[0].y) > 0.1 for l in lifts):
             result.add_failure("B_LIFT_NOT_STACKED", "Lift shafts on different floors don't line up.")
         stair_w = md.get("stair_width_mm", r["stair_min_width_m"] * 1000)

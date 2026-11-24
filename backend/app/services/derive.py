@@ -9,7 +9,7 @@ import os
 from functools import cache
 from typing import Any, Dict, List
 
-from backend.app.models.brief import Brief
+from backend.app.models.brief import LIFT_FROM_FLOORS, Brief
 from backend.app.models.twin import (
     ACUnit, BOQ, Beam, ColorWall, Column, Floor, Foundation, HouseTwin, MEP, Room, Structure, StyleInfo, WastePipe,
 )
@@ -207,6 +207,10 @@ def emi(principal: float, annual_rate_pct: float = 8.5, years: int = 20) -> floa
     return principal / n if i == 0 else principal * i * (1 + i) ** n / ((1 + i) ** n - 1)
 
 
+def _max_floors(r) -> int:
+    return max(1, int(r["max_height_m"] // pack.FLOOR_HEIGHT_M))
+
+
 def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], engines: bool = True) -> List[Dict[str, Any]]:
     """Writes the candidate into the twin. Returns explainability records."""
     r, env = cand["rules"], cand["envelope"]
@@ -249,7 +253,9 @@ def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], engines: bool = T
         {"field": "fsi", "value": f"{built:.0f} sqft ({built / twin.plot.plot_area_sqft:.2f})", "source": "pack", "rule": r["fsi_source"],
          "reason": f"Cap {r['fsi_max']} for a {brief.road_width_m:.0f} m road; base {r['fsi_base']}."},
         {"field": "floors", "value": cand["floors"], "source": "user" if cand["floors"] == brief.floors_wanted else "generator",
-         "reason": "As requested." if cand["floors"] == brief.floors_wanted else f"You asked for {brief.floors_wanted}; this option uses {cand['floors']} so the rooms fit."},
+         "reason": "As requested." if cand["floors"] == brief.floors_wanted else (
+             f"You asked for {brief.floors_wanted}; the rules for your plot and road allow up to {_max_floors(r)} (about {r['max_height_m']:.0f} m), so this design uses {cand['floors']}."
+             if brief.floors_wanted > _max_floors(r) else f"You asked for {brief.floors_wanted}; this option uses {cand['floors']} so the rooms fit.")},
         {"field": "parking", "value": cand["strategy"]["parking"] + (" (stilt)" if cand["strategy"]["stilt"] else ""),
          "source": "user" if cand["strategy"]["parking"] == brief.parking else "generator",
          "reason": "As requested." if cand["strategy"]["parking"] == brief.parking else "A car stall (2.5 × 5 m) doesn't fit beside the essential rooms on this plot."},
@@ -271,9 +277,13 @@ def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], engines: bool = T
     if brief.future_extra_floor:
         decisions.append({"field": "future_floor", "value": "columns and footings sized for one more floor", "source": "user",
                           "reason": "Costs more now, avoids rebuilding the frame later. The extra floor still needs FSI and approval."})
-    if brief.lift != "none":
-        decisions.append({"field": "lift", "value": "lift shaft reserved" if brief.lift == "shaft" else "lift", "source": "user",
-                          "reason": "1.6 m core beside the stair on every floor; machine-room-less lift, approvals separate."})
+    if brief.lift != "none" or cand["floors"] >= LIFT_FROM_FLOORS:
+        must = cand["floors"] >= LIFT_FROM_FLOORS
+        decisions.append({"field": "lift", "value": "lift" if must or brief.lift == "lift" else "lift shaft reserved", "source": "rule" if must else "user",
+                          "reason": ("Required from 3 storeys. " if must else "") + "1.6 m core beside the stair on every floor; machine-room-less lift, approvals separate."})
+    if brief.two_wheelers:
+        decisions.append({"field": "two_wheelers", "value": f"{brief.two_wheelers} in the front open space", "source": "user",
+                          "reason": "Scooters and bikes park in the open front setback (about 1 × 2 m each), so they don't use built-up area."})
     if cand["layout"]["dropped"]:
         decisions.append({"field": "dropped_rooms", "value": ", ".join(cand["layout"]["dropped"]), "source": "generator",
                           "reason": "These optional rooms didn't fit at code-minimum sizes."})

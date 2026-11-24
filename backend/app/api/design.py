@@ -49,14 +49,20 @@ def extract(body: ExtractIn):
 
 def brief_sentences(b: Brief) -> List[str]:
     """What we understood, in plain words (shown for confirmation)."""
-    out = [f"{b.plot_width_ft:.0f} × {b.plot_depth_ft:.0f} ft plot on a {b.road_width_m:.0f} m road, facing {dict(N='north', E='east', S='south', W='west')[b.facing]}."]
-    people = [f"{b.adults} adult{'s' * (b.adults > 1)}"]
-    if b.elders:
-        people.append(f"{b.elders} elder{'s' * (b.elders > 1)}" + (" with limited mobility" if b.elder_mobility_issue else ""))
+    out = [f"{b.plot_width_ft:.0f} × {b.plot_depth_ft:.0f} ft plot on a {b.road_width_m:.0f} m road on the {dict(N='north', E='east', S='south', W='west')[b.facing]} side."]
+    pl = lambda n, w, ws=None: f"{n} {w if n == 1 else (ws or w + 's')}"
+    if b.couples is not None or b.singles is not None:
+        people = [pl(c, x, y) for c, x, y in ((b.couples or 0, "couple", None), (b.singles or 0, "single adult", None),
+                                             (b.elder_couples or 0, "elder couple", None), (b.elder_singles or 0, "single elder", None)) if c]
+    else:
+        people = [pl(b.adults, "adult")] + ([pl(b.elders, "elder")] if b.elders else [])
+    if b.elder_mobility_issue:
+        people.append("someone who finds stairs hard")
     if b.kids:
         people.append(f"{b.kids} child{'ren' * (b.kids > 1)}")
     out.append("Living here: " + ", ".join(people) + (", plus pets" if b.pets else "") + ".")
-    out.append(f"{b.floors_wanted} floor(s), about {b.bedrooms_needed} bedroom(s); parking: {b.parking.replace('_', '-')}.")
+    vehicles = [pl(b.cars, "car") if b.cars else "", pl(b.two_wheelers, "two-wheeler") if b.two_wheelers else ""]
+    out.append(f"{pl(b.floors_wanted, 'floor')}, {pl(b.bedrooms_needed, 'bedroom')}" + (f"; parking for {' and '.join(v for v in vehicles if v)}." if any(vehicles) else "; no parking."))
     if b.elders:
         out.append("The elder's bedroom and bathroom go on the ground floor" + (", step-free with wider doors." if b.elder_mobility_issue else "."))
     if b.wfh_people:
@@ -67,15 +73,13 @@ def brief_sentences(b: Brief) -> List[str]:
                               ("a store room", b.store_room), ("a dressing area in the master bedroom", b.master_dressing)) if on]
     if extras:
         out.append("Also: " + ", ".join(extras) + ".")
-    out.append("Open kitchen flowing into the living room." if b.kitchen == "open" else f"Closed kitchen with dining for {b.dining_seats}.")
+    out.append("Open kitchen flowing into the living room." if b.kitchen == "open" else "Closed kitchen with a separate dining area.")
     for txt, on in (("Your street floods in monsoon: we raise the plinth.", b.flood_prone),
                     ("Frame sized for one more floor later.", b.future_extra_floor),
-                    ("Lift shaft reserved." if b.lift == "shaft" else "A lift.", b.lift != "none"),
+                    ("Space reserved for a lift later." if b.lift == "shaft" else "A lift" + (" (required from 3 floors)." if b.floors_wanted >= 3 else "."), b.lift != "none"),
                     ("Low-maintenance finishes.", b.low_maintenance)):
         if on:
             out.append(txt)
-    if b.parking == "car" and b.cars == 2:
-        out.append("Parking for 2 cars if it fits.")
     if b.terrace_garden:
         out.append("Keep an open terrace garden on top where the rules allow.")
     if b.rental_floor:
