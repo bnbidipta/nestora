@@ -92,7 +92,7 @@ export interface Brief {
   rental_floor: boolean;
   puja: 'none' | 'nook' | 'room';
   kitchen: 'closed' | 'open';
-  dining_seats: number;
+  dining_seats?: number;
   guest_room: boolean;
   help_room: boolean;
   laundry: boolean;

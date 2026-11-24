@@ -35,7 +35,6 @@ class Brief(BaseModel):
     rental_floor: bool = False
     puja: Literal["none", "nook", "room"] = "nook"
     kitchen: Literal["closed", "open"] = "closed"  # open: kitchen + dining flow into living, no separate dining room
-    dining_seats: int = Field(default=4, ge=2, le=12)
     guest_room: bool = False
     help_room: bool = False  # live-in domestic help
     laundry: bool = False  # separate wash/utility area
@@ -46,6 +45,12 @@ class Brief(BaseModel):
     styles: List[str] = Field(default_factory=list, max_length=5)
     styles_locked: bool = False  # true when the user picked styles by hand; swipes then don't override them
     free_text: str = Field(default="", max_length=2000)
+
+    @property
+    def dining_seats(self) -> int:
+        """Dining table seats, from the household (4, 6 or 8); no longer asked."""
+        n = self.adults + self.elders + self.kids
+        return min(8, max(4, n + n % 2))
 
     @property
     def bedrooms_needed(self) -> int:

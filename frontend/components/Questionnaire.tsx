@@ -6,20 +6,29 @@ import { ArrowLeft, ArrowRight, Check, Loader2, MapPin, Sparkles } from 'lucide-
 import {
   Brief, StyleEntry, Strictness, createHouse, extractBrief, getStyles, getTraditions, joinWaitlist, saveBrief,
 } from '@/lib/api';
-import { NumberInput, Segmented, Select, Stepper, TextArea, Toggle } from '@/components/form';
+import { InfoTip, NumberField, Select, TextArea, Toggle } from '@/components/form';
 import { track } from '@/lib/analytics';
 
 const DEFAULT: Brief = {
   build_type: 'new_plot', city: 'mumbai', plot_width_ft: 30, plot_depth_ft: 40, road_width_m: 9, facing: 'E', corner_plot: false,
   soil: 'black_cotton', floors_wanted: 2, parking: 'two_wheeler', cars: 1, flood_prone: false, future_extra_floor: false, lift: 'none', low_maintenance: false, budget_inr: 4000000, tier: 'standard', adults: 2, elders: 0,
   elder_mobility_issue: false, kids: 0, pets: false, wfh_people: 0, joint_family: false, rental_floor: false, puja: 'nook',
-  kitchen: 'closed', dining_seats: 4, guest_room: false, help_room: false, laundry: false, store_room: false, master_dressing: false,
+  kitchen: 'closed', guest_room: false, help_room: false, laundry: false, store_room: false, master_dressing: false,
   terrace_garden: false, traditions: { vaastu: 'soft' }, styles: [], styles_locked: false, free_text: '',
 };
 
-const STEPS = ['Plot', 'Household', 'Rooms', 'Traditions', 'Style', 'Budget & words'] as const;
+const STEPS = ['Plot', 'Household', 'Rooms', 'Cultural preferences', 'Style', 'Budget & words'] as const;
+// Road direction (8 points) -> the plot side the generator orients to.
+// ponytail: diagonals snap clockwise to a cardinal side; carry the 8-point value to the backend when Vaastu rules need it.
+const DIRS = [['N', 'North'], ['NE', 'North-east'], ['E', 'East'], ['SE', 'South-east'], ['S', 'South'], ['SW', 'South-west'], ['W', 'West'], ['NW', 'North-west']] as const;
+const SHORT: Record<string, string> = {
+  vaastu: 'Vaastu', mayamatam: 'Mayamatam (Dravidian Vastu)', sthapatya_veda: 'Sthapatya Veda', feng_shui: 'Feng Shui',
+  islamic: 'Islamic home principles', jain: 'Jain home principles', biophilic: 'Nature-led (biophilic) design',
+};
+const ROAD_M: Record<string, number> = { lane: 6, street: 9, main: 12, unsure: 9 };
+const SNAP: Record<string, Brief['facing']> = { N: 'N', NE: 'E', E: 'E', SE: 'S', S: 'S', SW: 'W', W: 'W', NW: 'N', unsure: 'E' };
 const lakh = (n: number) => (n >= 1e7 ? `₹${(n / 1e7).toFixed(2)} crore` : `₹${(n / 1e5).toFixed(1)} lakh`);
-const TIER_HINT = { economy: 'Vitrified tiles, emulsion paint, flush doors', standard: 'Large-format tiles, premium emulsion, solid-core doors', premium: 'Marble/engineered wood, designer finishes, UPVC/aluminium systems' };
+const TIER_INFO = 'Economy: vitrified tiles, emulsion paint, flush doors. Standard: large-format tiles, premium emulsion, solid-core doors. Premium: marble or engineered wood, designer finishes, UPVC/aluminium windows.';
 
 function readCountry(): string | null {
   if (typeof document === 'undefined') return null;
@@ -28,7 +37,10 @@ function readCountry(): string | null {
 
 export default function Questionnaire() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [step, setStepRaw] = useState(0);
+  const [roadDir, setRoadDir] = useState<string>('E');
+  const [roadKind, setRoadKind] = useState<string>('street');
+  const setStep = (f: number | ((s: number) => number)) => { setStepRaw(f); window.scrollTo({ top: 0 }); };
   const [b, setB] = useState<Brief>(DEFAULT);
   const set = <K extends keyof Brief>(k: K, v: Brief[K]) => setB((x) => ({ ...x, [k]: v }));
   const [styles, setStyles] = useState<StyleEntry[]>([]);
@@ -120,105 +132,96 @@ export default function Questionnaire() {
       <section className="rounded-2xl bg-ivory-50 p-6 text-slate-900 shadow-xl sm:p-8">
         {step === 0 && (
           <div className="space-y-6">
-            <Header title="Your plot" sub="Setbacks and floor area (FSI) depend on plot size and the road in front." />
-            <Segmented label="What are you planning?" value={b.build_type} onChange={(v) => set('build_type', v)} options={[
-              { value: 'new_plot', label: 'New house on a plot', sub: 'Full design + estimate' },
-              { value: 'renovation', label: 'Renovate a house', sub: 'Waitlist' },
-              { value: 'flat_interior', label: 'Flat interiors', sub: 'Waitlist' },
-            ]} />
-            <Select label="City" value={b.city} onChange={(v) => set('city', v)} hint="Only Mumbai's building rules are loaded today."
-              options={[{ value: 'mumbai', label: 'Mumbai (pilot)' }, { value: 'pune', label: 'Pune (waitlist)' }, { value: 'bengaluru', label: 'Bengaluru (waitlist)' },
-                { value: 'delhi', label: 'Delhi NCR (waitlist)' }, { value: 'other', label: 'Somewhere else (waitlist)' }]} />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <NumberInput label="Plot width (road side)" unit="ft" value={b.plot_width_ft} min={15} max={200} onChange={(v) => set('plot_width_ft', v)} placeholder="e.g. 30" />
-              <NumberInput label="Plot depth" unit="ft" value={b.plot_depth_ft} min={15} max={300} onChange={(v) => set('plot_depth_ft', v)} placeholder="e.g. 40" />
-            </div>
-            {plotOk && <p className="text-xs text-slate-500">Plot area {(b.plot_width_ft * b.plot_depth_ft).toLocaleString('en-IN')} sqft ({(b.plot_width_ft * b.plot_depth_ft * 0.0929).toFixed(0)} m²).</p>}
-            <Segmented label="Width of the road in front" hint="Wider roads allow more floor area (FSI) under DCPR 2034." value={b.road_width_m} onChange={(v) => set('road_width_m', v)}
-              options={[{ value: 6, label: 'Under 9 m', sub: 'Lane' }, { value: 9, label: '9 m' }, { value: 12, label: '12 m' }, { value: 18, label: '18 m +', sub: 'Main road' }]} />
-            <Segmented label="Which direction does the road side face?" hint="Stand on the road looking at the plot: which way is your back facing? Used for sunlight and traditions."
-              value={b.facing} onChange={(v) => set('facing', v)} options={[{ value: 'N', label: 'North' }, { value: 'E', label: 'East' }, { value: 'S', label: 'South' }, { value: 'W', label: 'West' }]} />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-3">
-                <Toggle label="Corner plot" hint="Roads on two sides" checked={b.corner_plot} onChange={(v) => set('corner_plot', v)} />
-                <Toggle label="The street floods in monsoon" hint="We raise the plinth and add steps plus a ramp" checked={b.flood_prone} onChange={(v) => set('flood_prone', v)} />
-              </div>
-              <Select label="Soil" value={b.soil} onChange={(v) => set('soil', v)} hint="Not sure? Keep the default: we assume the weakest common Mumbai soil."
-                options={[{ value: 'black_cotton', label: "Don't know / black cotton" }, { value: 'red_soil', label: 'Red / murrum soil' }, { value: 'hard_rock', label: 'Hard rock (basalt)' }, { value: 'coastal', label: 'Coastal / reclaimed' }]} />
+            <Header title="Your plot" />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Select label="What are you planning?" value={b.build_type} onChange={(v) => set('build_type', v)} options={[
+                { value: 'new_plot', label: 'New house on a plot' },
+                { value: 'renovation', label: 'Renovate a house (coming soon)' },
+                { value: 'flat_interior', label: 'Flat interiors (coming soon)' },
+              ]} />
+              <Select label="City" value={b.city} onChange={(v) => set('city', v)}
+                options={[{ value: 'mumbai', label: 'Mumbai' }, { value: 'pune', label: 'Pune (coming soon)' }, { value: 'bengaluru', label: 'Bengaluru (coming soon)' },
+                  { value: 'delhi', label: 'Delhi NCR (coming soon)' }, { value: 'other', label: 'Somewhere else (coming soon)' }]} />
+              <NumberField label="Plot width (side on the road)" unit="ft" value={b.plot_width_ft} min={15} max={200} onChange={(v) => set('plot_width_ft', v)} placeholder="e.g. 30" />
+              <NumberField label="Plot length" unit="ft" value={b.plot_depth_ft} min={15} max={300} onChange={(v) => set('plot_depth_ft', v)} placeholder="e.g. 40" />
+              <Select label="Which side of the plot is the road on?" value={roadDir}
+                onChange={(v) => { setRoadDir(v); set('facing', SNAP[v]); }}
+                options={[...DIRS.map(([value, label]) => ({ value: value as string, label })), { value: 'unsure', label: 'Not sure' }]} />
+              <Select label="Road in front" value={roadKind} onChange={(v) => { setRoadKind(v); set('road_width_m', ROAD_M[v]); }}
+                info="The width of the road decides how many floors and how much built-up area the building rules allow."
+                options={[{ value: 'lane', label: 'Narrow lane' }, { value: 'street', label: 'Normal street' }, { value: 'main', label: 'Main road' }, { value: 'unsure', label: 'Not sure' }]} />
+              <Select label="Soil" value={b.soil} onChange={(v) => set('soil', v)} info="Not sure? Keep the default: we assume the weakest common soil, which is the safe choice."
+                options={[{ value: 'black_cotton', label: "Don't know" }, { value: 'red_soil', label: 'Red / murrum soil' }, { value: 'hard_rock', label: 'Hard rock' }, { value: 'coastal', label: 'Coastal / reclaimed' }]} />
+              <div className="hidden sm:block" />
+              <Toggle label="Corner plot" info="Roads on two sides." checked={b.corner_plot} onChange={(v) => set('corner_plot', v)} />
+              <Toggle label="The street floods in monsoon" info="We raise the plinth and add steps plus a ramp." checked={b.flood_prone} onChange={(v) => set('flood_prone', v)} />
             </div>
           </div>
         )}
 
         {step === 1 && (
           <div className="space-y-6">
-            <Header title="Who will live here?" sub="Sizes bedrooms, bathrooms and what goes on the ground floor." />
-            <div className="grid gap-5 sm:grid-cols-3">
-              <Stepper label="Adults" value={b.adults} min={1} max={12} onChange={(v) => set('adults', v)} hint="Couples share a bedroom." />
-              <Stepper label="Elders (65+)" value={b.elders} min={0} max={6} onChange={(v) => set('elders', v)} hint="Get a ground-floor bedroom." />
-              <Stepper label="Children" value={b.kids} min={0} max={8} onChange={(v) => set('kids', v)} />
-            </div>
-            {b.elders > 0 && (
-              <Segmented label="Does anyone find stairs hard?" value={b.elder_mobility_issue ? 'yes' : 'no'} onChange={(v) => set('elder_mobility_issue', v === 'yes')}
-                options={[{ value: 'no', label: 'No' }, { value: 'yes', label: 'Yes', sub: 'Knee pain, walker or wheelchair: wider doors, step-free' }]} />
-            )}
-            <Stepper label="People working or studying from home" value={b.wfh_people} min={0} max={8} onChange={(v) => set('wfh_people', v)} hint="One or more adds a study." />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Toggle label="Pets" hint="Scratch-resistant floors" checked={b.pets} onChange={(v) => set('pets', v)} />
-              <Toggle label="Joint family" hint="Several households sharing the house" checked={b.joint_family} onChange={(v) => set('joint_family', v)} />
+            <Header title="Who will live here?" />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <NumberField label="Adults" value={b.adults} min={1} max={12} onChange={(v) => set('adults', v)} />
+              <NumberField label="Elders" value={b.elders} min={0} max={6} onChange={(v) => set('elders', v)} />
+              <NumberField label="Children" value={b.kids} min={0} max={8} onChange={(v) => set('kids', v)} />
+              <NumberField label="People working or studying from home" value={b.wfh_people} min={0} max={8} onChange={(v) => set('wfh_people', v)} />
+              <Toggle label="Someone has trouble with stairs" info="They get a ground-floor bedroom, wider doors and step-free access." checked={b.elder_mobility_issue} onChange={(v) => set('elder_mobility_issue', v)} />
+              <Toggle label="Pets" checked={b.pets} onChange={(v) => set('pets', v)} />
+              <Toggle label="Joint family" info="Several households sharing the house." checked={b.joint_family} onChange={(v) => set('joint_family', v)} />
             </div>
           </div>
         )}
 
         {step === 2 && (
           <div className="space-y-6">
-            <Header title="Rooms and how you live" sub="Optional rooms are kept only if they fit at legal minimum sizes; we'll tell you what didn't fit." />
-            <Segmented label="Floors" hint="Mumbai allows up to about 10 m (G+2) for houses like this." value={b.floors_wanted} onChange={(v) => set('floors_wanted', v)}
-              options={[{ value: 1, label: 'Ground only' }, { value: 2, label: 'G + 1' }, { value: 3, label: 'G + 2' }]} />
-            <Segmented label="Parking" hint="A car needs a 2.5 × 5 m bay. On 30 ft plots it often doesn't fit; we'll show alternatives." value={b.parking} onChange={(v) => set('parking', v)}
-              options={[{ value: 'none', label: 'None' }, { value: 'two_wheeler', label: 'Two-wheeler' }, { value: 'car', label: 'Car' }]} />
-            {b.parking === 'car' && (
-              <Segmented label="How many cars?" value={b.cars} onChange={(v) => set('cars', v)} options={[{ value: 1, label: '1 car' }, { value: 2, label: '2 cars', sub: 'Needs about 5.4 m of frontage' }]} />
-            )}
-            {b.floors_wanted > 1 && (
-              <Segmented label="Lift" hint="A lift needs a 1.6 m core next to the stair on every floor." value={b.lift} onChange={(v) => set('lift', v)}
-                options={[{ value: 'none', label: 'No lift' }, { value: 'shaft', label: 'Reserve a shaft', sub: 'Fit the lift later' }, { value: 'lift', label: 'Lift now' }]} />
-            )}
-            <Toggle label="We may add a floor later" hint="Columns and footings are sized for it now (costs a little more)" checked={b.future_extra_floor} onChange={(v) => set('future_extra_floor', v)} />
-            <Segmented label="Kitchen" value={b.kitchen} onChange={(v) => set('kitchen', v)}
-              options={[{ value: 'closed', label: 'Closed kitchen', sub: 'Separate dining; keeps smells and tadka out' }, { value: 'open', label: 'Open kitchen', sub: 'Flows into living and dining' }]} />
-            {b.kitchen === 'closed' && (
-              <Segmented label="Dining table seats" value={b.dining_seats} onChange={(v) => set('dining_seats', v)}
-                options={[{ value: 4, label: '4' }, { value: 6, label: '6' }, { value: 8, label: '8' }]} />
-            )}
-            <Segmented label="Puja / prayer space" value={b.puja} onChange={(v) => set('puja', v)}
-              options={[{ value: 'none', label: 'None' }, { value: 'nook', label: 'A corner or niche' }, { value: 'room', label: 'A separate room' }]} />
-            <div className="grid gap-3 sm:grid-cols-2">
+            <Header title="Rooms and how you live" />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <NumberField label="Floors" value={b.floors_wanted} min={1} max={3} onChange={(v) => set('floors_wanted', v)}
+                info="Counting the ground floor. The building rules for your plot and road set the maximum." />
+              {b.floors_wanted > 1 ? (
+                <Select label="Lift" value={b.lift} onChange={(v) => set('lift', v)}
+                  options={[{ value: 'none', label: 'No lift' }, { value: 'shaft', label: 'Leave space for a lift later' }, { value: 'lift', label: 'Lift now' }]} />
+              ) : <div className="hidden sm:block" />}
+              <Select label="Parking" value={b.parking} onChange={(v) => set('parking', v)}
+                options={[{ value: 'none', label: 'None' }, { value: 'two_wheeler', label: 'Two-wheeler' }, { value: 'car', label: 'Car' }]} />
+              {b.parking === 'car' ? (
+                <NumberField label="Cars" value={b.cars} min={1} max={2} onChange={(v) => set('cars', v)} />
+              ) : <div className="hidden sm:block" />}
+              <Select label="Kitchen" value={b.kitchen} onChange={(v) => set('kitchen', v)}
+                options={[{ value: 'closed', label: 'Closed kitchen' }, { value: 'open', label: 'Open kitchen' }]} />
+              <Select label="Puja / prayer space" value={b.puja} onChange={(v) => set('puja', v)}
+                options={[{ value: 'none', label: 'None' }, { value: 'nook', label: 'A corner or niche' }, { value: 'room', label: 'A separate room' }]} />
               <Toggle label="Guest bedroom" checked={b.guest_room} onChange={(v) => set('guest_room', v)} />
               <Toggle label="Room for live-in help" checked={b.help_room} onChange={(v) => set('help_room', v)} />
-              <Toggle label="Wash / utility area" hint="Wet kitchen work, washing machine, drying" checked={b.laundry} onChange={(v) => set('laundry', v)} />
+              <Toggle label="Wash / utility area" checked={b.laundry} onChange={(v) => set('laundry', v)} />
               <Toggle label="Store room" checked={b.store_room} onChange={(v) => set('store_room', v)} />
               <Toggle label="Dressing area in master bedroom" checked={b.master_dressing} onChange={(v) => set('master_dressing', v)} />
-              <Toggle label="Terrace garden on top" hint="Leaves part of the top floor open" checked={b.terrace_garden} onChange={(v) => set('terrace_garden', v)} />
-              <Toggle label="Top floor as a rental unit" hint="Separate kitchen and entry" checked={b.rental_floor} onChange={(v) => set('rental_floor', v)} />
+              <Toggle label="Terrace garden on top" checked={b.terrace_garden} onChange={(v) => set('terrace_garden', v)} />
+              <Toggle label="Top floor as a rental unit" info="Separate kitchen and entry." checked={b.rental_floor} onChange={(v) => set('rental_floor', v)} />
+              <Toggle label="We may add a floor later" info="Columns and footings are sized for it now, which costs a little more." checked={b.future_extra_floor} onChange={(v) => set('future_extra_floor', v)} />
             </div>
           </div>
         )}
 
         {step === 3 && (
-          <div className="space-y-5">
-            <Header title="Traditions" sub="Choose how strictly each one should guide room placement. Building codes and safety always come first." />
+          <div className="space-y-6">
+            <Header title="Cultural preferences" info="Choose how strictly each one should guide where rooms go. Building codes and safety always come first." />
             {traditions.length === 0 && <p className="text-sm text-slate-500">Loading…</p>}
-            {traditions.map((t) => (
-              <Segmented key={t.id} label={t.name} hint={t.description} value={(b.traditions[t.id] ?? 'off') as Strictness}
-                onChange={(v) => set('traditions', { ...b.traditions, [t.id]: v })}
-                options={[{ value: 'off', label: 'Off' }, { value: 'soft', label: 'Prefer', sub: 'Follow where it fits' }, { value: 'strict', label: 'Strict', sub: 'Reject layouts that break core rules' }]} />
-            ))}
+            <div className="grid gap-5 sm:grid-cols-2">
+              {traditions.map((t) => (
+                <Select key={t.id} label={SHORT[t.id] ?? t.name} info={t.description} value={(b.traditions[t.id] ?? 'off') as Strictness}
+                  onChange={(v) => set('traditions', { ...b.traditions, [t.id]: v })}
+                  options={[{ value: 'off', label: 'Off' }, { value: 'soft', label: 'Follow where it fits' }, { value: 'strict', label: 'Strictly' }]} />
+              ))}
+            </div>
           </div>
         )}
 
         {step === 4 && (
           <div className="space-y-5">
-            <Header title="Style" sub="Pick up to 3 styles you love, or skip and let a quick photo swipe find your taste." />
+            <Header title="Style" />
             <div className="flex flex-wrap gap-2" role="tablist" aria-label="Style groups">
               {groups.map((g) => (
                 <button key={g} role="tab" aria-selected={g === group} type="button" onClick={() => setGroup(g)}
@@ -230,35 +233,30 @@ export default function Questionnaire() {
                 const on = b.styles.includes(s.id);
                 return (
                   <button key={s.id} type="button" aria-pressed={on} onClick={() => toggleStyle(s.id)}
-                    className={`rounded-xl border bg-white p-3 text-left transition ${on ? 'border-sage-700 ring-2 ring-sage-700' : 'border-slate-300 hover:border-slate-400'}`}>
-                    <div className="mb-2 flex h-6 overflow-hidden rounded">
-                      {(['wall', 'accent', 'wood', 'floor'] as const).map((k) => <span key={k} title={k} className="flex-1" style={{ background: s.palette[k] }} />)}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-slate-900">{s.name}</span>
-                      {on && <Check className="h-4 w-4 text-sage-700" aria-hidden />}
-                    </div>
-                    <p className="mt-1 text-xs text-slate-600">{s.features.slice(0, 3).map((f) => (f.length > 48 ? f.slice(0, 46).replace(/[\s,(]+\S*$/, '') + '…' : f)).join(' · ')}</p>
-                    <p className="mt-1 text-xs text-slate-500">Mumbai: {s.mumbai}</p>
+                    className={`flex h-14 items-center justify-between rounded-xl border bg-white px-4 text-left transition ${on ? 'border-sage-700 ring-2 ring-sage-700' : 'border-slate-300 hover:border-slate-400'}`}>
+                    <span className="font-semibold text-slate-900">{s.name}</span>
+                    {on && <Check className="h-4 w-4 text-sage-700" aria-hidden />}
                   </button>
                 );
               })}
             </div>
-            <Toggle label="Prefer low-maintenance finishes" hint="Swaps real wood, lime plaster and raw terracotta for durable lookalikes" checked={b.low_maintenance} onChange={(v) => set('low_maintenance', v)} />
-            <p className="text-sm text-slate-600">{b.styles.length ? `Chosen: ${b.styles.map((id) => styles.find((s) => s.id === id)?.name ?? id).join(', ')}` : 'Nothing chosen: the photo swipe will decide.'}</p>
+            <Toggle label="Prefer low-maintenance finishes" info="Swaps real wood, lime plaster and raw terracotta for durable lookalikes." checked={b.low_maintenance} onChange={(v) => set('low_maintenance', v)} />
+            {b.styles.length > 0 && <p className="text-sm text-slate-600">Chosen: {b.styles.map((id) => styles.find((s) => s.id === id)?.name ?? id).join(', ')}</p>}
           </div>
         )}
 
         {step === 5 && (
           <div className="space-y-6">
-            <Header title="Budget, and anything else" sub="Construction budget, not including the land." />
-            <NumberInput label="Construction budget" unit="₹" step={100000} min={100000} value={b.budget_inr} onChange={(v) => set('budget_inr', v)}
-              hint={Number.isFinite(b.budget_inr) ? `${lakh(b.budget_inr)} · excludes GST and approvals` : 'Enter an amount in rupees'} placeholder="e.g. 4000000" />
-            <Segmented label="Finish level" value={b.tier} onChange={(v) => set('tier', v)}
-              options={(['economy', 'standard', 'premium'] as const).map((t) => ({ value: t, label: t[0].toUpperCase() + t.slice(1), sub: TIER_HINT[t] }))} />
+            <Header title="Budget, and anything else" />
+            <div className="grid gap-5 sm:grid-cols-2">
+              <NumberField label="Construction budget" unit="₹" step={100000} min={100000} value={b.budget_inr} onChange={(v) => set('budget_inr', v)}
+                info={`Construction only, not the land. Excludes GST and approvals.${Number.isFinite(b.budget_inr) ? ` That is ${lakh(b.budget_inr)}.` : ''}`} placeholder="e.g. 4000000" />
+              <Select label="Finish level" value={b.tier} onChange={(v) => set('tier', v)} info={TIER_INFO}
+                options={(['economy', 'standard', 'premium'] as const).map((t) => ({ value: t, label: t[0].toUpperCase() + t.slice(1) }))} />
+            </div>
             <TextArea label="In your own words (optional)" rows={5} value={b.free_text} onChange={(v) => set('free_text', v)}
               placeholder="e.g. My mother has knee pain and can't climb stairs. We cook a lot of non-veg, so a closed kitchen. Strict Vaastu for the puja and kitchen."
-              hint="English, Hindi or Hinglish. Don't include names or phone numbers." />
+              info="English, Hindi or Hinglish. Don't include names or phone numbers." />
             <button type="button" onClick={readWords} disabled={busy || !b.free_text.trim()}
               className="inline-flex items-center gap-2 rounded-lg border border-sage-700 bg-white px-4 py-2 text-sm font-semibold text-sage-800 hover:bg-sage-50 disabled:opacity-50">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Read my words
@@ -293,19 +291,14 @@ export default function Questionnaire() {
   );
 }
 
-function Header({ title, sub }: { title: string; sub: string }) {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
-      <p className="mt-1 text-sm text-slate-600">{sub}</p>
-    </div>
-  );
+function Header({ title, info }: { title: string; info?: string }) {
+  return <h1 className="flex items-center gap-2 text-2xl font-bold text-slate-900">{title}{info && <InfoTip text={info} />}</h1>;
 }
 
 const FIELD_LABEL: Record<string, string> = {
   elders: 'Elders', elder_mobility_issue: 'Finds stairs hard', kids: 'Children', pets: 'Pets', wfh_people: 'Work from home',
-  joint_family: 'Joint family', rental_floor: 'Rental floor', puja: 'Puja', parking: 'Parking', floors_wanted: 'Floors', traditions: 'Traditions', styles: 'Styles',
-  plot_width_ft: 'Plot width (ft)', plot_depth_ft: 'Plot depth (ft)', facing: 'Plot faces', corner_plot: 'Corner plot', lift: 'Lift',
+  joint_family: 'Joint family', rental_floor: 'Rental floor', puja: 'Puja', parking: 'Parking', floors_wanted: 'Floors', traditions: 'Cultural preferences', styles: 'Styles',
+  plot_width_ft: 'Plot width (ft)', plot_depth_ft: 'Plot length (ft)', facing: 'Plot faces', corner_plot: 'Corner plot', lift: 'Lift',
   guest_room: 'Guest room', help_room: 'Help / servant room', master_dressing: 'Dressing room', store_room: 'Store room', laundry: 'Wash area',
 };
 
@@ -389,7 +382,7 @@ function Review({ understood, waitlist, brief, houseId, onEdit, onNext }: {
           <>
             {!brief.styles_locked && <button type="button" onClick={() => onNext(true)} className="rounded-lg bg-sage-800 px-4 py-2 text-sm font-semibold text-white">Find my style (1 min swipe)</button>}
             <button type="button" onClick={() => onNext(false)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${brief.styles_locked ? 'bg-sage-800 text-white' : 'border border-sage-800 text-sage-800'}`}>
-              {brief.styles_locked ? 'See 4 layout options' : 'Skip to layouts'}
+              {brief.styles_locked ? 'See options' : 'Skip to options'}
             </button>
           </>
         )}
