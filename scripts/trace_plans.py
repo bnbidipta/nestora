@@ -54,15 +54,16 @@ def is_line_drawing(img: np.ndarray) -> bool:
 
 
 def solid_walls(img: np.ndarray, boxes, ppf: float) -> np.ndarray:
-    """Black-line drawings: erase text, fuse each wall's two parallel lines into a solid band (closing at ~wall
-    thickness), then drop anything thinner than a 4.5-inch wall (furniture, door arcs, dimension lines) by opening."""
+    """Black-line drawings: erase text, keep only long straight horizontal/vertical lines (walls run for feet;
+    furniture edges, door arcs and hatching are short or curved), then fuse each wall's two parallel lines."""
     dark = (img.max(axis=2) < 90).astype(np.uint8) * 255
     for x0, y0, x1, y1 in boxes:
         dark[max(0, y0 - 3):y1 + 3, max(0, x0 - 3):x1 + 3] = 0
-    k1 = max(3, int(0.8 * ppf))
-    fused = cv2.morphologyEx(dark, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (k1, k1)))
-    k2 = max(3, int(0.3 * ppf))
-    return cv2.morphologyEx(fused, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (k2, k2)))
+    L = max(15, int(3.0 * ppf))
+    lines = cv2.bitwise_or(cv2.morphologyEx(dark, cv2.MORPH_OPEN, np.ones((1, L), np.uint8)),
+                           cv2.morphologyEx(dark, cv2.MORPH_OPEN, np.ones((L, 1), np.uint8)))
+    k = max(3, int(0.9 * ppf))
+    return cv2.morphologyEx(lines, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (k, k)))
 
 
 def barriers(img: np.ndarray, gap_px: int = 0, walls=None) -> np.ndarray:
@@ -81,6 +82,9 @@ def outline_px(img: np.ndarray) -> float:
     """Longest side of the building's linework, ignoring a page frame (a component spanning most of the sheet)."""
     m = wall_mask(img).astype(np.uint8)
     H, W = m.shape
+    if not is_line_drawing(img):  # blue wall layer: no page frame in it
+        ys, xs = np.nonzero(m)
+        return float(max(xs.max() - xs.min(), ys.max() - ys.min()))
     n, lab, st, _ = cv2.connectedComponentsWithStats(m, connectivity=8)
     keep = [i for i in range(1, n) if not (st[i][2] > 0.85 * W or st[i][3] > 0.85 * H) and st[i][4] > 50]
     if not keep:
@@ -206,9 +210,11 @@ def trace(path: str, plot_long_ft: float, eng):
             rooms.append({"type": L["type"], "label": L["text"], "dims_ft": L["dims_ft"], "area_px": float(cv2.contourArea(c)),
                           "split": len(Ls) > 1, "polygon_px": cv2.approxPolyDP(c, 3, True)[:, 0, :].tolist()})
     ratios = [math.sqrt(r["area_px"] / (r["dims_ft"][0] * r["dims_ft"][1])) for r in rooms if r["dims_ft"] and not r["split"]]
-    if len(ratios) < 3:
-        return {"file": os.path.basename(path), "ok": False, "reason": "too few sized rooms to fix the scale", "rooms": []}
-    ppf = float(np.median(ratios))
+    if not rooms:
+        return {"file": os.path.basename(path), "ok": False, "reason": "no labelled rooms enclosed", "rooms": []}
+    # scale: median over sized single-label rooms; with fewer than 3, fall back to the plot-size estimate
+    # (each room still has to match its printed size within 15% to count, so a poor scale only loses rooms)
+    ppf = float(np.median(ratios)) if len(ratios) >= 3 else ppf0
     for r in rooms:
         printed = r["dims_ft"][0] * r["dims_ft"][1] if r["dims_ft"] else None
         r["area_ft2"] = round(r["area_px"] / ppf ** 2, 1)
