@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import { track } from '@/lib/analytics';
 import { area, len, lenShort, loadRegional, plotArea, useLengthUnit } from '@/lib/units';
 import { FILL, fitLabel, roomName } from '@/lib/rooms';
+import { MepLayer, MepLegend, MepOverlay } from '@/components/MepLayer';
 
 type ViewMode = 'plan' | 'structure' | '3d' | LayerMode;
 const LAYERS: string[] = ['paint', 'decor', 'mep', 'climate', 'sound'];
@@ -39,6 +40,8 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const [canEdit, setCanEdit] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
   const u = useLengthUnit();
+  const [mepLayers, setMepLayers] = useState<Set<MepLayer>>(new Set<MepLayer>(['drain']));
+  const toggleMep = (l: MepLayer) => setMepLayers((s) => { const x = new Set(s); x.has(l) ? x.delete(l) : x.add(l); return x; });
 
   useEffect(() => {
     // Editable by the creating browser (edit token) or a signed-in owner; the API enforces it either way.
@@ -178,7 +181,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
           <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
-            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'MEP', Zap], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
+            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'Services', Zap], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
               <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${mode === id ? 'bg-blue-600 text-white' : 'border border-slate-700 text-slate-300 hover:text-white'}`}>
                 <Icon className="h-3.5 w-3.5" aria-hidden />{text}
@@ -264,7 +267,8 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
                   ))}
                 </g>
               )}
-              {LAYERS.includes(mode) && <Overlay mode={mode as LayerMode} twin={twin} floor={floorNo} toScreen={(x, y) => [px(x), PD - sbFront - y]} />}
+              {mode === 'mep' ? <MepOverlay twin={twin} floor={floorNo} layers={mepLayers} toScreen={(x, y) => [px(x), PD - sbFront - y]} />
+                : LAYERS.includes(mode) && <Overlay mode={mode as LayerMode} twin={twin} floor={floorNo} toScreen={(x, y) => [px(x), PD - sbFront - y]} />}
               {mode === 'structure' && twin.structure.columns.map((c, i) => (
                 <rect key={i} x={px(c.x) - 0.4} y={PD - sbFront - c.y - 0.4} width={0.8} height={((c.size_y_mm ?? 230) / 304.8)} fill="#1D4ED8">
                   <title>{`C${i + 1}: 230×${c.size_y_mm ?? 230} mm, ${c.load_tons} t`}</title>
@@ -279,7 +283,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             </svg>
           )}
           {LAYERS.includes(mode) && (
-            <Legend mode={mode as LayerMode} />
+            mode === 'mep' ? <MepLegend layers={mepLayers} toggle={toggleMep} loadKw={(twin as any).mep_routes?.connected_load_kw} /> : <Legend mode={mode as LayerMode} />
           )}
         </div>
         {mode !== '3d' && tags.length > 0 && (

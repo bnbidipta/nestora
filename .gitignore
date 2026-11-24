@@ -48,3 +48,6 @@ data/mlstruct/
 data/extra/
 data/weather/
 data/kaggle/
+
+# local dev house store (tests create houses here)
+backend/app/data/storage/houses/
