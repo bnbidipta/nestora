@@ -172,7 +172,7 @@ def indian_sizes():
             w, d = r["w_ft"] * FT, r["d_ft"] * FT
             if min(w, d) < 0.6:
                 continue
-            for key in (t, f"{t}@{bucket(plate_m2)}"):
+            for key in (f"{t}@IN", f"{t}@{bucket(plate_m2)}@IN"):
                 area[key].append(math.log(w * d))
                 aspect[key].append(math.log(max(w, d) / min(w, d)))
     stat = lambda v: {"mu": round(mean(v), 4), "sd": round(max(pstdev(v), 0.05), 4), "n": len(v)}
@@ -195,14 +195,16 @@ ALIAS = {"bedroom_elder": "bedroom", "bedroom_guest": "bedroom", "bedroom_kid": 
          "lounge": "living"}
 
 
-def realism(rooms, prior, plate_m2=None) -> dict:
+def realism(rooms, prior, plate_m2=None, region=None) -> dict:
     """0..1: how typical the room sizes, proportions and adjacencies are vs real plans.
     rooms: [{type,x,y,w,d,polygon?}] in metres, one floor; plate_m2 picks the plot-size bucket."""
     bk = bucket(plate_m2) if plate_m2 else None
     known = []
     for r in rooms:
         t = ALIAS.get(r["type"], r["type"])
-        s = prior["rooms"].get(f"{t}@{bk}") or prior["rooms"].get(t)
+        R = prior["rooms"]
+        # most specific first: same region + plot size, any region + plot size, same region, anything
+        s = (region and R.get(f"{t}@{bk}@{region}")) or R.get(f"{t}@{bk}") or (region and R.get(f"{t}@{region}")) or R.get(t)
         if not s or r["w"] <= 0 or r["d"] <= 0:
             continue
         ar, asp = area_aspect(r)
@@ -251,14 +253,12 @@ def main():
         fits[name], tests[name] = fit(plans[:cut]), plans[cut:]
     prior = merge(fits["resplan"], fits["swiss"])
     indian = indian_sizes() if os.path.exists(INDIAN[0]) else {}
-    for t, v in indian.items():  # real Indian houses win for their plot-size buckets, and for room types nobody else has
-        if "@" in t or t not in prior["rooms"]:
-            prior["rooms"][t] = v
+    prior["rooms"].update(indian)  # "@IN" keys: used only when scoring Indian homes (region="IN")
     prior["meta"] = {
         "sources": ["ResPlan v1.0.0 (github.com/m-agour/ResPlan), CC BY 4.0",
                     "Swiss Dwellings v3.0.0 (zenodo.org/records/7788422), CC BY 4.0",
                     "Indian house CAD plans (huggingface.co/datasets/umesh16071973/Floorplan_Dataset_20022024), MIT: printed room sizes only"],
-        "indian_room_types": sorted(t for t in indian if "@" not in t),
+        "indian_room_types": sorted({t.split("@")[0] for t in indian}),
         "attribution": "Floor-plan statistics derived from ResPlan (Abouagour & Garyfallidis) and Swiss Dwellings (Archilyse), both CC BY 4.0.",
         "buckets_m2": {n: [lo, hi] for n, lo, hi in BUCKETS},
         "heldout": {name: heldout(t, prior) for name, t in tests.items()},

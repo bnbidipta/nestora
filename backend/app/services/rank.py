@@ -49,7 +49,7 @@ def realism(c: Dict[str, Any]) -> float:
     rooms = c["layout"]["rooms"]
     floors = sorted({r["floor"] for r in rooms})
     plate = c["envelope"]["area_m2"]
-    return sum(score_rooms([r for r in rooms if r["floor"] == f], _prior(), plate)["score"] for f in floors) / len(floors) if floors else 0.0
+    return sum(score_rooms([r for r in rooms if r["floor"] == f], _prior(), plate, "IN")["score"] for f in floors) / len(floors) if floors else 0.0
 
 
 def brief_fit(brief: Brief, c: Dict[str, Any]) -> Dict[str, float]:

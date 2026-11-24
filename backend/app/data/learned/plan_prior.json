@@ -14,14 +14,14 @@
   },
   "bedroom@large": {
    "log_area": {
-    "mu": 2.9742,
-    "sd": 0.2548,
-    "n": 118
+    "mu": 2.7953,
+    "sd": 0.322,
+    "n": 6609
    },
    "log_aspect": {
-    "mu": 0.3013,
-    "sd": 0.1313,
-    "n": 118
+    "mu": 0.4382,
+    "sd": 0.3403,
+    "n": 6609
    }
   },
   "balcony": {
@@ -110,14 +110,14 @@
   },
   "toilet@large": {
    "log_area": {
-    "mu": 1.5713,
-    "sd": 0.4461,
-    "n": 125
+    "mu": 1.5835,
+    "sd": 0.3531,
+    "n": 9361
    },
    "log_aspect": {
-    "mu": 0.2891,
-    "sd": 0.2558,
-    "n": 125
+    "mu": 0.5083,
+    "sd": 0.2519,
+    "n": 9361
    }
   },
   "kitchen": {
@@ -134,14 +134,14 @@
   },
   "kitchen@large": {
    "log_area": {
-    "mu": 2.7799,
-    "sd": 0.4588,
-    "n": 81
+    "mu": 2.3931,
+    "sd": 0.3094,
+    "n": 3105
    },
    "log_aspect": {
-    "mu": 0.2426,
-    "sd": 0.1425,
-    "n": 81
+    "mu": 0.4808,
+    "sd": 0.2872,
+    "n": 3105
    }
   },
   "living": {
@@ -158,14 +158,14 @@
   },
   "living@large": {
    "log_area": {
-    "mu": 3.2616,
-    "sd": 0.5185,
-    "n": 129
+    "mu": 3.2883,
+    "sd": 0.3063,
+    "n": 12193
    },
    "log_aspect": {
-    "mu": 0.2864,
-    "sd": 0.2241,
-    "n": 129
+    "mu": 0.8618,
+    "sd": 0.5058,
+    "n": 12193
    }
   },
   "stair": {
@@ -230,14 +230,14 @@
   },
   "dining@large": {
    "log_area": {
-    "mu": 3.063,
-    "sd": 0.3623,
-    "n": 40
+    "mu": 2.3418,
+    "sd": 0.4302,
+    "n": 448
    },
    "log_aspect": {
-    "mu": 0.3462,
-    "sd": 0.1548,
-    "n": 40
+    "mu": 0.4504,
+    "sd": 0.3066,
+    "n": 448
    }
   },
   "bedroom_master@medium": {
@@ -254,38 +254,38 @@
   },
   "bedroom@medium": {
    "log_area": {
-    "mu": 2.7932,
-    "sd": 0.1828,
-    "n": 125
+    "mu": 2.6787,
+    "sd": 0.1777,
+    "n": 8720
    },
    "log_aspect": {
-    "mu": 0.293,
-    "sd": 0.1518,
-    "n": 125
+    "mu": 0.294,
+    "sd": 0.2782,
+    "n": 8720
    }
   },
   "toilet@medium": {
    "log_area": {
-    "mu": 1.5814,
-    "sd": 0.4022,
-    "n": 126
+    "mu": 1.385,
+    "sd": 0.2444,
+    "n": 14369
    },
    "log_aspect": {
-    "mu": 0.4561,
-    "sd": 0.2828,
-    "n": 126
+    "mu": 0.4944,
+    "sd": 0.21,
+    "n": 14369
    }
   },
   "kitchen@medium": {
    "log_area": {
-    "mu": 2.5154,
-    "sd": 0.3464,
-    "n": 64
+    "mu": 2.1452,
+    "sd": 0.2683,
+    "n": 6729
    },
    "log_aspect": {
-    "mu": 0.2944,
-    "sd": 0.1978,
-    "n": 64
+    "mu": 0.4609,
+    "sd": 0.2568,
+    "n": 6729
    }
   },
   "balcony@medium": {
@@ -372,7 +372,55 @@
     "n": 326
    }
   },
-  "living@medium": {
+  "store@IN": {
+   "log_area": {
+    "mu": 1.4133,
+    "sd": 0.28,
+    "n": 31
+   },
+   "log_aspect": {
+    "mu": 0.2358,
+    "sd": 0.2119,
+    "n": 31
+   }
+  },
+  "kitchen@IN": {
+   "log_area": {
+    "mu": 2.6518,
+    "sd": 0.4314,
+    "n": 151
+   },
+   "log_aspect": {
+    "mu": 0.2678,
+    "sd": 0.177,
+    "n": 151
+   }
+  },
+  "kitchen@medium@IN": {
+   "log_area": {
+    "mu": 2.5154,
+    "sd": 0.3464,
+    "n": 64
+   },
+   "log_aspect": {
+    "mu": 0.2944,
+    "sd": 0.1978,
+    "n": 64
+   }
+  },
+  "living@IN": {
+   "log_area": {
+    "mu": 3.2098,
+    "sd": 0.5267,
+    "n": 218
+   },
+   "log_aspect": {
+    "mu": 0.3104,
+    "sd": 0.2381,
+    "n": 218
+   }
+  },
+  "living@medium@IN": {
    "log_area": {
     "mu": 3.1598,
     "sd": 0.5307,
@@ -384,7 +432,19 @@
     "n": 82
    }
   },
-  "entrance": {
+  "dining@IN": {
+   "log_area": {
+    "mu": 2.9313,
+    "sd": 0.3625,
+    "n": 69
+   },
+   "log_aspect": {
+    "mu": 0.3401,
+    "sd": 0.1624,
+    "n": 69
+   }
+  },
+  "entrance@IN": {
    "log_area": {
     "mu": 2.4925,
     "sd": 0.5695,
@@ -396,7 +456,55 @@
     "n": 36
    }
   },
-  "porch": {
+  "toilet@IN": {
+   "log_area": {
+    "mu": 1.5802,
+    "sd": 0.4196,
+    "n": 261
+   },
+   "log_aspect": {
+    "mu": 0.3746,
+    "sd": 0.2823,
+    "n": 261
+   }
+  },
+  "toilet@medium@IN": {
+   "log_area": {
+    "mu": 1.5814,
+    "sd": 0.4022,
+    "n": 126
+   },
+   "log_aspect": {
+    "mu": 0.4561,
+    "sd": 0.2828,
+    "n": 126
+   }
+  },
+  "bedroom@IN": {
+   "log_area": {
+    "mu": 2.8781,
+    "sd": 0.2367,
+    "n": 253
+   },
+   "log_aspect": {
+    "mu": 0.2945,
+    "sd": 0.1414,
+    "n": 253
+   }
+  },
+  "bedroom@medium@IN": {
+   "log_area": {
+    "mu": 2.7932,
+    "sd": 0.1828,
+    "n": 125
+   },
+   "log_aspect": {
+    "mu": 0.293,
+    "sd": 0.1518,
+    "n": 125
+   }
+  },
+  "porch@IN": {
    "log_area": {
     "mu": 3.3631,
     "sd": 0.4247,
@@ -408,7 +516,7 @@
     "n": 76
    }
   },
-  "porch@medium": {
+  "porch@medium@IN": {
    "log_area": {
     "mu": 3.1706,
     "sd": 0.3155,
@@ -420,7 +528,7 @@
     "n": 32
    }
   },
-  "puja": {
+  "puja@IN": {
    "log_area": {
     "mu": 1.5524,
     "sd": 0.5731,
@@ -432,7 +540,7 @@
     "n": 55
    }
   },
-  "porch@large": {
+  "porch@large@IN": {
    "log_area": {
     "mu": 3.5107,
     "sd": 0.4534,
@@ -444,7 +552,7 @@
     "n": 41
    }
   },
-  "puja@large": {
+  "puja@large@IN": {
    "log_area": {
     "mu": 1.6772,
     "sd": 0.4483,
@@ -456,7 +564,67 @@
     "n": 34
    }
   },
-  "entrance@large": {
+  "toilet@large@IN": {
+   "log_area": {
+    "mu": 1.5713,
+    "sd": 0.4461,
+    "n": 125
+   },
+   "log_aspect": {
+    "mu": 0.2891,
+    "sd": 0.2558,
+    "n": 125
+   }
+  },
+  "living@large@IN": {
+   "log_area": {
+    "mu": 3.2616,
+    "sd": 0.5185,
+    "n": 129
+   },
+   "log_aspect": {
+    "mu": 0.2864,
+    "sd": 0.2241,
+    "n": 129
+   }
+  },
+  "dining@large@IN": {
+   "log_area": {
+    "mu": 3.063,
+    "sd": 0.3623,
+    "n": 40
+   },
+   "log_aspect": {
+    "mu": 0.3462,
+    "sd": 0.1548,
+    "n": 40
+   }
+  },
+  "kitchen@large@IN": {
+   "log_area": {
+    "mu": 2.7799,
+    "sd": 0.4588,
+    "n": 81
+   },
+   "log_aspect": {
+    "mu": 0.2426,
+    "sd": 0.1425,
+    "n": 81
+   }
+  },
+  "bedroom@large@IN": {
+   "log_area": {
+    "mu": 2.9742,
+    "sd": 0.2548,
+    "n": 118
+   },
+   "log_aspect": {
+    "mu": 0.3013,
+    "sd": 0.1313,
+    "n": 118
+   }
+  },
+  "entrance@large@IN": {
    "log_area": {
     "mu": 2.5785,
     "sd": 0.5429,
@@ -567,15 +735,15 @@
   },
   "heldout": {
    "resplan": {
-    "real_mean": 0.61,
-    "shuffled_mean": 0.357,
-    "real_beats_shuffled": 0.98,
+    "real_mean": 0.655,
+    "shuffled_mean": 0.333,
+    "real_beats_shuffled": 0.994,
     "floors": 1353
    },
    "swiss": {
-    "real_mean": 0.512,
-    "shuffled_mean": 0.374,
-    "real_beats_shuffled": 0.95,
+    "real_mean": 0.608,
+    "shuffled_mean": 0.36,
+    "real_beats_shuffled": 0.993,
     "floors": 461
    }
   }
