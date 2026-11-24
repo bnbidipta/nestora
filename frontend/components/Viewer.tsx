@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
+import dynamic from 'next/dynamic';
 import { Box, ChevronRight, Copy, Download, FlipHorizontal, Info, Layers, Lightbulb, Minus, Palette, Plus, Printer, Ruler, Share2, ShieldCheck, Sofa, Sun, Volume2, Zap } from 'lucide-react';
 import { LayerMode, Legend, Overlay, RoomDetail, SunPath, roomFill } from '@/components/ModeLayers';
 import { HouseTwin, getJudge, builtUpSqft } from '@/lib/twin';
@@ -11,8 +11,9 @@ import { track } from '@/lib/analytics';
 import { area, len, lenShort, loadRegional, plotArea, useLengthUnit } from '@/lib/units';
 import { FILL, fitLabel, roomName } from '@/lib/rooms';
 import { MepLayer, MepLegend, MepOverlay } from '@/components/MepLayer';
+const House3D = dynamic(() => import('@/components/House3D'), { ssr: false, loading: () => <p className="py-20 text-center text-sm text-slate-400">Loading 3D…</p> });
 
-type ViewMode = 'plan' | 'structure' | '3d' | LayerMode;
+type ViewMode = 'plan' | 'structure' | LayerMode;
 const LAYERS: string[] = ['paint', 'decor', 'mep', 'climate', 'sound'];
 type Decision = { field: string; value: string | number; source: string; reason: string; rule?: string };
 type TraditionPack = { mode: string; score: number; verified: boolean; findings: { rule: string; status: string; why: string }[] };
@@ -38,7 +39,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [canEdit, setCanEdit] = useState(false);
-  const mountRef = useRef<HTMLDivElement>(null);
+  const [view3d, setView3d] = useState(false);
   const u = useLengthUnit();
   const [mepLayers, setMepLayers] = useState<Set<MepLayer>>(new Set<MepLayer>(['drain']));
   const toggleMep = (l: MepLayer) => setMepLayers((s) => { const x = new Set(s); x.has(l) ? x.delete(l) : x.add(l); return x; });
@@ -84,72 +85,6 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const px = (x: number) => sbSide + x;
   const py = (y: number, d: number) => PD - sbFront - y - d;
 
-  useEffect(() => {
-    if (mode !== '3d' || !mountRef.current) return;
-    const el = mountRef.current;
-    const w = el.clientWidth, h = el.clientHeight || 480;
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf7f6f2);
-    const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 2000);
-    const r = Math.max(W, D) * 1.6;
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(w, h);
-    el.appendChild(renderer.domElement);
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8577, 1.1));
-    const sun = new THREE.DirectionalLight(0xffffff, 0.8);
-    sun.position.set(r, r, r / 2);
-    scene.add(sun);
-    const group = new THREE.Group();
-    const disposables: { dispose: () => void }[] = [];
-    twin.floors.forEach((f) => {
-      const fh = f.floor_height_ft;
-      f.rooms.forEach((rm) => {
-        const g = new THREE.BoxGeometry(rm.length_ft - 0.4, fh - 0.6, rm.width_ft - 0.4);
-        const m = new THREE.MeshStandardMaterial({ color: FILL[rm.type ?? ''] ?? '#e5e5e5', transparent: f.floor_no > 0, opacity: f.floor_no > 0 ? 0.92 : 1 });
-        const mesh = new THREE.Mesh(g, m);
-        mesh.position.set(rm.x + rm.length_ft / 2 - W / 2, f.floor_no * fh + fh / 2, -(rm.y + rm.width_ft / 2 - D / 2));
-        group.add(mesh);
-        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({ color: 0x334155 }));
-        edges.position.copy(mesh.position);
-        group.add(edges);
-        disposables.push(g, m, edges.geometry, edges.material as THREE.Material);
-      });
-    });
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(PW, PD), new THREE.MeshStandardMaterial({ color: 0xd9d4c7 }));
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.set(sbSide + W / 2 - PW / 2, -0.01, -(PD / 2 - sbFront - D / 2));
-    disposables.push(ground.geometry, ground.material as THREE.Material);
-    scene.add(group, ground);
-    let angle = 0.8, drag: number | null = null, raf = 0, visible = true;
-    const onDown = (e: PointerEvent) => { drag = e.clientX; };
-    const onMove = (e: PointerEvent) => { if (drag !== null) { angle += (e.clientX - drag) * 0.01; drag = e.clientX; } };
-    const onUp = () => { drag = null; };
-    el.addEventListener('pointerdown', onDown);
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; });
-    io.observe(el);
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      if (!visible) return;
-      if (drag === null) angle += 0.002;
-      camera.position.set(Math.sin(angle) * r, r * 0.7, Math.cos(angle) * r);
-      camera.lookAt(0, twin.floors.length * 4, 0);
-      renderer.render(scene, camera);
-    };
-    tick();
-    return () => {
-      cancelAnimationFrame(raf);
-      io.disconnect();
-      el.removeEventListener('pointerdown', onDown);
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      disposables.forEach((d) => d.dispose());
-      renderer.dispose();
-      el.removeChild(renderer.domElement);
-    };
-  }, [mode, twin, W, D, PW, PD, sbSide, sbFront]);
-
   const edit = async (action: 'grow' | 'shrink' | 'mirror') => {
     setBusy(true);
     setMsg(null);
@@ -180,15 +115,23 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
     <div className="flex flex-col gap-6 print:block">
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
-          <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
-            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'Services', Zap], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
+          <div role="radiogroup" aria-label="2D or 3D" className="flex rounded-lg border border-slate-700 p-0.5">
+            {([[false, '2D plan'], [true, '3D']] as const).map(([v, text]) => (
+              <button key={text} type="button" role="radio" aria-checked={view3d === v} onClick={() => setView3d(v)}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs ${view3d === v ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white'}`}>
+                {v ? <Box className="h-3.5 w-3.5" aria-hidden /> : <Ruler className="h-3.5 w-3.5" aria-hidden />}{text}
+              </button>
+            ))}
+          </div>
+          {!view3d && <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
+            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'Services', Zap], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2]] as const).map(([id, text, Icon]) => (
               <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${mode === id ? 'bg-blue-600 text-white' : 'border border-slate-700 text-slate-300 hover:text-white'}`}>
                 <Icon className="h-3.5 w-3.5" aria-hidden />{text}
               </button>
             ))}
-          </div>
-          {mode !== '3d' && (
+          </div>}
+          {!view3d && (
             <div className="flex gap-1.5" role="tablist" aria-label="Floor">
               {twin.floors.map((f) => (
                 <button key={f.floor_no} type="button" role="tab" aria-selected={f.floor_no === floorNo} onClick={() => { setFloorNo(f.floor_no); setSelected(null); }}
@@ -209,8 +152,8 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
         </div>
 
         <div className="relative mt-4 overflow-hidden rounded-xl bg-[#FAFAF7] print:mt-0">
-          {mode === '3d' ? (
-            <div ref={mountRef} className="h-[480px] w-full cursor-grab active:cursor-grabbing" aria-label="3D massing model, drag to rotate" />
+          {view3d ? (
+            <div className="bg-[#131926] pt-1"><House3D twin={twin} /></div>
           ) : (
             <svg viewBox={`-3 -3 ${PW + 10} ${PD + 8}`} className="max-h-[560px] w-full" role="img" aria-label={`Floor ${floorNo} plan`}>
               <rect x={0} y={0} width={PW} height={PD} fill="#EFEDE6" stroke="#475569" strokeWidth={0.25} strokeDasharray="1 0.6" />
@@ -282,11 +225,11 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
               </g>
             </svg>
           )}
-          {LAYERS.includes(mode) && (
+          {!view3d && LAYERS.includes(mode) && (
             mode === 'mep' ? <MepLegend layers={mepLayers} toggle={toggleMep} loadKw={(twin as any).mep_routes?.connected_load_kw} /> : <Legend mode={mode as LayerMode} />
           )}
         </div>
-        {mode !== '3d' && tags.length > 0 && (
+        {!view3d && tags.length > 0 && (
           <p className="mt-2 font-mono text-[11px] text-slate-400">{tags.map((id, i) => `${i + 1} ${roomName(id, floor?.rooms.find((r) => r.name === id)?.type ?? undefined)}`).join(' · ')}</p>
         )}
       </div>
