@@ -10,7 +10,7 @@ from functools import cache
 from typing import Any, Dict, List
 
 from backend.app.models.brief import Brief
-from backend.app.services import generator
+from backend.app.services import critic, generator
 
 FEATURES = ("living_share", "bedroom_size", "outside_wall_share", "open_plan", "kitchen_front", "bedrooms_front",
             "stair_left", "proportion", "terrace_share", "storeys")
@@ -49,7 +49,13 @@ def realism(c: Dict[str, Any]) -> float:
     rooms = c["layout"]["rooms"]
     floors = sorted({r["floor"] for r in rooms})
     plate = c["envelope"]["area_m2"]
-    return sum(score_rooms([r for r in rooms if r["floor"] == f], _prior(), plate, "IN")["score"] for f in floors) / len(floors) if floors else 0.0
+    total = 0.0
+    for f in floors:
+        fl = [r for r in rooms if r["floor"] == f]
+        s = score_rooms(fl, _prior(), plate, "IN")["score"]
+        learned = critic.score(fl)  # transformer trained on a free Kaggle GPU; None if not installed
+        total += s if learned is None else (s + learned) / 2  # combined beats either alone on held-out plans
+    return total / len(floors) if floors else 0.0
 
 
 def brief_fit(brief: Brief, c: Dict[str, Any]) -> Dict[str, float]:
