@@ -1,0 +1,166 @@
+{
+ "rooms": {
+  "living": {
+   "log_area": {
+    "mu": 4.0606,
+    "sd": 0.5043,
+    "n": 12298
+   },
+   "log_aspect": {
+    "mu": 0.3014,
+    "sd": 0.2358,
+    "n": 12298
+   }
+  },
+  "bedroom_master": {
+   "log_area": {
+    "mu": 2.9292,
+    "sd": 0.2912,
+    "n": 12172
+   },
+   "log_aspect": {
+    "mu": 0.2159,
+    "sd": 0.1499,
+    "n": 12172
+   }
+  },
+  "bedroom": {
+   "log_area": {
+    "mu": 2.745,
+    "sd": 0.2848,
+    "n": 16671
+   },
+   "log_aspect": {
+    "mu": 0.176,
+    "sd": 0.1329,
+    "n": 16671
+   }
+  },
+  "toilet": {
+   "log_area": {
+    "mu": 1.3941,
+    "sd": 0.368,
+    "n": 28415
+   },
+   "log_aspect": {
+    "mu": 0.4538,
+    "sd": 0.1967,
+    "n": 28415
+   }
+  },
+  "kitchen": {
+   "log_area": {
+    "mu": 2.1978,
+    "sd": 0.3511,
+    "n": 12173
+   },
+   "log_aspect": {
+    "mu": 0.2842,
+    "sd": 0.1943,
+    "n": 12173
+   }
+  },
+  "balcony": {
+   "log_area": {
+    "mu": 1.5528,
+    "sd": 0.5824,
+    "n": 15307
+   },
+   "log_aspect": {
+    "mu": 0.8377,
+    "sd": 0.4452,
+    "n": 15307
+   }
+  },
+  "porch": {
+   "log_area": {
+    "mu": 3.2792,
+    "sd": 0.7808,
+    "n": 112
+   },
+   "log_aspect": {
+    "mu": 0.4767,
+    "sd": 0.3689,
+    "n": 112
+   }
+  },
+  "store": {
+   "log_area": {
+    "mu": 1.4398,
+    "sd": 0.6525,
+    "n": 598
+   },
+   "log_aspect": {
+    "mu": 0.3056,
+    "sd": 0.2153,
+    "n": 598
+   }
+  },
+  "stair": {
+   "log_area": {
+    "mu": 1.3501,
+    "sd": 0.9746,
+    "n": 231
+   },
+   "log_aspect": {
+    "mu": 0.4656,
+    "sd": 0.2999,
+    "n": 231
+   }
+  }
+ },
+ "adjacency": {
+  "balcony|balcony": 0.0017,
+  "balcony|bedroom": 0.0802,
+  "balcony|bedroom_master": 0.0936,
+  "balcony|kitchen": 0.0019,
+  "balcony|living": 0.0864,
+  "balcony|toilet": 0.0571,
+  "bedroom|bedroom": 0.0536,
+  "bedroom|bedroom_master": 0.2946,
+  "bedroom|kitchen": 0.0804,
+  "bedroom|living": 0.2927,
+  "bedroom|toilet": 0.5191,
+  "bedroom_master|bedroom_master": 0.0001,
+  "bedroom_master|kitchen": 0.0944,
+  "bedroom_master|living": 0.3484,
+  "bedroom_master|toilet": 0.5586,
+  "kitchen|kitchen": 0.0001,
+  "kitchen|living": 0.0853,
+  "kitchen|toilet": 0.1696,
+  "living|living": 0.0021,
+  "living|toilet": 0.3616,
+  "toilet|toilet": 0.2486,
+  "bedroom|porch": 0.0233,
+  "bedroom_master|porch": 0.0833,
+  "kitchen|porch": 0.0833,
+  "living|porch": 0.1296,
+  "porch|porch": 0.0093,
+  "porch|toilet": 0.0741,
+  "balcony|store": 0.0204,
+  "bedroom|store": 0.1744,
+  "bedroom_master|store": 0.0663,
+  "kitchen|store": 0.1122,
+  "living|store": 0.1582,
+  "store|store": 0.0034,
+  "store|toilet": 0.1241,
+  "balcony|stair": 0.0081,
+  "bedroom|stair": 0.0337,
+  "bedroom_master|stair": 0.0543,
+  "kitchen|stair": 0.0498,
+  "living|stair": 0.0679,
+  "stair|stair": 0.0045,
+  "stair|toilet": 0.1267,
+  "balcony|porch": 0.0789,
+  "porch|stair": 0.3542
+ },
+ "meta": {
+  "source": "ResPlan v1.0.0 (github.com/m-agour/ResPlan), CC BY 4.0; cleaned by scripts/resplan_clean.py",
+  "attribution": "Floor-plan statistics derived from ResPlan (Agour et al.), CC BY 4.0.",
+  "train_plans": 12174,
+  "test_plans": 1353,
+  "heldout_real_mean": 0.568,
+  "heldout_shuffled_mean": 0.312,
+  "heldout_real_beats_shuffled": 0.984
+ }
+}

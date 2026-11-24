@@ -51,7 +51,7 @@ TYPES: Dict[str, Dict[str, Any]] = {
     "utility":        {"zone": "middle", "min_w": 0.9, "area": 0.0, "weight": 0.0, "hab": False, "ext": False, "aspect": 99},
 }
 LIFT_M = 1.6
-MAX_ASPECT = {"porch": 3.0, "kitchen": 3.0, "toilet": 3.5, "balcony": 6.0, "dining": 2.6}
+MAX_ASPECT = {"porch": 3.0, "kitchen": 3.0, "toilet": 2.6, "balcony": 6.0, "dining": 2.6}
 MAX_AREA = {"laundry": 5.0, "store": 5.0, "help": 9.0, "toilet": 6.0, "puja": 5.0, "passage": 12.0, "kitchen": 16.0, "entrance": 8.0, "dining": 18.0,
             "balcony": 9.0, "study": 12.0, "porch": 18.0}
 NON_FSI = ("porch",)  # open parking: non-FSI per DCPR 2034 Reg. 31(1) (unverified)

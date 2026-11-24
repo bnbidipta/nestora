@@ -42,3 +42,5 @@ graphify-out/
 
 # large datasets, downloaded locally
 data/resplan/
+data/swiss/
+data/msd/

@@ -3,7 +3,10 @@ Ranker (Generator C1): fixed brief-fit and quality terms plus learned layout-pre
 Each keep/discard in the 4-at-a-time loop is a preference label; weights move toward what the user keeps.
 ponytail: online linear preference model (perceptron-style); swap for a trained model once pilot labels exist.
 """
+import json
 import math
+import os
+from functools import cache
 from typing import Any, Dict, List
 
 from backend.app.models.brief import Brief
@@ -34,6 +37,20 @@ def features(c: Dict[str, Any]) -> Dict[str, float]:
     }
 
 
+@cache
+def _prior() -> Dict[str, Any]:
+    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "learned", "plan_prior.json"), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def realism(c: Dict[str, Any]) -> float:
+    """Learned from ResPlan (backend/ml/train_plan_prior.py): how typical room sizes, proportions and neighbours are, 0..1."""
+    from backend.ml.train_plan_prior import realism as score_rooms
+    rooms = c["layout"]["rooms"]
+    floors = sorted({r["floor"] for r in rooms})
+    return sum(score_rooms([r for r in rooms if r["floor"] == f], _prior())["score"] for f in floors) / len(floors) if floors else 0.0
+
+
 def brief_fit(brief: Brief, c: Dict[str, Any]) -> Dict[str, float]:
     rooms = c["layout"]["rooms"]
     ids = {r["id"] for r in rooms}
@@ -57,9 +74,10 @@ def score(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float], tradition_sc
     fit_score = 2 * fit["bedrooms"] + fit["floors"] + fit["parking"] + 0.5 * fit["study"] + 0.5 * fit["puja"] + 3 * fit["elder_ground"]
     fit_score += 0.4 * fit["guest"] + 0.4 * fit["help"] + (1.0 * f["terrace_share"] if brief.terrace_garden else 0.0)
     learned = sum(prefs.get(k, 0.0) * f[k] for k in FEATURES)
-    total = fit_score + 1.5 * f["proportion"] + 1.5 * tradition_score + learned - 0.15 * warnings - 0.2 * len(c["layout"]["dropped"])
+    real = realism(c)
+    total = fit_score + 1.5 * f["proportion"] + 2.0 * real + 1.5 * tradition_score + learned - 0.15 * warnings - 0.2 * len(c["layout"]["dropped"])
     return {"total": round(total, 3), "brief_fit": fit, "features": {k: round(v, 3) for k, v in f.items()},
-            "learned": round(learned, 3), "tradition": tradition_score}
+            "learned": round(learned, 3), "tradition": tradition_score, "realism": round(real, 3)}
 
 
 def update(prefs: Dict[str, float], kept: List[Dict[str, float]], discarded: List[Dict[str, float]]) -> Dict[str, float]:
