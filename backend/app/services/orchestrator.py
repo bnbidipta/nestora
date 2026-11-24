@@ -56,6 +56,9 @@ def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[s
     }
 
 
+VARIANTS = 6  # layouts tried per strategy/arrangement/mirror; the most realistic is kept
+
+
 def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
     extra = []
     if any(v != "off" for v in brief.traditions.values()):
@@ -63,7 +66,7 @@ def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[s
     proposal = llm.propose_arrangement(brief)
     if proposal:
         extra.append(proposal)
-    cands = generator.candidates(brief, n=24, seed=seed, extra_arrangements=extra)
+    cands = generator.candidates(brief, n=24, seed=seed, extra_arrangements=extra, score=rank.realism, variants=VARIANTS)
     scored = [(c, evaluate(brief, c, prefs)) for c in cands]
     good = [x for x in scored if x[1]["pass"]]
     if len(good) < SHOW:  # strict traditions vetoed most code-compliant layouts: top up with the closest, flagged

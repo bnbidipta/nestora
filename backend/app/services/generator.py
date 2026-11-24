@@ -458,17 +458,22 @@ def make_candidate(brief: Brief, rng: random.Random, strategy: Dict[str, Any], a
     return None
 
 
-def candidates(brief: Brief, n: int = 24, seed: int = 0, extra_arrangements: Optional[List[Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
-    """A diverse pool: every strategy x arrangement x mirror, with jitter, deduplicated by geometry."""
+def candidates(brief: Brief, n: int = 24, seed: int = 0, extra_arrangements: Optional[List[Dict[str, Any]]] = None,
+               score=None, variants: int = 1) -> List[Dict[str, Any]]:
+    """A diverse pool: every strategy x arrangement x mirror, with jitter, deduplicated by geometry.
+    With score + variants > 1, each combination is generated several times (different row depths) and the
+    highest-scoring variant is kept: the learned realism model shapes the layouts, not just their ranking."""
     rng = random.Random(seed)
     pool, seen = [], set()
     arr = (extra_arrangements or []) + arrangements()
     for strat in strategies(brief, pack.rules(brief.plot_width_ft * pack.FT, brief.plot_depth_ft * pack.FT, brief.road_width_m, brief.city)):
         for a in arr:
             for mirror in (True, False):
-                c = make_candidate(brief, rng, strat, a, jitter=0.15, mirror=mirror)
-                if c is None:
+                tries = [make_candidate(brief, rng, strat, a, jitter=0.15 if i == 0 else 0.3, mirror=mirror) for i in range(variants)]
+                tries = [t for t in tries if t is not None]
+                if not tries:
                     continue
+                c = max(tries, key=score) if score and len(tries) > 1 else tries[0]
                 key = signature(c)
                 if key in seen:
                     continue
