@@ -41,9 +41,16 @@ def room_type(text: str):
     return next((v for k, v in LABELS if k in t), None)
 
 
+def wall_mask(img: np.ndarray) -> np.ndarray:
+    """Wall pixels: the blue wall layer if the sheet has one, else dark linework (black-line drawings)."""
+    b, g, r = (img[..., i].astype(int) for i in range(3))
+    blue = (b > 140) & (r < 110) & (g < 110)
+    return blue if blue.sum() >= 2000 else ((b < 90) & (g < 90) & (r < 90))
+
+
 def barriers(img: np.ndarray, gap_px: int = 0) -> np.ndarray:
     b, g, r = (img[..., i].astype(int) for i in range(3))
-    blue = ((b > 140) & (r < 110) & (g < 110)).astype(np.uint8) * 255   # wall layer
+    blue = wall_mask(img).astype(np.uint8) * 255
     cyan = (b > 140) & (g > 140) & (r < 120)                             # doors, windows, frames
     red = (r > 160) & (g < 90) & (b < 90)                                # columns
     if gap_px:  # bridge door openings: join wall pieces that line up across a gap of up to gap_px
@@ -54,8 +61,7 @@ def barriers(img: np.ndarray, gap_px: int = 0) -> np.ndarray:
 
 
 def outline_px(img: np.ndarray) -> float:
-    b, g, r = (img[..., i].astype(int) for i in range(3))
-    ys, xs = np.nonzero((b > 140) & (r < 110) & (g < 110))
+    ys, xs = np.nonzero(wall_mask(img))
     return float(max(xs.max() - xs.min(), ys.max() - ys.min()))
 
 
@@ -101,9 +107,8 @@ def printed_sizes(file: str):
 def trace(path: str, plot_long_ft: float, eng):
     img = cv2.imread(path)
     H, W = img.shape[:2]
-    b, g, r = (img[..., i].astype(int) for i in range(3))
-    if ((b > 140) & (r < 110) & (g < 110)).sum() < 2000:
-        return {"file": os.path.basename(path), "ok": False, "reason": "no blue wall layer (different CAD colours)", "rooms": []}
+    if wall_mask(img).sum() < 2000:
+        return {"file": os.path.basename(path), "ok": False, "reason": "no wall linework found", "rooms": []}
     ppf0 = outline_px(img) / plot_long_ft  # rough scale, only to size the door-gap bridge
     def label_map(gap_ft):
         wall = barriers(img, gap_px=int(gap_ft * ppf0))
