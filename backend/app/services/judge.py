@@ -244,6 +244,12 @@ class JudgeService:
         circ = twin.metadata.get("circulation_width_mm", min(widths) if widths else 1000)
         if circ < 900:
             result.add_failure("E_CIRCULATION_TOO_NARROW", f"Passage width {circ:.0f} mm is under 900 mm.")
+        tri = twin.metadata.get("kitchen_triangle_perimeter_ft")
+        if tri and tri > 22:  # measured from the placed sink, stove and fridge (engines/furniture.py)
+            result.add_warning("E_KITCHEN_TRIANGLE_HIGH", f"Kitchen work triangle is {tri:.0f} ft; the brief's comfort limit is 22 ft.")
+        for name, fr in (twin.furniture or {}).get("rooms", {}).items():
+            if "bed" in fr.get("did_not_fit", []):
+                result.add_warning("E_BED_DOES_NOT_FIT", f"{name}: a bed with 0.6 m walking space doesn't fit.")
         for f in twin.floors:
             if len(f.rooms) > 4 and not any(_kind(x.name, x.type) in ("passage", "living", "lounge", "dining") for x in f.rooms):
                 result.add_warning("E_NO_CIRCULATION", f"Floor {f.floor_no} has no passage or living space: rooms open off each other.")
@@ -252,9 +258,6 @@ class JudgeService:
         for f in twin.floors:
             for x in f.rooms:
                 if _kind(x.name, x.type) == "kitchen":
-                    run = max(x.length_ft, x.width_ft)
-                    if run > 15:  # sink-stove-fridge spread along a run this long exceeds the ~22-26 ft triangle guideline
-                        result.add_warning("E_KITCHEN_TRIANGLE_HIGH", f"{x.name} is {run:.0f} ft long; keep sink, stove and fridge within a 22–26 ft triangle.")
                     if min(x.length_ft, x.width_ft) < 6:
                         result.add_warning("E_KITCHEN_NARROW", f"{x.name} is under 6 ft wide: single-counter galley only.")
 

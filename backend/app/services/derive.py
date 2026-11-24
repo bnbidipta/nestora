@@ -14,6 +14,7 @@ from backend.app.models.twin import (
     ACUnit, BOQ, Beam, ColorWall, Column, Floor, Foundation, HouseTwin, MEP, Room, Structure, StyleInfo, WastePipe,
 )
 from backend.app.services import generator, pack
+from backend.app.services.engines import acoustics, climate, finishes, furniture, land, mep as mep_routes
 from backend.app.services.judge import required_pump_head_m
 
 FT = pack.FT
@@ -40,23 +41,9 @@ def colour(name: str, hexv: str) -> ColorWall:
     return ColorWall(name=name, rgb=",".join(map(str, rgb)), cmyk=",".join(map(str, cmy + [round(100 * k)])), lrv=lrv, hex=hexv)
 
 
-LOW_MAINT_SWAP = {"wood_flooring": "wood_look_tiles", "oak_flooring": "wood_look_tiles", "teak_wood": "wood_look_tiles",
-                  "lime_plaster": "vitrified_tiles", "red_oxide": "vitrified_tiles", "mud_cow_dung": "vitrified_tiles",
-                  "terracotta": "terracotta_look_tiles", "travertine": "vitrified_tiles", "microcement": "vitrified_tiles",
-                  "white_microcement": "vitrified_tiles", "saltillo_terracotta": "terracotta_look_tiles"}
-
-
 def _floor_material(t: str, style: Dict[str, Any], brief: Brief) -> str:
-    if t in ("toilet", "kitchen", "balcony", "porch"):
-        return "anti_skid_ceramic" if t != "porch" else "paver_blocks"
-    if t == "stair":
-        return "granite"
-    if brief.elder_mobility_issue and t in ("bedroom_elder", "living", "passage"):
-        return "anti_skid_vitrified"
-    if brief.pets and style["materials"]["floor"] in ("wood_flooring", "oak_flooring", "teak_wood"):
-        return "wood_look_tiles"  # scratch resistant
-    m = style["materials"]["floor"]
-    return LOW_MAINT_SWAP.get(m, m) if brief.low_maintenance else m
+    """Material Brain: best-scoring floor for this room and family (engines/finishes.py)."""
+    return finishes.choose_floor(t, brief, style["materials"]["floor"])
 
 
 def _door_mm(rm: Dict[str, Any], brief: Brief, r: Dict[str, Any]) -> int:
@@ -220,7 +207,7 @@ def emi(principal: float, annual_rate_pct: float = 8.5, years: int = 20) -> floa
     return principal / n if i == 0 else principal * i * (1 + i) ** n / ((1 + i) ** n - 1)
 
 
-def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any]) -> List[Dict[str, Any]]:
+def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], engines: bool = True) -> List[Dict[str, Any]]:
     """Writes the candidate into the twin. Returns explainability records."""
     r, env = cand["rules"], cand["envelope"]
     twin.plot.plot_width_ft, twin.plot.plot_depth_ft = brief.plot_width_ft, brief.plot_depth_ft
@@ -290,5 +277,42 @@ def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any]) -> List[Dict[str,
     if cand["layout"]["dropped"]:
         decisions.append({"field": "dropped_rooms", "value": ", ".join(cand["layout"]["dropped"]), "source": "generator",
                           "reason": "These optional rooms didn't fit at code-minimum sizes."})
+    if engines:  # skipped while scoring candidates; run for the chosen design
+        run_engines(twin, brief, st, boq)
     twin.metadata["decisions"] = decisions
     return decisions
+
+
+def run_engines(twin: HouseTwin, brief: Brief, st: Dict[str, Any], boq: Dict[str, Any]) -> None:
+    """Brief models 4-11 on the finished layout, plus proactive suggestions (the orchestrator's 'tasks the user didn't ask for')."""
+    twin.climate = climate.analyse(twin)
+    twin.sound = acoustics.analyse(twin)
+    twin.paint = finishes.paint(twin, st["palette"])
+    twin.materials = finishes.materials_report(twin, brief, st["materials"]["floor"])
+    twin.furniture = furniture.analyse(twin, brief)
+    twin.mep_routes = mep_routes.analyse(twin)
+    height = sum(f.floor_height_ft for f in twin.floors) * FT
+    twin.land = land.analyse(brief, twin.plot.plot_area_sqft * SQFT, height)
+    if twin.furniture.get("kitchen_triangle_ft") is not None:
+        twin.metadata["kitchen_triangle_perimeter_ft"] = twin.furniture["kitchen_triangle_ft"]
+    sug = climate.suggestions(twin.climate) + acoustics.suggestions(twin.sound)
+    tiers = boq["tiers"]
+    exp = tiers[brief.tier]["expected"]["total"]
+    if exp > brief.budget_inr:
+        cheaper = [t for t in ("economy", "standard") if t != brief.tier and tiers[t]["expected"]["total"] <= brief.budget_inr]
+        if cheaper:
+            t = cheaper[-1]
+            sug.append({"kind": "budget", "title": f"Switch to {t} finishes to fit the budget",
+                        "detail": f"Expected cost ₹{exp:,.0f} is over your ₹{brief.budget_inr:,.0f}. {t.title()} finishes bring it to ₹{tiers[t]['expected']['total']:,.0f}.",
+                        "auto_applied": False})
+        else:
+            sug.append({"kind": "budget", "title": "Over budget at every finish level",
+                        "detail": f"Even economy finishes cost about ₹{tiers['economy']['expected']['total']:,.0f}. Consider one floor less, or phase the top floor.",
+                        "auto_applied": False})
+    for w in twin.materials.get("warnings", []):
+        sug.append({"kind": "material", "title": "Material warning", "detail": w, "auto_applied": False})
+    misfit = [n for n, r in twin.furniture["rooms"].items() if "bed" in r.get("did_not_fit", [])]
+    if misfit:
+        sug.append({"kind": "furniture", "title": "Tight bedroom", "detail": f"A bed with walking space doesn't fit in {', '.join(misfit)}: make it bigger in the viewer.",
+                    "auto_applied": False})
+    twin.suggestions = sug

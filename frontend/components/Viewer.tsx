@@ -2,13 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Box, ChevronRight, Copy, Download, FlipHorizontal, Info, Layers, Minus, Plus, Printer, Ruler, Share2, ShieldCheck } from 'lucide-react';
+import { Box, ChevronRight, Copy, Download, FlipHorizontal, Info, Layers, Lightbulb, Minus, Palette, Plus, Printer, Ruler, Share2, ShieldCheck, Sofa, Sun, Volume2, Zap } from 'lucide-react';
+import { LayerMode, Legend, Overlay, RoomDetail, SunPath, roomFill } from '@/components/ModeLayers';
 import { HouseTwin, getJudge, builtUpSqft } from '@/lib/twin';
 import { canEditLocally, dxfUrl, editHouse, getHouse } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { track } from '@/lib/analytics';
 
-type ViewMode = 'plan' | 'structure' | '3d';
+type ViewMode = 'plan' | 'structure' | '3d' | LayerMode;
+const LAYERS: string[] = ['paint', 'decor', 'mep', 'climate', 'sound'];
 type Decision = { field: string; value: string | number; source: string; reason: string; rule?: string };
 type TraditionPack = { mode: string; score: number; verified: boolean; findings: { rule: string; status: string; why: string }[] };
 
@@ -149,7 +151,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
           <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
-            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
+            {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'MEP', Zap], ['paint', 'Paint', Palette], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2], ['3d', '3D massing', Box]] as const).map(([id, text, Icon]) => (
               <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${mode === id ? 'bg-blue-600 text-white' : 'border border-slate-700 text-slate-300 hover:text-white'}`}>
                 <Icon className="h-3.5 w-3.5" aria-hidden />{text}
@@ -182,7 +184,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
               {floor?.rooms.map((r) => (
                 <g key={r.name} onClick={() => setSelected(r.name)} tabIndex={0} role="button" aria-label={`${label(r.name)}, ${r.length_ft} by ${r.width_ft} feet`}
                   onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(r.name)} className="cursor-pointer focus:outline-none">
-                  <rect x={px(r.x)} y={py(r.y, r.width_ft)} width={r.length_ft} height={r.width_ft} fill={FILL[r.type ?? ''] ?? '#EEE'}
+                  <rect x={px(r.x)} y={py(r.y, r.width_ft)} width={r.length_ft} height={r.width_ft} fill={(LAYERS.includes(mode) ? roomFill(mode as LayerMode, twin, r) : null) ?? FILL[r.type ?? ''] ?? '#EEE'}
                     stroke={selected === r.name ? '#1D4ED8' : '#1F2937'} strokeWidth={selected === r.name ? 0.5 : 0.25} />
                   {r.length_ft > 4 && r.type !== 'passage' && r.type !== 'utility' && (
                     <>
@@ -194,6 +196,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
                   )}
                 </g>
               ))}
+              {LAYERS.includes(mode) && <Overlay mode={mode as LayerMode} twin={twin} floor={floorNo} toScreen={(x, y) => [px(x), PD - sbFront - y]} />}
               {mode === 'structure' && twin.structure.columns.map((c, i) => (
                 <rect key={i} x={px(c.x) - 0.4} y={PD - sbFront - c.y - 0.4} width={0.8} height={((c.size_y_mm ?? 230) / 304.8)} fill="#1D4ED8">
                   <title>{`C${i + 1}: 230×${c.size_y_mm ?? 230} mm, ${c.load_tons} t`}</title>
@@ -206,6 +209,9 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
                 <text y={-2.3} textAnchor="middle" fontSize={1} fill="#111827">N</text>
               </g>
             </svg>
+          )}
+          {LAYERS.includes(mode) && (
+            <Legend mode={mode as LayerMode} />
           )}
         </div>
       </div>
@@ -221,6 +227,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             <Row k="Direction" v={room.compass ?? '—'} />
             <Row k="Floor finish" v={label(room.material_floor)} />
             <Row k="Wall" v={`${room.color_wall_A?.hex ?? ''} · LRV ${room.color_wall_A?.lrv}`} swatch={room.color_wall_A?.hex} />
+            {LAYERS.includes(mode) && <div className="pt-2"><RoomDetail mode={mode as LayerMode} twin={twin} room={room} /></div>}
             {canEdit && room.type !== 'stair' && room.type !== 'utility' && (
               <div className="flex gap-2 pt-2 print:hidden">
                 <button type="button" disabled={busy} onClick={() => edit('grow')} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-slate-600 px-2 py-1.5 text-xs text-white hover:bg-slate-800 disabled:opacity-50"><Plus className="h-3.5 w-3.5" />Bigger</button>
@@ -236,6 +243,23 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             <Row k="Built-up (FSI)" v={`${Math.round(builtUp).toLocaleString('en-IN')} sqft (${(builtUp / twin.plot.plot_area_sqft).toFixed(2)})`} />
             <Row k="Foundation" v={`${twin.structure.foundation.type}, ${twin.structure.foundation.depth_ft} ft`} />
             <Row k="Columns" v={`${twin.structure.columns.length}`} />
+            {mode === 'climate' && (
+              <div className="flex flex-col items-center pt-2">
+                <SunPath climate={(twin as any).climate} />
+                <p className="text-center text-[11px] text-slate-400"><span className="text-red-400">June</span> · <span className="text-amber-400">March/Sept</span> · <span className="text-blue-400">December</span> sun path</p>
+              </div>
+            )}
+            {mode === 'sound' && <Row k="Road noise" v={`${(twin as any).sound?.outside_db ?? '—'} dB`} />}
+            {((twin as any).suggestions ?? []).length > 0 && (
+              <div className="mt-3 space-y-2">
+                <p className="flex items-center gap-1.5 font-mono text-[11px] uppercase text-amber-300"><Lightbulb className="h-3.5 w-3.5" />Suggestions</p>
+                {((twin as any).suggestions as { kind: string; title: string; detail: string }[]).map((s) => (
+                  <div key={s.title} className="rounded-lg border border-amber-900/60 bg-amber-950/30 p-2.5 text-xs text-amber-100">
+                    <span className="font-semibold">{s.title}.</span> <span className="text-amber-200/80">{s.detail}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <ul className="mt-3 space-y-2">
               {decisions.map((d) => (
                 <li key={d.field} className="rounded-lg bg-slate-900/70 p-2.5 text-xs text-slate-300">

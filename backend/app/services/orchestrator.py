@@ -34,7 +34,7 @@ def _preview(c: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[str, Any]:
     twin = HouseTwin(house_id="eval")
-    derive.apply(twin, brief, c)
+    derive.apply(twin, brief, c, engines=False)
     judge = JudgeService.validate_house(twin)
     trad = traditions.evaluate(c, brief.facing, brief.traditions)
     s = rank.score(brief, c, prefs, trad["score"], len(judge.warnings))

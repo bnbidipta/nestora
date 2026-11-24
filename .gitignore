@@ -39,3 +39,6 @@ inspect_new_page.js
 # graphify knowledge graph (local)
 graphify-out/
 *.tsbuildinfo
+
+# large datasets, downloaded locally
+data/resplan/

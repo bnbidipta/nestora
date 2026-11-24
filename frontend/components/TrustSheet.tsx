@@ -116,6 +116,27 @@ export default function TrustSheet({ twin }: { twin: HouseTwin }) {
           </ul>
         </section>
       )}
+
+      {(twin as any).land?.checklist && (
+        <section className="rounded-2xl border border-slate-800 bg-[#131926] p-6">
+          <h2 className="font-mono text-sm font-bold uppercase tracking-wider text-white">Plot risks and approvals</h2>
+          {((twin as any).land.risks ?? []).length > 0 && (
+            <ul className="mt-3 space-y-2">
+              {(twin as any).land.risks.map((r: { level: string; title: string; detail: string }) => (
+                <li key={r.title} className="rounded-lg bg-slate-900/70 p-3 text-sm text-slate-300">
+                  <span className={`mr-2 rounded px-1.5 py-0.5 font-mono text-[10px] uppercase ${r.level === 'high' ? 'bg-red-900 text-red-200' : r.level === 'medium' ? 'bg-amber-900 text-amber-200' : 'bg-slate-700 text-slate-200'}`}>{r.level}</span>
+                  <strong className="text-white">{r.title}:</strong> {r.detail}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-4 text-sm font-semibold text-white">Documents and approvals for Mumbai (MCGM)</p>
+          <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-slate-300">
+            {(twin as any).land.checklist.map((c: string) => <li key={c}>{c}</li>)}
+          </ol>
+          <p className="mt-3 text-xs text-slate-500">{(twin as any).land.not_covered} Checklist is a research draft, not yet verified.</p>
+        </section>
+      )}
     </div>
   );
 }

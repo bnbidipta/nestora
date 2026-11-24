@@ -13,7 +13,8 @@ from backend.app.services.access import rate_limit
 from backend.app.services.judge import JudgeService
 
 router = APIRouter(prefix="/api/v1/stages", tags=["Stages"])
-Stage = Literal["plot", "layout", "structure", "mep", "boq", "style", "traditions", "judge"]
+Stage = Literal["plot", "layout", "structure", "mep", "boq", "style", "traditions", "judge",
+                "climate", "sound", "paint", "materials", "furniture", "mep_routes", "land", "suggestions"]
 
 
 @router.post("/{stage}", dependencies=[Depends(rate_limit("stages", 10))])
@@ -36,5 +37,7 @@ def run_stage(stage: Stage, brief: Brief):
         "style": {"style": derive.styles()[twin.style.primary_style], "secondary": twin.style.secondary_style},
         "traditions": traditions.evaluate(cand, brief.facing, brief.traditions),
         "judge": JudgeService.validate_house(twin).to_dict(),
+        "climate": twin.climate, "sound": twin.sound, "paint": twin.paint, "materials": twin.materials,
+        "furniture": twin.furniture, "mep_routes": twin.mep_routes, "land": twin.land, "suggestions": twin.suggestions,
     }
     return {"stage": stage, "candidate": cand["id"], "score": ev["score"]["total"], "data": out[stage]}

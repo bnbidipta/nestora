@@ -173,4 +173,13 @@ class HouseTwin(BaseModel):
     style: StyleInfo = Field(default_factory=StyleInfo)
     boq: BOQ = Field(default_factory=BOQ)
     swipe_history: List[SwipeRecord] = Field(default_factory=list)
+    # Engine outputs (brief models 4-11). Each is recomputed from the layout by services/derive.py.
+    climate: Dict[str, Any] = Field(default_factory=dict)
+    sound: Dict[str, Any] = Field(default_factory=dict)
+    paint: Dict[str, Any] = Field(default_factory=dict)
+    materials: Dict[str, Any] = Field(default_factory=dict)
+    furniture: Dict[str, Any] = Field(default_factory=dict)
+    mep_routes: Dict[str, Any] = Field(default_factory=dict)
+    land: Dict[str, Any] = Field(default_factory=dict)
+    suggestions: List[Dict[str, Any]] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
