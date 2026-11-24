@@ -48,9 +48,26 @@ def wall_mask(img: np.ndarray) -> np.ndarray:
     return blue if blue.sum() >= 2000 else ((b < 90) & (g < 90) & (r < 90))
 
 
-def barriers(img: np.ndarray, gap_px: int = 0) -> np.ndarray:
+def is_line_drawing(img: np.ndarray) -> bool:
     b, g, r = (img[..., i].astype(int) for i in range(3))
-    blue = wall_mask(img).astype(np.uint8) * 255
+    return ((b > 140) & (r < 110) & (g < 110)).sum() < 2000
+
+
+def solid_walls(img: np.ndarray, boxes, ppf: float) -> np.ndarray:
+    """Black-line drawings: erase text, fuse each wall's two parallel lines into a solid band (closing at ~wall
+    thickness), then drop anything thinner than a 4.5-inch wall (furniture, door arcs, dimension lines) by opening."""
+    dark = (img.max(axis=2) < 90).astype(np.uint8) * 255
+    for x0, y0, x1, y1 in boxes:
+        dark[max(0, y0 - 3):y1 + 3, max(0, x0 - 3):x1 + 3] = 0
+    k1 = max(3, int(0.8 * ppf))
+    fused = cv2.morphologyEx(dark, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (k1, k1)))
+    k2 = max(3, int(0.3 * ppf))
+    return cv2.morphologyEx(fused, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (k2, k2)))
+
+
+def barriers(img: np.ndarray, gap_px: int = 0, walls=None) -> np.ndarray:
+    b, g, r = (img[..., i].astype(int) for i in range(3))
+    blue = walls if walls is not None else wall_mask(img).astype(np.uint8) * 255
     cyan = (b > 140) & (g > 140) & (r < 120)                             # doors, windows, frames
     red = (r > 160) & (g < 90) & (b < 90)                                # columns
     if gap_px:  # bridge door openings: join wall pieces that line up across a gap of up to gap_px
@@ -61,8 +78,17 @@ def barriers(img: np.ndarray, gap_px: int = 0) -> np.ndarray:
 
 
 def outline_px(img: np.ndarray) -> float:
-    ys, xs = np.nonzero(wall_mask(img))
-    return float(max(xs.max() - xs.min(), ys.max() - ys.min()))
+    """Longest side of the building's linework, ignoring a page frame (a component spanning most of the sheet)."""
+    m = wall_mask(img).astype(np.uint8)
+    H, W = m.shape
+    n, lab, st, _ = cv2.connectedComponentsWithStats(m, connectivity=8)
+    keep = [i for i in range(1, n) if not (st[i][2] > 0.85 * W or st[i][3] > 0.85 * H) and st[i][4] > 50]
+    if not keep:
+        ys, xs = np.nonzero(m)
+        return float(max(xs.max() - xs.min(), ys.max() - ys.min()))
+    big = max(keep, key=lambda i: st[i][4])  # the building's connected linework
+    x, y, w, h = st[big][:4]
+    return float(max(w, h))
 
 
 def ocr(img: np.ndarray, eng):
@@ -76,9 +102,10 @@ def ocr(img: np.ndarray, eng):
         for box, txt, sc in zip(res.boxes, res.txts, res.scores):
             if sc < 0.6:
                 continue
-            cx, cy = float(np.mean(box[:, 0])), float(np.mean(box[:, 1]))
-            x, y = (cy, H - 1 - cx) if rot == cv2.ROTATE_90_CLOCKWISE else (W - 1 - cy, cx) if rot is not None else (cx, cy)
-            out.append((txt.replace("−", "-"), x, y))
+            pts = [(cy, H - 1 - cx) if rot == cv2.ROTATE_90_CLOCKWISE else (W - 1 - cy, cx) if rot is not None else (cx, cy)
+                   for cx, cy in box]
+            xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+            out.append((txt.replace("−", "-"), sum(xs) / 4, sum(ys) / 4, (int(min(xs)), int(min(ys)), int(max(xs)), int(max(ys)))))
     return out
 
 
@@ -110,8 +137,11 @@ def trace(path: str, plot_long_ft: float, eng):
     if wall_mask(img).sum() < 2000:
         return {"file": os.path.basename(path), "ok": False, "reason": "no wall linework found", "rooms": []}
     ppf0 = outline_px(img) / plot_long_ft  # rough scale, only to size the door-gap bridge
+    texts = ocr(img, eng)
+    walls = solid_walls(img, [t[3] for t in texts], ppf0) if is_line_drawing(img) else None
+
     def label_map(gap_ft):
-        wall = barriers(img, gap_px=int(gap_ft * ppf0))
+        wall = barriers(img, gap_px=int(gap_ft * ppf0), walls=walls)
         _, lab, stats, _ = cv2.connectedComponentsWithStats(cv2.bitwise_not(wall), connectivity=4)
         return lab, stats
 
@@ -121,9 +151,8 @@ def trace(path: str, plot_long_ft: float, eng):
 
     lab, stats = label_map(3.8)        # ordinary doors
     lab2, stats2 = label_map(6.5)      # wide openings and double doors, for labels pass 1 can't enclose
-    texts = ocr(img, eng)
     labels, dims = [], []
-    for t, x, y in texts:
+    for t, x, y, _ in texts:
         d = parse_dims(t)
         if d:
             dims.append((d, x, y))
@@ -151,6 +180,8 @@ def trace(path: str, plot_long_ft: float, eng):
             if rid and enclosed(st, rid):
                 L["region"] = (pas, rid)
                 break
+    if os.environ.get("TRACE_DEBUG"):
+        cv2.imwrite(os.environ["TRACE_DEBUG"], cv2.resize(barriers(img, int(3.8 * ppf0), walls), (1600, int(1600 * H / W))))
     rooms = []
     by_region = {}
     for L in labels:
