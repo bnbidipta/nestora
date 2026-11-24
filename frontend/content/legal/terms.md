@@ -56,3 +56,11 @@ You agree not to:
 These Terms shall be governed by, construed, and enforced in accordance with the **laws of the Republic of India**.
 
 Any dispute, controversy, or claim arising out of or relating to these Terms or the use of the platform shall be subject to the exclusive territorial jurisdiction of the competent civil courts situated in **Mumbai, Maharashtra, India**.
+
+## 8. Open Data Attribution
+Nestora's layout models use statistics derived from these open datasets, both licensed under Creative Commons Attribution 4.0 (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/):
+
+- **ResPlan** (Abouagour & Garyfallidis), https://github.com/m-agour/ResPlan
+- **Swiss Dwellings** (Archilyse), https://zenodo.org/records/7788422
+
+No plans from these datasets are shown or redistributed; only aggregate room-size, proportion and adjacency statistics are used.

@@ -52,7 +52,9 @@ TYPES: Dict[str, Dict[str, Any]] = {
 }
 LIFT_M = 1.6
 MAX_ASPECT = {"porch": 3.0, "kitchen": 3.0, "toilet": 2.6, "balcony": 6.0, "dining": 2.6}
-MAX_AREA = {"laundry": 5.0, "store": 5.0, "help": 9.0, "toilet": 6.0, "puja": 5.0, "passage": 12.0, "kitchen": 16.0, "entrance": 8.0, "dining": 18.0,
+# Bedroom/kitchen/stair caps = 90th percentile of real plans (backend/ml/train_plan_prior.py, ResPlan + Swiss Dwellings).
+MAX_AREA = {"bedroom": 21.0, "bedroom_elder": 21.0, "bedroom_guest": 21.0, "bedroom_master": 23.9, "stair": 11.4,
+            "laundry": 5.0, "store": 5.0, "help": 9.0, "toilet": 6.0, "puja": 5.0, "passage": 12.0, "kitchen": 13.3, "entrance": 8.0, "dining": 18.0,
             "balcony": 9.0, "study": 12.0, "porch": 18.0}
 NON_FSI = ("porch",)  # open parking: non-FSI per DCPR 2034 Reg. 31(1) (unverified)
 TEMPLATE_TYPE_MAP = {"entrance": "porch", "family_lounge": "lounge", "store": None, "courtyard": None}

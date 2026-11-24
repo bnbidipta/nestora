@@ -48,7 +48,8 @@ def realism(c: Dict[str, Any]) -> float:
     from backend.ml.train_plan_prior import realism as score_rooms
     rooms = c["layout"]["rooms"]
     floors = sorted({r["floor"] for r in rooms})
-    return sum(score_rooms([r for r in rooms if r["floor"] == f], _prior())["score"] for f in floors) / len(floors) if floors else 0.0
+    plate = c["envelope"]["area_m2"]
+    return sum(score_rooms([r for r in rooms if r["floor"] == f], _prior(), plate)["score"] for f in floors) / len(floors) if floors else 0.0
 
 
 def brief_fit(brief: Brief, c: Dict[str, Any]) -> Dict[str, float]:
