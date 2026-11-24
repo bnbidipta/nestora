@@ -37,3 +37,21 @@ In `physics-simulation.md`:
 - A recommended plan: which engine to calibrate against which data.
 
 Quote licences only from pages you actually opened; write "unconfirmed" otherwise. Append a done note to this file.
+
+---
+
+## Done + Caveats (2026-11-24)
+
+- **Completed**:
+  - Downloaded Mumbai Santacruz (WMO 430030) weather datasets (both TMYx 2007–2021 and ISHRAE 2014) into `data/weather/` along with associated `.ddy`, `.stat`, `.rain`, and `.wea` files.
+  - Audited 12 open-source simulation engines across energy, daylight, CFD, acoustics, structure, and thermal comfort, quoting licenses directly from primary repository and documentation pages opened and verified during research.
+  - Provided minimal functional example calls and evaluated server/SaaS permissibility for each engine.
+  - Documented empirical validation data and Indian statutory standards (IMAC adaptive thermal comfort, Eco-Niwas Samhita RETV equations, ISO 354 absorption coefficients, NBC 2016 Part 8 wall $R_w$/STC ratings, CPCB/MPCB Mumbai ambient noise monitoring data, BMC Disaster Management flood-prone wards, Mumbai geotechnical SBC strata, IS 1893: 2016 seismic Zone III, IS 875 Part 3: 2015 wind speed $44\text{ m/s}$, and ASHRAE 140 / BESTEST test cases).
+  - Authored comprehensive report in `docs/research/data/physics-simulation.md` with master source inventory table, engine-by-engine calibration roadmap, and JSON data definitions.
+- **Caveats & Licensing Alerts**:
+  - `verified: false`: All empirical formulas, regulatory figures, soil bearing capacities, and acoustic ratings are unverified and must be audited and stamped by a licensed structural engineer and registered architect before construction.
+  - **OpenSees Commercial Restriction**: OpenSees contains an explicit non-commercial / internal-use restriction prohibiting incorporation into commercial distribution or SaaS without an agreement with UC Berkeley OTL. **PyNite (MIT)** must be used for production structural analysis.
+  - **ISHRAE 2014 Single-Machine Restriction**: The ISHRAE weather dataset license forbids redistribution or multi-machine copying. It cannot be hosted on multi-tenant SaaS servers. The **TMYx (Lawrie & Crawley / OpenBuilding)** weather dataset is the approved production dataset for Mumbai.
+  - **Ladybug / Honeybee AGPLv3 Contamination Risk**: Honeybee-core and Ladybug-core are licensed under GNU AGPLv3. Network interaction triggers copyleft provisions; they must never be imported directly into Nestora's proprietary monolith and must be isolated behind an independent CLI microservice boundary if used.
+  - **CONTAM Public Domain**: NIST CONTAM is in the US Public Domain (17 U.S.C. § 105), permitting unrestricted backend server execution.
+

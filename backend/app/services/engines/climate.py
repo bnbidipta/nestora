@@ -4,7 +4,10 @@ clear-sky beam irradiance from an air-mass model, solar gain through each room's
 summer overhang depths, cross-ventilation and wind exposure. No weather API: physics only, so results are
 relative (hotter vs cooler rooms), not indoor temperatures.
 """
+import json
 import math
+import os
+from functools import cache
 from typing import Any, Dict, List
 
 from backend.app.models.twin import HouseTwin
@@ -32,6 +35,15 @@ def beam(alt_deg: float) -> float:
     return 1353 * 0.7 ** (am ** 0.678)
 
 
+@cache
+def _measured(city: str):
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "climate", f"{city}_walls.json")
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
 def wall_insolation(lat: float, day: int, wall_az: float) -> Dict[str, float]:
     """Daily kWh/m² on a vertical wall, and the hour and profile angle of its peak."""
     total, peak, peak_h, prof = 0.0, 0.0, 12.0, 90.0
@@ -51,6 +63,10 @@ def wall_insolation(lat: float, day: int, wall_az: float) -> Dict[str, float]:
 def analyse(twin: HouseTwin) -> Dict[str, Any]:
     lat = CITY_LAT.get(str(twin.metadata.get("city", "mumbai")), 19.07)
     by_dir = {d: wall_insolation(lat, DATES["hot_month"], az) for d, az in AZ.items()}
+    measured = _measured(str(twin.metadata.get("city", "mumbai")))
+    if measured:  # real weather (TMYx) beats the clear-sky model: it includes haze and diffuse sky light
+        for d in by_dir:
+            by_dir[d] = dict(by_dir[d], kwh_m2=measured["walls_kwh_m2_day"]["5"][d], source="measured TMYx 2007-2021")
     rooms: Dict[str, Any] = {}
     for f in twin.floors:
         for r in f.rooms:

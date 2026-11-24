@@ -1,0 +1,292 @@
+{
+  "marble": {
+    "conductivity_w_mk": 2.8,
+    "density_kg_m3": 2680.0,
+    "specific_heat_j_kgk": 880.0,
+    "embodied_carbon_kgco2e_kg": 0.11,
+    "water_absorption_pct": 0.4,
+    "slip_rating": "R9",
+    "source": "IS 1124:1974 §4; IS 1130:1969; CPWD Specifications 2019 Ch 8 §8.2; ICE Database v3.0 (Circular Ecology)",
+    "verified": false
+  },
+  "granite": {
+    "conductivity_w_mk": 3.2,
+    "density_kg_m3": 2650.0,
+    "specific_heat_j_kgk": 820.0,
+    "embodied_carbon_kgco2e_kg": 0.056,
+    "water_absorption_pct": 0.3,
+    "slip_rating": "R9",
+    "source": "IS 1124:1974 §4; IS 3316:1974 §5; CPWD Specifications 2019 Ch 8 §8.3; ICE Database v3.0",
+    "verified": false
+  },
+  "epoxy_flooring": {
+    "conductivity_w_mk": 0.25,
+    "density_kg_m3": 1400.0,
+    "specific_heat_j_kgk": 1100.0,
+    "embodied_carbon_kgco2e_kg": 6.1,
+    "water_absorption_pct": 0.08,
+    "slip_rating": "R9",
+    "source": "ICE Database v3.0 (Polymers: Epoxy resin); ASTM D570; DIN 51130; CPWD Specifications 2019 Ch 11",
+    "verified": false
+  },
+  "teak_wood": {
+    "conductivity_w_mk": 0.14,
+    "density_kg_m3": 680.0,
+    "specific_heat_j_kgk": 1600.0,
+    "embodied_carbon_kgco2e_kg": 0.45,
+    "water_absorption_pct": 10.5,
+    "slip_rating": "R10",
+    "source": "IS 1708:1986; IS 399:1963; SP 41 (S&T):1987 Table 2; ICE Database v3.0 (Sawn Timber: Hardwood)",
+    "verified": false
+  },
+  "engineered_wood": {
+    "conductivity_w_mk": 0.15,
+    "density_kg_m3": 800.0,
+    "specific_heat_j_kgk": 1400.0,
+    "embodied_carbon_kgco2e_kg": 0.78,
+    "water_absorption_pct": 7.0,
+    "slip_rating": "R10",
+    "source": "IS 12049:1987; EN 14342:2013; ICE Database v3.0 (Plywood/Laminated wood); DIN 51130",
+    "verified": false
+  },
+  "polished_concrete": {
+    "conductivity_w_mk": 1.5,
+    "density_kg_m3": 2350.0,
+    "specific_heat_j_kgk": 1000.0,
+    "embodied_carbon_kgco2e_kg": 0.135,
+    "water_absorption_pct": 4.2,
+    "slip_rating": "R9",
+    "source": "IS 456:2000; IS 3792:1978; NBC 2016 Part 8 §5; ICE Database v3.0 (Concrete: 1:2:4 / C20/25)",
+    "verified": false
+  },
+  "vitrified_tiles": {
+    "conductivity_w_mk": 1.1,
+    "density_kg_m3": 2400.0,
+    "specific_heat_j_kgk": 850.0,
+    "embodied_carbon_kgco2e_kg": 0.72,
+    "water_absorption_pct": 0.08,
+    "slip_rating": "R9",
+    "source": "IS 15622:2017 Table 1 Group BIa; CPWD Specifications 2019 Ch 11 §11.41; ICE Database v3.0 (Ceramic tiles)",
+    "verified": false
+  },
+  "anti_skid_ceramic": {
+    "conductivity_w_mk": 0.9,
+    "density_kg_m3": 2100.0,
+    "specific_heat_j_kgk": 840.0,
+    "embodied_carbon_kgco2e_kg": 0.62,
+    "water_absorption_pct": 4.5,
+    "slip_rating": "R11",
+    "source": "IS 15622:2017 Table 3 Group BIIa; DIN 51130 Class R11; CPWD Specifications 2019 Ch 11 §11.39",
+    "verified": false
+  },
+  "anti_skid_vitrified": {
+    "conductivity_w_mk": 1.1,
+    "density_kg_m3": 2400.0,
+    "specific_heat_j_kgk": 850.0,
+    "embodied_carbon_kgco2e_kg": 0.72,
+    "water_absorption_pct": 0.08,
+    "slip_rating": "R11",
+    "source": "IS 15622:2017 Table 1 Group BIa (matt embossed); DIN 51130 Class R11; CPWD Specifications 2019 Ch 11 §11.41",
+    "verified": false
+  },
+  "kota_stone": {
+    "conductivity_w_mk": 2.0,
+    "density_kg_m3": 2650.0,
+    "specific_heat_j_kgk": 840.0,
+    "embodied_carbon_kgco2e_kg": 0.065,
+    "water_absorption_pct": 0.6,
+    "slip_rating": "R10",
+    "source": "IS 1124:1974 §4; CPWD Specifications 2019 Ch 8 §8.5; ICE Database v3.0 (Stone: Limestone general)",
+    "verified": false
+  },
+  "terrazzo": {
+    "conductivity_w_mk": 1.4,
+    "density_kg_m3": 2280.0,
+    "specific_heat_j_kgk": 900.0,
+    "embodied_carbon_kgco2e_kg": 0.2,
+    "water_absorption_pct": 8.5,
+    "slip_rating": "R9",
+    "source": "IS 1237:2012 §8.3; IS 1443:1972; CPWD Specifications 2019 Ch 11 §11.16; ICE Database v3.0",
+    "verified": false
+  },
+  "red_oxide": {
+    "conductivity_w_mk": 1.2,
+    "density_kg_m3": 2180.0,
+    "specific_heat_j_kgk": 920.0,
+    "embodied_carbon_kgco2e_kg": 0.22,
+    "water_absorption_pct": 5.5,
+    "slip_rating": "R9",
+    "source": "CPWD Specifications 2019 Ch 11 §11.2 (Indian Patent Stone Flooring); IS 44:1991; ICE Database v3.0",
+    "verified": false
+  },
+  "athangudi_tiles": {
+    "conductivity_w_mk": 1.1,
+    "density_kg_m3": 2150.0,
+    "specific_heat_j_kgk": 900.0,
+    "embodied_carbon_kgco2e_kg": 0.21,
+    "water_absorption_pct": 6.8,
+    "slip_rating": "R9",
+    "source": "IS 1237:2012 §8.3 (Cement flooring tile protocol); Chettinad Heritage Craft Studies; ICE Database v3.0",
+    "verified": false
+  },
+  "wood_look_tiles": {
+    "conductivity_w_mk": 1.1,
+    "density_kg_m3": 2400.0,
+    "specific_heat_j_kgk": 850.0,
+    "embodied_carbon_kgco2e_kg": 0.72,
+    "water_absorption_pct": 0.08,
+    "slip_rating": "R10",
+    "source": "IS 15622:2017 Table 1 Group BIa; DIN 51130 Class R10; ICE Database v3.0",
+    "verified": false
+  },
+  "terracotta": {
+    "conductivity_w_mk": 0.78,
+    "density_kg_m3": 1900.0,
+    "specific_heat_j_kgk": 880.0,
+    "embodied_carbon_kgco2e_kg": 0.27,
+    "water_absorption_pct": 11.5,
+    "slip_rating": "R11",
+    "source": "IS 2690 (Part 1):1993 §6; IS 1478:1992; CPWD Specifications 2019 Ch 11; ICE Database v3.0 (Clay tile)",
+    "verified": false
+  },
+  "red_clay_brick": {
+    "conductivity_w_mk": 0.81,
+    "density_kg_m3": 1800.0,
+    "specific_heat_j_kgk": 840.0,
+    "embodied_carbon_kgco2e_kg": 0.22,
+    "water_absorption_pct": 18.0,
+    "slip_rating": null,
+    "source": "IS 1077:1992 §7.2; IS 3792:1978 Table 1; NBC 2016 Part 8 §5; ICE Database v3.0 (Common clay brick)",
+    "verified": false
+  },
+  "fly_ash_brick": {
+    "conductivity_w_mk": 0.58,
+    "density_kg_m3": 1700.0,
+    "specific_heat_j_kgk": 880.0,
+    "embodied_carbon_kgco2e_kg": 0.125,
+    "water_absorption_pct": 15.0,
+    "slip_rating": null,
+    "source": "IS 12894:2002 §7.2; CPWD Specifications 2019 Ch 6 §6.2.8; ICE Database v3.0 (Fly ash building block)",
+    "verified": false
+  },
+  "aac_block": {
+    "conductivity_w_mk": 0.18,
+    "density_kg_m3": 600.0,
+    "specific_heat_j_kgk": 1000.0,
+    "embodied_carbon_kgco2e_kg": 0.31,
+    "water_absorption_pct": 40.0,
+    "slip_rating": null,
+    "source": "IS 2185 (Part 3):1984 (Reaffirmed 2020) §6; CPWD Specifications 2019 Ch 6 §6.2.7; ICE Database v3.0 (Aerated concrete)",
+    "verified": false
+  },
+  "laterite": {
+    "conductivity_w_mk": 1.0,
+    "density_kg_m3": 1950.0,
+    "specific_heat_j_kgk": 920.0,
+    "embodied_carbon_kgco2e_kg": 0.042,
+    "water_absorption_pct": 9.5,
+    "slip_rating": null,
+    "source": "IS 3620:1979 (Reaffirmed 2018) §4.3; IS 1124:1974; CPWD Specifications 2019 Ch 7; ICE Database v3.0",
+    "verified": false
+  },
+  "putty_primer": {
+    "conductivity_w_mk": 0.55,
+    "density_kg_m3": 1680.0,
+    "specific_heat_j_kgk": 950.0,
+    "embodied_carbon_kgco2e_kg": 0.98,
+    "water_absorption_pct": 10.0,
+    "slip_rating": null,
+    "source": "CPWD Specifications 2019 Ch 13 §13.23; IS 15477:2019; ICE Database v3.0 (Mortars / Plasters)",
+    "verified": false
+  },
+  "emulsion": {
+    "conductivity_w_mk": 0.25,
+    "density_kg_m3": 1320.0,
+    "specific_heat_j_kgk": 1200.0,
+    "embodied_carbon_kgco2e_kg": 3.1,
+    "water_absorption_pct": 2.0,
+    "slip_rating": null,
+    "source": "IS 5411 (Part 1):1974 §4; CPWD Specifications 2019 Ch 13 §13.27; ICE Database v3.0 (Paints: Water-borne acrylic)",
+    "verified": false
+  },
+  "plywood_bwp": {
+    "conductivity_w_mk": 0.13,
+    "density_kg_m3": 710.0,
+    "specific_heat_j_kgk": 1600.0,
+    "embodied_carbon_kgco2e_kg": 0.92,
+    "water_absorption_pct": 10.0,
+    "slip_rating": null,
+    "source": "IS 710:2010 §9; IS 1734:1983; ICE Database v3.0 (Plywood general)",
+    "verified": false
+  },
+  "mdf": {
+    "conductivity_w_mk": 0.12,
+    "density_kg_m3": 760.0,
+    "specific_heat_j_kgk": 1700.0,
+    "embodied_carbon_kgco2e_kg": 0.79,
+    "water_absorption_pct": 12.0,
+    "slip_rating": null,
+    "source": "IS 12406:2003 §7; IS 14587:1998; ICE Database v3.0 (Medium Density Fibreboard)",
+    "verified": false
+  },
+  "laminate": {
+    "conductivity_w_mk": 0.22,
+    "density_kg_m3": 1400.0,
+    "specific_heat_j_kgk": 1300.0,
+    "embodied_carbon_kgco2e_kg": 2.35,
+    "water_absorption_pct": 3.2,
+    "slip_rating": null,
+    "source": "IS 2046:1995 Table 2; EN 438-2:2016; ICE Database v3.0 (Plastic laminates / HPL)",
+    "verified": false
+  },
+  "glass": {
+    "conductivity_w_mk": 1.0,
+    "density_kg_m3": 2500.0,
+    "specific_heat_j_kgk": 840.0,
+    "embodied_carbon_kgco2e_kg": 1.2,
+    "water_absorption_pct": 0.0,
+    "slip_rating": null,
+    "source": "IS 14900:2000 §5; IS 3792:1978 Table 1; NBC 2016 Part 8 §5; ICE Database v3.0 (Flat / Float glass)",
+    "verified": false
+  },
+  "steel": {
+    "conductivity_w_mk": 48.0,
+    "density_kg_m3": 7850.0,
+    "specific_heat_j_kgk": 480.0,
+    "embodied_carbon_kgco2e_kg": 2.15,
+    "water_absorption_pct": 0.0,
+    "slip_rating": null,
+    "source": "IS 1786:2008 §8; IS 2062:2011; SP 41 (S&T):1987 Table 2; ICE Database v3.0 (Bar & Rod / Rebar general)",
+    "verified": false
+  },
+  "upvc_pipes": {
+    "conductivity_w_mk": 0.15,
+    "density_kg_m3": 1420.0,
+    "specific_heat_j_kgk": 1000.0,
+    "embodied_carbon_kgco2e_kg": 2.8,
+    "water_absorption_pct": 0.08,
+    "slip_rating": null,
+    "source": "IS 4985:2000 §9; IS 12235:2004; ICE Database v3.0 (Plastics: PVC pipe)",
+    "verified": false
+  },
+  "cpvc_pipes": {
+    "conductivity_w_mk": 0.14,
+    "density_kg_m3": 1530.0,
+    "specific_heat_j_kgk": 950.0,
+    "embodied_carbon_kgco2e_kg": 3.45,
+    "water_absorption_pct": 0.08,
+    "slip_rating": null,
+    "source": "IS 15778:2007 §7; ASTM D2846; ICE Database v3.0 (Plastics: Chlorinated PVC)",
+    "verified": false
+  },
+  "brass_fittings": {
+    "conductivity_w_mk": 115.0,
+    "density_kg_m3": 8500.0,
+    "specific_heat_j_kgk": 380.0,
+    "embodied_carbon_kgco2e_kg": 4.6,
+    "water_absorption_pct": 0.0,
+    "slip_rating": null,
+    "source": "IS 6912:2004 §6; IS 1264:1997; ICE Database v3.0 (Metals: Brass / Copper-zinc alloy)",
+    "verified": false
+  }
+}
