@@ -8,6 +8,7 @@ import { HouseTwin, getJudge, builtUpSqft } from '@/lib/twin';
 import { canEditLocally, dxfUrl, editHouse, getHouse } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { track } from '@/lib/analytics';
+import { area, len, lenShort, loadRegional, plotArea, useLengthUnit } from '@/lib/units';
 
 type ViewMode = 'plan' | 'structure' | '3d' | LayerMode;
 const LAYERS: string[] = ['paint', 'decor', 'mep', 'climate', 'sound'];
@@ -31,6 +32,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [canEdit, setCanEdit] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
+  const u = useLengthUnit();
 
   useEffect(() => {
     // Editable by the creating browser (edit token) or a signed-in owner; the API enforces it either way.
@@ -182,7 +184,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
               <rect x={0} y={0} width={PW} height={PD} fill="#EFEDE6" stroke="#475569" strokeWidth={0.25} strokeDasharray="1 0.6" />
               <rect x={sbSide} y={PD - sbFront - D} width={W} height={D} fill="none" stroke="#D97706" strokeWidth={0.2} strokeDasharray="0.6 0.4" />
               {floor?.rooms.map((r) => (
-                <g key={r.name} onClick={() => setSelected(r.name)} tabIndex={0} role="button" aria-label={`${label(r.name)}, ${r.length_ft} by ${r.width_ft} feet`}
+                <g key={r.name} onClick={() => setSelected(r.name)} tabIndex={0} role="button" aria-label={`${label(r.name)}, ${len(r.length_ft, u)} by ${len(r.width_ft, u)}`}
                   onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(r.name)} className="cursor-pointer focus:outline-none">
                   <rect x={px(r.x)} y={py(r.y, r.width_ft)} width={r.length_ft} height={r.width_ft} fill={(LAYERS.includes(mode) ? roomFill(mode as LayerMode, twin, r) : null) ?? FILL[r.type ?? ''] ?? '#EEE'}
                     stroke={selected === r.name ? '#1D4ED8' : '#1F2937'} strokeWidth={selected === r.name ? 0.5 : 0.25} />
@@ -190,7 +192,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
                     <>
                       <text x={px(r.x) + r.length_ft / 2} y={py(r.y, r.width_ft) + r.width_ft / 2 - 0.4} textAnchor="middle" fontSize={Math.min(1.3, r.length_ft / 7)} fontWeight={600} fill="#111827">{label(r.name)}</text>
                       <text x={px(r.x) + r.length_ft / 2} y={py(r.y, r.width_ft) + r.width_ft / 2 + 1.1} textAnchor="middle" fontSize={Math.min(1.0, r.length_ft / 9)} fill="#374151">
-                        {r.length_ft.toFixed(1)}′×{r.width_ft.toFixed(1)}′
+                        {lenShort(r.length_ft, u)}×{lenShort(r.width_ft, u)}
                       </text>
                     </>
                   )}
@@ -202,7 +204,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
                   <title>{`C${i + 1}: 230×${c.size_y_mm ?? 230} mm, ${c.load_tons} t`}</title>
                 </rect>
               ))}
-              <text x={PW / 2} y={PD + 2.6} textAnchor="middle" fontSize={1.2} fill="#64748B">Road ({twin.plot.orientation} side) · plot {PW}′×{PD}′ · dashed orange = setback line</text>
+              <text x={PW / 2} y={PD + 2.6} textAnchor="middle" fontSize={1.2} fill="#64748B">Road ({twin.plot.orientation} side) · plot {lenShort(PW, u)}×{lenShort(PD, u)} · dashed orange = setback line</text>
               <g transform={`translate(${PW + 3.5}, 3) rotate(${NORTH_ROT[twin.plot.orientation] ?? 0})`} aria-label="North arrow">
                 <circle r={2} fill="#fff" stroke="#475569" strokeWidth={0.15} />
                 <polygon points="0,-1.7 -0.7,0.6 0.7,0.6" fill="#DC2626" />
@@ -221,9 +223,9 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
           <div className="space-y-3">
             <p className="font-mono text-[10px] uppercase text-blue-400">Selected room</p>
             <h3 className="text-lg font-bold text-white">{label(room.name)}</h3>
-            <Row k="Size" v={`${room.length_ft}′ × ${room.width_ft}′ (${room.area_sqft} sqft)`} />
+            <Row k="Size" v={`${lenShort(room.length_ft, u)} × ${lenShort(room.width_ft, u)} (${area(room.area_sqft, u)})`} />
             <Row k="Door" v={`${room.door_width_mm} mm`} />
-            <Row k="Window" v={room.window_area_sqft ? `${room.window_area_sqft} sqft` : room.exterior ? 'Vent' : 'Internal (duct/exhaust)'} />
+            <Row k="Window" v={room.window_area_sqft ? area(room.window_area_sqft, u) : room.exterior ? 'Vent' : 'Internal (duct/exhaust)'} />
             <Row k="Direction" v={room.compass ?? '—'} />
             <Row k="Floor finish" v={label(room.material_floor)} />
             <Row k="Wall" v={`${room.color_wall_A?.hex ?? ''} · LRV ${room.color_wall_A?.lrv}`} swatch={room.color_wall_A?.hex} />
@@ -239,9 +241,9 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
         ) : (
           <div className="space-y-2">
             <div className="flex items-center gap-2"><Info className="h-4 w-4 text-blue-400" /><h3 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">Why this design</h3></div>
-            <Row k="Plot" v={`${PW}′ × ${PD}′ (${twin.plot.plot_area_sqft.toLocaleString('en-IN')} sqft)`} />
-            <Row k="Built-up (FSI)" v={`${Math.round(builtUp).toLocaleString('en-IN')} sqft (${(builtUp / twin.plot.plot_area_sqft).toFixed(2)})`} />
-            <Row k="Foundation" v={`${twin.structure.foundation.type}, ${twin.structure.foundation.depth_ft} ft`} />
+            <Row k="Plot" v={`${lenShort(PW, u)} × ${lenShort(PD, u)} (${plotArea(twin.plot.plot_area_sqft, u, loadRegional())})`} />
+            <Row k="Built-up (FSI)" v={`${area(builtUp, u)} (FSI ${(builtUp / twin.plot.plot_area_sqft).toFixed(2)})`} />
+            <Row k="Foundation" v={`${twin.structure.foundation.type}, ${len(twin.structure.foundation.depth_ft, u)}`} />
             <Row k="Columns" v={`${twin.structure.columns.length}`} />
             {mode === 'climate' && (
               <div className="flex flex-col items-center pt-2">

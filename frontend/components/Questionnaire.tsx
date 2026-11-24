@@ -8,6 +8,7 @@ import {
 } from '@/lib/api';
 import { InfoTip, NumberField, Select, TextArea, Toggle } from '@/components/form';
 import { track } from '@/lib/analytics';
+import PlotSize from '@/components/PlotSize';
 
 const DEFAULT: Brief = {
   build_type: 'new_plot', city: 'mumbai', plot_width_ft: 30, plot_depth_ft: 40, road_width_m: 9, facing: 'E', corner_plot: false,
@@ -142,8 +143,8 @@ export default function Questionnaire() {
               <Select label="City" value={b.city} onChange={(v) => set('city', v)}
                 options={[{ value: 'mumbai', label: 'Mumbai' }, { value: 'pune', label: 'Pune (coming soon)' }, { value: 'bengaluru', label: 'Bengaluru (coming soon)' },
                   { value: 'delhi', label: 'Delhi NCR (coming soon)' }, { value: 'other', label: 'Somewhere else (coming soon)' }]} />
-              <NumberField label="Plot width (side on the road)" unit="ft" value={b.plot_width_ft} min={15} max={200} onChange={(v) => set('plot_width_ft', v)} placeholder="e.g. 30" />
-              <NumberField label="Plot length" unit="ft" value={b.plot_depth_ft} min={15} max={300} onChange={(v) => set('plot_depth_ft', v)} placeholder="e.g. 40" />
+              <PlotSize widthFt={b.plot_width_ft} lengthFt={b.plot_depth_ft} onChange={(w, l) => setB((x) => ({ ...x, plot_width_ft: w, plot_depth_ft: l }))} />
+              {!plotOk && <p role="alert" className="text-sm text-red-700 sm:col-span-2">The plot must be 15–200 ft (5–60 m) wide and 15–300 ft (5–90 m) long.</p>}
               <Select label="Which side of the plot is the road on?" value={roadDir}
                 onChange={(v) => { setRoadDir(v); set('facing', SNAP[v]); }}
                 options={[...DIRS.map(([value, label]) => ({ value: value as string, label })), { value: 'unsure', label: 'Not sure' }]} />

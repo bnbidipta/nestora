@@ -1,8 +1,11 @@
+'use client';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Paint / Decor / MEP / Climate / Sound views drawn over the plan, from the engines' output in the twin.
  * Plan coordinates: feet; toScreen maps a plan point to the SVG (road at the bottom).
  */
+import { len, perArea, perAreaRate, useLengthUnit } from '@/lib/units';
 import { HouseTwin, Room } from '@/lib/twin';
 
 export type LayerMode = 'paint' | 'decor' | 'mep' | 'climate' | 'sound';
@@ -109,6 +112,7 @@ function KV({ k, v }: { k: string; v: string }) {
 }
 
 export function RoomDetail({ mode, twin, room }: { mode: LayerMode; twin: HouseTwin; room: Room }) {
+  const u = useLengthUnit();
   const t = twin as any;
   if (mode === 'paint') {
     const p = t.paint?.[room.name];
@@ -124,7 +128,7 @@ export function RoomDetail({ mode, twin, room }: { mode: LayerMode; twin: HouseT
         {p && <p className="pt-1 text-xs text-slate-400">{p.why} Palette harmony: {p.harmony}.</p>}
         {mat && (
           <div className="pt-2 text-xs text-slate-300">
-            <p className="font-semibold text-white">Floor: {mat.chosen.name} (₹{mat.chosen.cost_sqft[0]}–{mat.chosen.cost_sqft[1]}/sqft)</p>
+            <p className="font-semibold text-white">Floor: {mat.chosen.name} (₹{Math.round(perAreaRate(mat.chosen.cost_sqft[0], u))}–{Math.round(perAreaRate(mat.chosen.cost_sqft[1], u))}/{perArea(u)})</p>
             <p className="text-emerald-400">+ {mat.chosen.benefits}</p>
             <p className="text-amber-400">− {mat.chosen.risks}</p>
             <p className="text-slate-400">Care: {mat.chosen.maintenance}. Also good: {mat.alternatives.map((a: any) => a.name).join(', ')}.</p>
@@ -139,7 +143,7 @@ export function RoomDetail({ mode, twin, room }: { mode: LayerMode; twin: HouseT
       <div className="text-xs text-slate-300">
         <KV k="Furniture" v={f.items.map((i: any) => i.item).join(', ') || '—'} />
         {f.did_not_fit?.length > 0 && <KV k="Didn't fit" v={f.did_not_fit.join(', ')} />}
-        {f.triangle_ft && <KV k="Work triangle" v={`${f.triangle_ft} ft (limit 22)`} />}
+        {f.triangle_ft && <KV k="Work triangle" v={`${len(f.triangle_ft, u)} (limit ${len(22, u, 0)})`} />}
         <KV k="Door on" v={`${f.door_wall} wall`} />
       </div>
     ) : <p className="text-xs text-slate-400">No furniture for this space.</p>;

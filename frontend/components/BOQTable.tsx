@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FileSpreadsheet, Coins } from 'lucide-react';
+import { area as fmtArea, perArea, perAreaRate, useLengthUnit } from '@/lib/units';
 import { HouseTwin, builtUpSqft, formatINR } from '@/lib/twin';
 
 /** Standard amortised EMI. Returns 0 for a zero principal or zero tenure instead of dividing by zero. */
@@ -41,6 +42,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
   const lines: Record<string, number> = range ? range.expected : boq.cost_breakdown;
   const total = range ? range.expected.total : boq.total_cost_inr;
   const area = builtUpSqft(twin);
+  const u = useLengthUnit();
   const overBudget = total - budget.total_budget_inr;
   const monthly = emi((total * loanPct) / 100, rate, years);
 
@@ -67,7 +69,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
           <p className="mt-2 font-mono text-2xl font-bold text-white">{formatINR(total)}</p>
           {range && <p className="text-xs text-slate-400">Range {formatINR(range.low.total)} – {formatINR(range.high.total)}</p>}
           <p className="mt-1 text-xs text-slate-400">
-            {area > 0 ? `${formatINR(total / area)} per sqft over ${area.toLocaleString('en-IN')} sqft` : 'No floors generated'}
+            {area > 0 ? `${formatINR(perAreaRate(total / area, u))} per ${perArea(u)} over ${fmtArea(area, u)}` : 'No floors generated'}
           </p>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-[#131926] p-5">
@@ -134,7 +136,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
               ))}
             </tbody>
           </table>
-          <p className="mt-3 text-xs text-slate-500">Thumb-rule quantities per sqft of built-up area; a quantity surveyor refines these from drawings.</p>
+          <p className="mt-3 text-xs text-slate-500">Thumb-rule quantities per unit of built-up area; a quantity surveyor refines these from drawings.</p>
         </section>
       </div>
 

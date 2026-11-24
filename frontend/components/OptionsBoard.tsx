@@ -6,6 +6,7 @@ import { AlertTriangle, Check, Loader2, RefreshCw } from 'lucide-react';
 import { Option, OptionsResponse, chooseOption, selectOptions, startOptions } from '@/lib/api';
 import { formatINR } from '@/lib/twin';
 import { track } from '@/lib/analytics';
+import { area, useLengthUnit } from '@/lib/units';
 import PlanThumb from '@/components/PlanThumb';
 
 const FIT_LABEL: Record<string, string> = {
@@ -105,6 +106,7 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
 }
 
 function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: number; kept: boolean; busy: boolean; onKeep: () => void; onChoose: () => void }) {
+  const u = useLengthUnit();
   const [floor, setFloor] = useState(0);
   const floors = Array.from(new Set(o.preview.map((r) => r.f))).sort();
   const s = o.summary;
@@ -127,7 +129,7 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: numb
       </div>
       <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
         <dt className="text-slate-500">Estimated cost</dt><dd className="text-right font-semibold">{formatINR(s.cost_inr.low)}–{formatINR(s.cost_inr.high)}</dd>
-        <dt className="text-slate-500">Built-up</dt><dd className="text-right">{Math.round(s.built_up_sqft).toLocaleString('en-IN')} sqft · FSI {s.fsi_used}</dd>
+        <dt className="text-slate-500">Built-up</dt><dd className="text-right">{area(s.built_up_sqft, u)} · FSI {s.fsi_used}</dd>
         <dt className="text-slate-500">Bedrooms · floors</dt><dd className="text-right">{s.bedrooms} · {s.floors}{s.stilt ? ' (stilt parking)' : ''}</dd>
         <dt className="text-slate-500">Parking</dt><dd className="text-right">{s.parking.replace('_', '-')}</dd>
         {Object.entries(o.traditions).map(([k, v]) => (
