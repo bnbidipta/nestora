@@ -14,7 +14,7 @@ services:
       - key: CORS_ORIGINS
         sync: false # set to the Vercel URL(s)
       - key: CORS_ORIGIN_REGEX
-        value: ^https://frontend(-[a-z0-9-]+)?-bnbidipta\.vercel\.app$
+        value: ^https://(nestora-studio|frontend(-[a-z0-9-]+)?-bnbidipta)\.vercel\.app$
       - key: GROQ_API_KEY
         sync: false
       - key: GROQ_MODEL
