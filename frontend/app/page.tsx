@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { MotionConfig } from 'framer-motion';
 import Link from 'next/link';
 import SmoothScrollProvider from '@/components/motion/SmoothScrollProvider';
 import UnifiedHorizontalStack from '@/components/landing/UnifiedHorizontalStack';
@@ -31,6 +32,7 @@ function DesktopLanding() {
   };
 
   return (
+    <MotionConfig reducedMotion="user">
     <SmoothScrollProvider>
       {/* Inject Structured Data for SEO / AIEO */}
       <script
@@ -107,12 +109,13 @@ function DesktopLanding() {
         </footer>
       </div>
     </SmoothScrollProvider>
+    </MotionConfig>
   );
 }
 
-// The 3D scroll-world is too heavy for budget phones and ignores reduced-motion users,
-// so render the light static page first and upgrade only where it fits.
-const DESKTOP_QUERY = '(min-width: 1024px) and (prefers-reduced-motion: no-preference)';
+// The 3D scroll-world is too heavy for budget phones: render the light static page first and upgrade on tablets,
+// laptops and desktops. Reduced-motion users get the same page with motion calmed (MotionConfig + CSS), not a swap.
+const DESKTOP_QUERY = '(min-width: 768px)';
 
 export default function LandingPage() {
   const [desktop, setDesktop] = useState(false);
