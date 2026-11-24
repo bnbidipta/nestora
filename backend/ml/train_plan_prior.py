@@ -143,7 +143,8 @@ def fit(plans):
 def merge(primary, secondary, min_n=200):
     """ResPlan wins where it has enough data (South Asian proportions); Swiss fills stairs, passages, dining."""
     rooms = dict(secondary["rooms"])
-    rooms.update({t: v for t, v in primary["rooms"].items() if v["log_area"]["n"] >= min_n})
+    # ResPlan labels living + its corridors as one polygon, so living stats come from Swiss (separate passage label).
+    rooms.update({t: v for t, v in primary["rooms"].items() if v["log_area"]["n"] >= min_n and t.split("@")[0] != "living"})
     adjacency = dict(secondary["adjacency"])
     multi = ("stair", "passage", "dining")  # flats rarely have these; trust the multi-floor set for their neighbours
     adjacency.update({k: v for k, v in primary["adjacency"].items() if not any(m in k.split("|") for m in multi)})

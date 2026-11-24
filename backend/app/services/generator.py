@@ -14,6 +14,7 @@ Variation comes from: arrangement templates (zone per room type), mirroring, row
 parking strategy. Units are metres internally.
 """
 import copy
+import itertools
 import json
 import math
 import os
@@ -171,6 +172,40 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
 # ---------------------------------------------------------------------------------------------
 # Fitting
 # ---------------------------------------------------------------------------------------------
+@cache
+def _adjacency() -> Dict[str, float]:
+    """Learned P(two room types share a wall) from real plans (backend/ml/train_plan_prior.py)."""
+    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "learned", "plan_prior.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)["adjacency"]
+    except (OSError, KeyError):
+        return {}
+
+
+_PRIOR_TYPE = {"bedroom_elder": "bedroom", "bedroom_guest": "bedroom", "help": "bedroom", "lounge": "living"}
+
+
+def _neighbour_logp(a: str, b: str) -> float:
+    ta, tb = _PRIOR_TYPE.get(a, a), _PRIOR_TYPE.get(b, b)
+    p = _adjacency().get("|".join(sorted((ta, tb))))
+    return math.log(p) if p else math.log(0.3)  # unknown pair: neutral
+
+
+def _best_order(rooms: List[Dict[str, Any]], inner: List[int], ext: List[int], lead: List[int]) -> List[int]:
+    """Order interior rooms (and which outside-wall room goes first) so side-by-side pairs are the ones real homes have."""
+    best, best_s = None, -1e9
+    firsts = ext if (ext and not lead) else [None]
+    for first in firsts:
+        rest_ext = [i for i in ext if i != first]
+        for perm in itertools.islice(itertools.permutations(inner), 720):
+            seq = lead + ([first] if first is not None else []) + list(perm) + rest_ext
+            sc = sum(_neighbour_logp(rooms[i]["type"], rooms[j]["type"]) for i, j in zip(seq, seq[1:]))
+            if sc > best_s + 1e-9:
+                best, best_s = seq, sc
+    return best
+
+
 def _aspect(room: Dict[str, Any]) -> float:
     return TYPES[room["type"]].get("aspect", MAX_ASPECT.get(room["type"], 2.2))
 
@@ -225,7 +260,7 @@ def _fit_row(rooms: List[Dict[str, Any]], width: float, depth: float, stair: Dic
     core = ("stair", "lift")
     ext = [i for i in idx if rooms[i]["ext"] and rooms[i]["type"] not in core]
     inner = [i for i in idx if not rooms[i]["ext"] and rooms[i]["type"] not in core]
-    seq = stair_i + ([ext[0]] if ext and not stair_i else []) + inner + ext[(0 if stair_i else 1):]
+    seq = _best_order(rooms, inner, ext, stair_i)
     if not stair_left:
         seq = seq[::-1]
     # Front/rear rows without a stair touch an outer wall everywhere, so order is free: honour side preferences

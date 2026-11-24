@@ -146,26 +146,26 @@
   },
   "living": {
    "log_area": {
-    "mu": 3.5001,
-    "sd": 0.4166,
-    "n": 12298
+    "mu": 3.2883,
+    "sd": 0.3063,
+    "n": 12193
    },
    "log_aspect": {
-    "mu": 1.9472,
-    "sd": 0.5389,
-    "n": 12298
+    "mu": 0.8618,
+    "sd": 0.5058,
+    "n": 12193
    }
   },
   "living@large": {
    "log_area": {
-    "mu": 3.8173,
-    "sd": 0.4421,
-    "n": 3177
+    "mu": 3.2883,
+    "sd": 0.3063,
+    "n": 12193
    },
    "log_aspect": {
-    "mu": 1.9206,
-    "sd": 0.5012,
-    "n": 3177
+    "mu": 0.8618,
+    "sd": 0.5058,
+    "n": 12193
    }
   },
   "stair": {
@@ -240,18 +240,6 @@
     "n": 448
    }
   },
-  "living@medium": {
-   "log_area": {
-    "mu": 3.501,
-    "sd": 0.2935,
-    "n": 6774
-   },
-   "log_aspect": {
-    "mu": 1.9419,
-    "sd": 0.5351,
-    "n": 6774
-   }
-  },
   "bedroom_master@medium": {
    "log_area": {
     "mu": 2.8498,
@@ -310,18 +298,6 @@
     "mu": 0.8879,
     "sd": 0.4595,
     "n": 7685
-   }
-  },
-  "living@small": {
-   "log_area": {
-    "mu": 3.0684,
-    "sd": 0.2713,
-    "n": 2347
-   },
-   "log_aspect": {
-    "mu": 1.9989,
-    "sd": 0.5928,
-    "n": 2347
    }
   },
   "bedroom_master@small": {
@@ -483,14 +459,14 @@
   },
   "heldout": {
    "resplan": {
-    "real_mean": 0.691,
-    "shuffled_mean": 0.322,
-    "real_beats_shuffled": 0.999,
+    "real_mean": 0.655,
+    "shuffled_mean": 0.333,
+    "real_beats_shuffled": 0.994,
     "floors": 1353
    },
    "swiss": {
-    "real_mean": 0.586,
-    "shuffled_mean": 0.347,
+    "real_mean": 0.608,
+    "shuffled_mean": 0.36,
     "real_beats_shuffled": 0.993,
     "floors": 461
    }
