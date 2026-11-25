@@ -104,7 +104,7 @@ _LOCK = threading.Lock()  # one solve at a time: CP-SAT models must not be built
 def solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Optional[Dict[str, Any]] = None,
           step_m: Optional[float] = None, resize: Optional[Dict[str, tuple]] = None) -> Optional[Dict[str, Any]]:
     """Serialised entry point; None when busy for too long (callers fall back to the generator's layouts)."""
-    if not _LOCK.acquire(timeout=30):
+    if not _LOCK.acquire(timeout=2):  # never queue behind another user: fall back to the generator straight away
         log.warning("solver busy; skipped")
         return None
     try:
