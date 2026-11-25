@@ -76,3 +76,13 @@ def test_catalogues_and_extract():
     assert len(client.get("/api/v1/traditions").json()["traditions"]) == 7
     f = client.post("/api/v1/brief/extract", json={"text": "My mother has knee pain and we have a dog"}).json()["fields"]
     assert f.get("elder_mobility_issue") is True and f.get("pets") is True
+
+
+def test_style_deck_is_filtered_and_has_no_duplicate_photos():
+    allc = client.get("/api/v1/swipe/cards", params={"seed": 1}).json()["cards"]
+    assert allc and len({c["file"] for c in allc}) == len(allc)
+    from backend.app.api.swipe import photos
+    shas = [p["sha1"] for v in photos().values() for p in v]
+    assert len(shas) == len(set(shas))  # no image used twice, across styles
+    two = client.get("/api/v1/swipe/cards", params={"styles": "goan_portuguese,victorian"}).json()["cards"]
+    assert two and {c["style"] for c in two} == {"goan_portuguese", "victorian"}

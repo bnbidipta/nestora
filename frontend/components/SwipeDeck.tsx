@@ -9,7 +9,9 @@ import { track } from '@/lib/analytics';
 /** Photo taste swipe. Stops as soon as one style clearly leads (10–24 swipes). Keyboard: ← pass, → like. */
 export default function SwipeDeck() {
   const router = useRouter();
-  const houseId = useSearchParams().get('house');
+  const params = useSearchParams();
+  const houseId = params.get('house');
+  const picked = (params.get('styles') ?? '').split(',').filter(Boolean);
   const [cards, setCards] = useState<SwipeCard[]>([]);
   const [i, setI] = useState(0);
   const [max, setMax] = useState(24);
@@ -19,8 +21,8 @@ export default function SwipeDeck() {
   const shownAt = useRef(Date.now());
 
   useEffect(() => {
-    getSwipeCards().then((r) => { setCards(r.cards); setMax(r.max_swipes); }).catch((e) => setError(e.message));
-  }, []);
+    getSwipeCards(picked).then((r) => { setCards(r.cards); setMax(r.max_swipes); }).catch((e) => setError(e.message));
+  }, [params]);  // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { shownAt.current = Date.now(); }, [i]);
 
   const finish = useCallback(() => {
@@ -62,14 +64,14 @@ export default function SwipeDeck() {
     <div className="mx-auto max-w-md">
       <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
         <span>Do you like this? {i + 1} / up to {max}</span>
-        <button type="button" onClick={finish} className="underline hover:text-white">Skip to layouts</button>
+        <button type="button" onClick={finish} className="underline hover:text-white">Skip to options</button>
       </div>
       <div className="h-1.5 overflow-hidden rounded bg-slate-800"><div className="h-full bg-emerald-500 transition-all" style={{ width: `${(100 * (i + 1)) / max}%` }} /></div>
       <figure className="mt-4 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={card.file} alt={card.alt} className="aspect-[4/5] w-full object-cover" />
+        <img src={card.file} alt={card.alt} className="aspect-[4/3] w-full object-cover" />
         <figcaption className="px-3 py-2 text-xs text-slate-400">
-          {card.alt}. Photo: {card.author} ({card.licence.split(' (')[0]}).
+          <strong className="text-slate-200">{card.style_name}</strong> · Photo: {card.author}, {card.licence} (<a href={card.url} target="_blank" rel="noopener noreferrer" className="underline">Wikimedia Commons</a>)
         </figcaption>
       </figure>
       <div className="mt-5 flex justify-center gap-6">
@@ -83,7 +85,7 @@ export default function SwipeDeck() {
         </button>
       </div>
       {leader && leader.confidence > 0.1 && (
-        <p className="mt-4 text-center text-sm text-slate-400">Leaning towards <strong className="text-slate-200">{leader.style.replace('_', ' ')}</strong></p>
+        <p className="mt-4 text-center text-sm text-slate-400">Leaning towards <strong className="text-slate-200">{cards.find((c) => c.style === leader.style)?.style_name ?? leader.style}</strong></p>
       )}
       {error && <p role="alert" className="mt-3 text-center text-sm text-red-400">{error}</p>}
     </div>

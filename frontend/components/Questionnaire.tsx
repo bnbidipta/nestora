@@ -80,7 +80,7 @@ export default function Questionnaire() {
   const toggleStyle = (id: string) =>
     setB((x) => {
       const has = x.styles.includes(id);
-      const next = has ? x.styles.filter((s) => s !== id) : [...x.styles, id].slice(-3);
+      const next = has ? x.styles.filter((s) => s !== id) : [...x.styles, id];
       return { ...x, styles: next, styles_locked: next.length > 0 };
     });
 
@@ -119,7 +119,7 @@ export default function Questionnaire() {
 
   if (understood && houseId) {
     return <Review understood={understood} waitlist={waitlist} brief={b} houseId={houseId} onEdit={() => setUnderstood(null)}
-      onNext={(swipe) => router.push(swipe ? `/swipe?house=${houseId}` : `/house/${houseId}/options`)} />;
+      onNext={(swipe) => router.push(swipe ? `/swipe?house=${houseId}${b.styles.length ? `&styles=${b.styles.join(',')}` : ''}` : `/house/${houseId}/options`)} />;
   }
 
   return (
@@ -243,14 +243,18 @@ export default function Questionnaire() {
                   className={`rounded-full border px-3 py-1 text-sm ${g === group ? 'border-sage-700 bg-sage-700 text-white' : 'border-slate-300 bg-white text-slate-700'}`}>{g}</button>
               ))}
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
               {styles.filter((s) => s.group === group).map((s) => {
                 const on = b.styles.includes(s.id);
                 return (
                   <button key={s.id} type="button" aria-pressed={on} onClick={() => toggleStyle(s.id)}
-                    className={`flex h-14 items-center justify-between rounded-xl border bg-white px-4 text-left transition ${on ? 'border-sage-700 ring-2 ring-sage-700' : 'border-slate-300 hover:border-slate-400'}`}>
-                    <span className="font-semibold text-slate-900">{s.name}</span>
-                    {on && <Check className="h-4 w-4 text-sage-700" aria-hidden />}
+                    className={`overflow-hidden rounded-xl border bg-white text-left transition ${on ? 'border-sage-700 ring-2 ring-sage-700' : 'border-slate-300 hover:border-slate-400'}`}>
+                    <span className="relative block aspect-[3/2] bg-slate-100">
+                      {s.photo ? <img src={s.photo} alt={`${s.name} example`} loading="lazy" className="h-full w-full object-cover" />
+                        : <span className="flex h-full">{(['wall', 'accent', 'wood', 'floor'] as const).map((k) => <span key={k} className="flex-1" style={{ background: s.palette[k] }} />)}</span>}
+                      {on && <span className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-sage-700 text-white"><Check className="h-4 w-4" aria-hidden /></span>}
+                    </span>
+                    <span className="flex h-12 items-center px-3 font-semibold text-slate-900">{s.name}</span>
                   </button>
                 );
               })}
@@ -396,7 +400,9 @@ function Review({ understood, waitlist, brief, houseId, onEdit, onNext }: {
         <button type="button" onClick={onEdit} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Change answers</button>
         {(!waitlist || waitlist === 'city') && (
           <>
-            {!brief.styles_locked && <button type="button" onClick={() => onNext(true)} className="rounded-lg bg-sage-800 px-4 py-2 text-sm font-semibold text-white">Find my style (1 min swipe)</button>}
+            <button type="button" onClick={() => onNext(true)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${brief.styles_locked ? 'border border-sage-800 text-sage-800' : 'bg-sage-800 text-white'}`}>
+              {brief.styles_locked ? 'Rank my styles with photos (1 min)' : 'Find my style (1 min swipe)'}
+            </button>
             <button type="button" onClick={() => onNext(false)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${brief.styles_locked ? 'bg-sage-800 text-white' : 'border border-sage-800 text-sage-800'}`}>
               {brief.styles_locked ? 'See options' : 'Skip to options'}
             </button>

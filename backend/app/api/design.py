@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from backend.app.models.brief import Brief
 from backend.app.services import derive, generator, llm, orchestrator, pack, traditions
+from backend.app.api import swipe
 from backend.app.services.access import rate_limit, require_edit
 from backend.app.services.judge import JudgeService
 from backend.app.services.repository import HouseTwinRepository
@@ -28,7 +29,10 @@ def _twin(house_id: str):
 @router.get("/styles")
 def list_styles():
     s = derive.styles()
-    return {"groups": sorted({x["group"] for x in s.values()}), "styles": list(s.values())}
+    ph = swipe.photos()
+    rows = [{**x, "photo": ph[k][0]["file"] if ph.get(k) else None,
+             "photo_credit": f"{ph[k][0]['author']} · {ph[k][0]['licence']}" if ph.get(k) else None} for k, x in s.items()]
+    return {"groups": sorted({x["group"] for x in s.values()}), "styles": rows}
 
 
 @router.get("/traditions")

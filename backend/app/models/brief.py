@@ -50,7 +50,7 @@ class Brief(BaseModel):
     master_dressing: bool = False  # walk-in dressing in the master bedroom
     terrace_garden: bool = False  # prefers keeping an open terrace on the top floor
     traditions: Dict[str, Strictness] = Field(default_factory=lambda: {"vaastu": "soft"})
-    styles: List[str] = Field(default_factory=list, max_length=5)
+    styles: List[str] = Field(default_factory=list, max_length=60)  # no cap: pick as many as you like
     styles_locked: bool = False  # true when the user picked styles by hand; swipes then don't override them
     free_text: str = Field(default="", max_length=2000)
 

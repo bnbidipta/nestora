@@ -64,3 +64,5 @@ Nestora's layout models use statistics derived from these open datasets, both li
 - **Swiss Dwellings** (Archilyse), https://zenodo.org/records/7788422
 
 No plans from these datasets are shown or redistributed; only aggregate room-size, proportion and adjacency statistics are used.
+
+**Style photographs.** The example photos of architectural styles come from Wikimedia Commons under free licences that allow commercial use (CC0, public domain, CC BY or CC BY-SA). Each photo is shown with its author and licence, and links to its Commons page; the full list is in `backend/app/data/style_photos.json`. Photos under CC BY-SA keep that licence.

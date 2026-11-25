@@ -5,6 +5,7 @@ Structural sizing is IS 456 thumb-rule *preliminary* sizing and must be checked 
 """
 import json
 import math
+import zlib
 import os
 from functools import cache
 from typing import Any, Dict, List
@@ -59,9 +60,15 @@ def _door_mm(rm: Dict[str, Any], brief: Brief, r: Dict[str, Any]) -> int:
     return r["door_habitable_mm"]
 
 
+def style_for(brief: Brief, cand: Dict[str, Any]) -> Dict[str, Any]:
+    """With several picked styles, each option gets one of them (stable per candidate), so the options mix the styles."""
+    picks = [x for x in brief.styles if x in styles()] or ["indian_contemporary"]
+    return styles()[picks[zlib.crc32(str(cand.get("id", "")).encode()) % len(picks)]]
+
+
 def build_floors(brief: Brief, cand: Dict[str, Any]) -> List[Floor]:
     r, env = cand["rules"], cand["envelope"]
-    st = styles().get((brief.styles or ["indian_contemporary"])[0], styles()["indian_contemporary"])
+    st = style_for(brief, cand)
     pal = st["palette"]
     floors = []
     for f in sorted({rm["floor"] for rm in cand["layout"]["rooms"]}):
@@ -235,8 +242,8 @@ def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], engines: bool = T
                    aggregate_tons=q["aggregate_tons"], bricks_count=round(q["bricks"]),
                    cost_breakdown={k: float(v) for k, v in exp.items() if k != "total"},
                    total_cost_inr=float(exp["total"]), monthly_emi_inr=round(emi(0.8 * exp["total"])))
-    st = styles().get((brief.styles or ["indian_contemporary"])[0], styles()["indian_contemporary"])
-    twin.style = StyleInfo(primary_style=st["id"], secondary_style=(brief.styles[1] if len(brief.styles) > 1 else st["compatible"][0]),
+    st = style_for(brief, cand)
+    twin.style = StyleInfo(primary_style=st["id"], secondary_style=next((x for x in brief.styles if x != st["id"]), st["compatible"][0]),
                            mix_pct="70/30", taste_vector=twin.style.taste_vector)
     built = generator.built_up_m2(cand["layout"]) / SQFT
     twin.metadata.update({

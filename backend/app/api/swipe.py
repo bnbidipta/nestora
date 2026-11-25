@@ -1,7 +1,8 @@
 """
-Taste swipes: 54 photo cards (Unsplash, credited) with 9 taste attributes each.
-Model: Beta(likes+1, passes+1) per card style, dwell-weighted, plus a running attribute vector.
-Stops early once one style clearly leads (>= 10 swipes and a 0.25 lead), at most 24 swipes.
+"Find my style": real photos of each catalogue style (Wikimedia Commons, free licences, credited in style_photos.json).
+Model: Beta(likes+1, passes+1) per style, dwell-weighted. When the user already picked styles, the deck shows only those
+styles, so the swipes rank their own picks. Stops early once one style clearly leads (>= 10 swipes and a 0.25 lead),
+at most 24 swipes.
 """
 import json
 import os
@@ -13,21 +14,35 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from backend.app.models.twin import SwipeRecord
+from backend.app.services import derive
 from backend.app.services.access import require_edit
 from backend.app.services.repository import HouseTwinRepository
 
 router = APIRouter(prefix="/api/v1", tags=["Swipe"])
 MIN_SWIPES, MAX_SWIPES, LEAD = 10, 24, 0.25
-# card style -> catalogue styles (data/styles.json) it is evidence for
-CATALOGUE = {"japanese": ["japandi", "japanese"], "biophilic": ["biophilic", "tropical_modernism"], "brutalist": ["brutalist"],
-             "minimalist": ["minimalist"], "indian_heritage": ["old_world_heritage", "chettinad"], "scandinavian": ["scandinavian"],
-             "mediterranean": ["mediterranean"], "industrial": ["industrial"]}
+PHOTOS = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "style_photos.json")
+
+
+@cache
+def photos() -> Dict[str, List[Dict[str, Any]]]:
+    if not os.path.exists(PHOTOS):
+        return {}
+    with open(PHOTOS, encoding="utf-8") as f:
+        return {k: v for k, v in json.load(f).items() if v}
 
 
 @cache
 def cards() -> List[Dict[str, Any]]:
-    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "swipe_cards.json"), encoding="utf-8") as f:
-        return json.load(f)
+    cat = derive.styles()
+    out = []
+    for st, ps in photos().items():
+        if st not in cat:
+            continue
+        for i, p in enumerate(ps, 1):
+            out.append({"id": f"{st}_{i}", "file": p["file"], "deck": "style", "style": st, "style_name": cat[st]["name"],
+                        "alt": f"{cat[st]['name']}: {p['title'].removeprefix('File:').rsplit('.', 1)[0]}"[:160],
+                        "author": p["author"], "url": p["page"], "licence": p["licence"]})
+    return out
 
 
 def _by_id() -> Dict[str, Dict[str, Any]]:
@@ -35,35 +50,32 @@ def _by_id() -> Dict[str, Dict[str, Any]]:
 
 
 def taste(history: List[SwipeRecord]) -> Dict[str, Any]:
-    styles = {s: [1.0, 1.0] for s in CATALOGUE}
-    attrs: Dict[str, float] = {}
-    wsum = 0.0
+    styles: Dict[str, List[float]] = {}
     for h in history:
         c = _by_id().get(h.card_id)
         if not c:
             continue
         w = 1.5 if h.dwell_ms >= 3000 else 1.0
-        like = h.direction == "right"
-        if c["style"] in styles:
-            styles[c["style"]][0 if like else 1] += w
-        for k, v in c["attributes"].items():
-            attrs[k] = attrs.get(k, 0.0) + (v if like else -v) * w
-        wsum += w
-    means = sorted(((s, a / (a + b)) for s, (a, b) in styles.items()), key=lambda x: -x[1])
+        ab = styles.setdefault(c["style"], [1.0, 1.0])
+        ab[0 if h.direction == "right" else 1] += w
+    means = sorted(((s, a / (a + b)) for s, (a, b) in styles.items()), key=lambda x: -x[1]) or [("", 0.5)]
+    second = means[1][1] if len(means) > 1 else 0.5
     n = len(history)
-    done = n >= MAX_SWIPES or (n >= MIN_SWIPES and means[0][1] - means[1][1] >= LEAD)
-    top = [x for s, _ in means[:2] for x in CATALOGUE[s][:1]]
-    return {"style_scores": {s: round(m, 3) for s, m in means}, "attributes": {k: round(v / wsum, 3) for k, v in attrs.items()} if wsum else {},
-            "recommended_styles": top, "done": done, "swipes": n, "confidence": round(means[0][1] - means[1][1], 3)}
+    done = n >= MAX_SWIPES or (n >= MIN_SWIPES and means[0][1] - second >= LEAD)
+    top = [s for s, m in means[:2] if s and m > 0.5]
+    return {"style_scores": {s: round(m, 3) for s, m in means if s}, "recommended_styles": top, "done": done, "swipes": n,
+            "confidence": round(means[0][1] - second, 3)}
 
 
 @router.get("/swipe/cards")
-def get_cards(seed: Optional[int] = None):
-    """Round-robin across styles so early swipes cover every style."""
+def get_cards(seed: Optional[int] = None, styles: str = ""):
+    """Photos of the given styles (comma-separated), or of every style; round-robin so early swipes cover each style."""
+    want = {s for s in styles.split(",") if s}
     rng = random.Random(seed)
     by_style: Dict[str, List[Dict[str, Any]]] = {}
     for c in cards():
-        by_style.setdefault(c["style"], []).append(c)
+        if not want or c["style"] in want:
+            by_style.setdefault(c["style"], []).append(c)
     for v in by_style.values():
         rng.shuffle(v)
     order, keys = [], list(by_style)
@@ -72,7 +84,7 @@ def get_cards(seed: Optional[int] = None):
         for k in keys:
             if by_style[k]:
                 order.append(by_style[k].pop())
-    return {"cards": order, "min_swipes": MIN_SWIPES, "max_swipes": MAX_SWIPES}
+    return {"cards": order, "min_swipes": min(MIN_SWIPES, len(order)), "max_swipes": min(MAX_SWIPES, len(order))}
 
 
 class SwipeInput(BaseModel):
@@ -95,7 +107,10 @@ def register_swipe(house_id: str, swipe: SwipeInput, _user: Optional[str] = Depe
     t = taste(twin.swipe_history)
     twin.metadata["taste"] = t
     brief = twin.metadata.get("brief")
-    if brief is not None and t["done"] and not brief.get("styles_locked"):
-        brief["styles"] = t["recommended_styles"]
+    if brief is not None and t["done"] and t["recommended_styles"]:
+        picked = brief.get("styles") or []
+        # hand-picked styles are ranked by the swipes (liked ones first), never replaced by styles the user didn't pick
+        brief["styles"] = ([s for s in t["recommended_styles"] if s in picked] + [s for s in picked if s not in t["recommended_styles"]]) \
+            if brief.get("styles_locked") else t["recommended_styles"]
     HouseTwinRepository.save(twin)
     return {"success": True, **t}

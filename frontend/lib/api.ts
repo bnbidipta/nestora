@@ -112,6 +112,8 @@ export interface Brief {
 }
 
 export interface StyleEntry {
+  photo?: string | null;
+  photo_credit?: string | null;
   id: string;
   name: string;
   group: string;
@@ -157,10 +159,11 @@ export const joinWaitlist = (kind: 'city' | 'flat_interior' | 'renovation', emai
   call('/api/v1/waitlist', { method: 'POST', body: JSON.stringify({ kind, email, city }) });
 
 export interface SwipeCard {
-  id: string; file: string; deck: string; style: string; alt: string; author: string; url: string; licence: string;
+  id: string; file: string; deck: string; style: string; style_name: string; alt: string; author: string; url: string; licence: string;
 }
 
-export const getSwipeCards = () => call<{ cards: SwipeCard[]; min_swipes: number; max_swipes: number }>('/api/v1/swipe/cards');
+export const getSwipeCards = (styles: string[] = []) =>
+  call<{ cards: SwipeCard[]; min_swipes: number; max_swipes: number }>(`/api/v1/swipe/cards${styles.length ? `?styles=${encodeURIComponent(styles.join(','))}` : ''}`);
 
 export const submitSwipe = (houseId: string, swipe: { card_id: string; direction: 'left' | 'right'; dwell_ms: number }) =>
   call<{ done: boolean; swipes: number; recommended_styles: string[]; style_scores: Record<string, number>; confidence: number }>(
