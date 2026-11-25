@@ -1,3 +1,4 @@
+import ScrollVideo from '@/components/landing/ScrollVideo';
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -61,6 +62,10 @@ export default function MobileLanding() {
       </header>
 
       {/* Main Single-Column Stack */}
+      <ScrollVideo src="/video/hero.mp4" poster="/video/hero-poster.jpg" cta={{ href: '/questionnaire', text: 'Design my home' }}>
+        <h2 className="max-w-2xl text-4xl font-black leading-tight tracking-tight md:text-6xl">Your family. Your plot.<br />A home that fits.</h2>
+        <p className="mt-4 max-w-xl text-base text-white/85 md:text-lg">Answer a few questions. Get a house design that follows the building rules, a cost estimate, and a walk-through in 3D.</p>
+      </ScrollVideo>
       <main className="px-4 py-6 space-y-12 max-w-lg mx-auto">
         {/* Semantic H1 & Hero Intro */}
         <section className="space-y-4 text-left pt-2">
@@ -86,10 +91,10 @@ export default function MobileLanding() {
               <ArrowFolioRightIcon className="w-4 h-4" />
             </Link>
             <Link
-              href="/house/nest_09935d4293"
+              href="/house/nest_f24390ae0f"
               className="w-full bg-white text-sage-900 text-center py-3 rounded-xl font-bold text-sm border border-stone-border hover:bg-ivory-50 focus:outline-none focus:ring-2 focus:ring-sage-800 focus:ring-offset-2 transition-all"
             >
-              Inspect Sample House Twin
+              See a sample home
             </Link>
           </div>
         </section>
@@ -207,6 +212,10 @@ export default function MobileLanding() {
           </p>
         </section>
       </main>
+      <ScrollVideo src="/video/walkthrough.mp4" poster="/video/walkthrough-poster.jpg" cta={{ href: '/house/nest_f24390ae0f', text: 'Walk through a sample home' }}>
+        <h2 className="max-w-2xl text-3xl font-black leading-tight tracking-tight md:text-5xl">Walk through your home before a single brick is laid.</h2>
+        <p className="mt-3 max-w-xl text-white/85">Every design opens in 3D: look around, walk room to room, and watch the light move from morning to night.</p>
+      </ScrollVideo>
 
       {/* Semantic Footer */}
       <footer className="mt-8 px-4 py-6 border-t border-stone-border text-center text-xs text-stone-muted space-y-2">

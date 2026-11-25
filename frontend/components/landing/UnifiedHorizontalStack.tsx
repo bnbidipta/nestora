@@ -89,8 +89,8 @@ export const STAGES_DATA: StageData[] = [
     ],
     primaryMetric: 'Every number shown',
     metricLabel: 'Rule-based structural concept',
-    ctaText: 'View Sample Twin',
-    ctaLink: '/house/nest_09935d4293'
+    ctaText: 'See a sample home',
+    ctaLink: '/house/nest_f24390ae0f'
   },
   {
     id: 'enclosure',

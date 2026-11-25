@@ -7,6 +7,7 @@ import SmoothScrollProvider from '@/components/motion/SmoothScrollProvider';
 import UnifiedHorizontalStack from '@/components/landing/UnifiedHorizontalStack';
 import { CompassRoseIcon, ArrowFolioRightIcon } from '@/components/landing/BespokeIcons';
 import MobileLanding from '@/components/landing/mobile/MobileLanding';
+import ScrollVideo from '@/components/landing/ScrollVideo';
 import { warmUpApi } from '@/lib/api';
 import { track } from '@/lib/analytics';
 
@@ -63,10 +64,10 @@ function DesktopLanding() {
           {/* Right Action Buttons */}
           <div className="flex items-center space-x-4">
             <Link 
-              href="/house/nest_09935d4293"
+              href="/house/nest_f24390ae0f"
               className="hidden md:inline-flex text-xs font-bold text-sage-800 hover:text-sage-900 underline underline-offset-4 transition-colors"
             >
-              Inspect Sample House Twin
+              See a sample home
             </Link>
             <Link
               href="/questionnaire"
@@ -88,7 +89,15 @@ function DesktopLanding() {
 
         {/* 3D UNIFIED HORIZONTAL STACK (HERO TO 5-STAGE PROGRESSION) */}
         <main className="w-full">
+          <ScrollVideo src="/video/hero.mp4" poster="/video/hero-poster.jpg" cta={{ href: '/questionnaire', text: 'Design my home' }}>
+            <h2 className="max-w-2xl text-4xl font-black leading-tight tracking-tight md:text-6xl">Your family. Your plot.<br />A home that fits.</h2>
+            <p className="mt-4 max-w-xl text-base text-white/85 md:text-lg">Answer a few questions. Get a house design that follows the building rules, a cost estimate, and a walk-through in 3D.</p>
+          </ScrollVideo>
           <UnifiedHorizontalStack />
+          <ScrollVideo src="/video/walkthrough.mp4" poster="/video/walkthrough-poster.jpg" cta={{ href: '/house/nest_f24390ae0f', text: 'Walk through a sample home' }}>
+            <h2 className="max-w-2xl text-3xl font-black leading-tight tracking-tight md:text-5xl">Walk through your home before a single brick is laid.</h2>
+            <p className="mt-3 max-w-xl text-white/85">Every design opens in 3D: look around, walk room to room, and watch the light move from morning to night.</p>
+          </ScrollVideo>
         </main>
 
         {/* Technical Footer */}
