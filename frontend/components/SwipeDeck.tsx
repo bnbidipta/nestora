@@ -71,7 +71,7 @@ export default function SwipeDeck() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={card.file} alt={card.alt} className="aspect-[4/3] w-full object-cover" />
         <figcaption className="px-3 py-2 text-xs text-slate-400">
-          <strong className="text-slate-200">{card.style_name}</strong> · Photo: {card.author}, {card.licence} (<a href={card.url} target="_blank" rel="noopener noreferrer" className="underline">Wikimedia Commons</a>)
+          <strong className="text-slate-200">{card.style_name}</strong> · {card.ai ? 'AI-generated illustration of the style' : <>Photo: {card.author}, {card.licence} (<a href={card.url} target="_blank" rel="noopener noreferrer" className="underline">Wikimedia Commons</a>)</>}
         </figcaption>
       </figure>
       <div className="mt-5 flex justify-center gap-6">

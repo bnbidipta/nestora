@@ -623,7 +623,30 @@
    "file": "/styles/mughal_indo_islamic/6.webp"
   }
  ],
- "kutchi_bhunga": [],
+ "kutchi_bhunga": [
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "12ca53d1def452949214c4d6a042f5bce3bb571d",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/kutchi_bhunga/ai-1.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "fbf1b1dfcab85ca1ea86b56ff2012c54c1903b17",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/kutchi_bhunga/ai-2.webp",
+   "ai": true
+  }
+ ],
  "japanese": [
   {
    "title": "File:Hakogike house01.jpg",
@@ -2338,7 +2361,52 @@
    "file": "/styles/maximalist/3.webp"
   }
  ],
- "bohemian": [],
+ "bohemian": [
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "297b8a8f671116a4a1ea34edb17965e6cc4b2fa1",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/bohemian/ai-1.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "cf7f91c98b70ab166486e55d3dd8c80f95660d08",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/bohemian/ai-2.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "795a0399f4bcff538e99dcb96ced8641fb59c6ff",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/bohemian/ai-3.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "e356794847bbc1c9639932931d6626b00fc11292",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/bohemian/ai-4.webp",
+   "ai": true
+  }
+ ],
  "eco_passive": [
   {
    "title": "File:Achimhaus NB Pascal.jpg",

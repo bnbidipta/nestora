@@ -41,7 +41,7 @@ def cards() -> List[Dict[str, Any]]:
         for i, p in enumerate(ps, 1):
             out.append({"id": f"{st}_{i}", "file": p["file"], "deck": "style", "style": st, "style_name": cat[st]["name"],
                         "alt": f"{cat[st]['name']}: {p['title'].removeprefix('File:').rsplit('.', 1)[0]}"[:160],
-                        "author": p["author"], "url": p["page"], "licence": p["licence"]})
+                        "author": p["author"], "url": p["page"], "licence": p["licence"], "ai": bool(p.get("ai"))})
     return out
 
 

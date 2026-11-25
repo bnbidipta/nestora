@@ -159,7 +159,7 @@ export const joinWaitlist = (kind: 'city' | 'flat_interior' | 'renovation', emai
   call('/api/v1/waitlist', { method: 'POST', body: JSON.stringify({ kind, email, city }) });
 
 export interface SwipeCard {
-  id: string; file: string; deck: string; style: string; style_name: string; alt: string; author: string; url: string; licence: string;
+  id: string; file: string; deck: string; style: string; style_name: string; alt: string; author: string; url: string; licence: string; ai?: boolean;
 }
 
 export const getSwipeCards = (styles: string[] = []) =>
