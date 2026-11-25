@@ -44,9 +44,8 @@ function DesktopLanding() {
         {/* Sticky Editorial Header */}
         <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-3.5 bg-[#F7F6F2]/90 backdrop-blur-md border-b border-stone-border">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full bg-sage-900 text-ivory-50 flex items-center justify-center font-bold text-sm tracking-wider shadow-sm">
-              N
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-mark.png" alt="" width={36} height={36} className="h-9 w-9" />
             <div>
               <h1 className="text-base md:text-lg font-black tracking-tight text-sage-900">NESTORA</h1>
               <p className="text-[9px] uppercase tracking-widest text-stone-muted hidden sm:block">

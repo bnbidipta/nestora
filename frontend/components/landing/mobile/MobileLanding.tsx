@@ -43,9 +43,8 @@ export default function MobileLanding() {
       {/* Sticky Mobile Header */}
       <header className="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-ivory-100/95 backdrop-blur-md border-b border-stone-border">
         <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-full bg-sage-900 text-ivory-50 flex items-center justify-center font-bold text-xs tracking-wider">
-            N
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-mark.png" alt="" width={30} height={30} className="h-[30px] w-[30px]" />
           <div>
             <span className="text-base font-black tracking-tight text-sage-900 block leading-tight">NESTORA</span>
             <span className="text-[8px] uppercase tracking-widest text-stone-muted block">Autonomous Architecture</span>

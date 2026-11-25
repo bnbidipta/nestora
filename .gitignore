@@ -51,3 +51,6 @@ data/kaggle/
 
 # local dev house store (tests create houses here)
 backend/app/data/storage/houses/
+!frontend/public/*.png
+!frontend/app/*.png
+!docs/brand/**/*.png

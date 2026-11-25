@@ -686,7 +686,38 @@
    "file": "/styles/japanese/6.webp"
   }
  ],
- "japandi": [],
+ "japandi": [
+  {
+   "title": "File:EFTA00001765 - Neatly made bed in a minimalist bedroom with white linens wooden nightstands and soft lighting.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:EFTA00001765_-_Neatly_made_bed_in_a_minimalist_bedroom_with_white_linens_wooden_nightstands_and_soft_lighting.jpg",
+   "sha1": "2776b9affda923cf9bd7e69de7592c157c1d48e4",
+   "licence": "Public domain",
+   "licence_url": "",
+   "author": "Federal Bureau of Investigation",
+   "query": "minimalist bedroom wooden",
+   "file": "/styles/japandi/1.webp"
+  },
+  {
+   "title": "File:USVI IMG 5173 - Minimalist bedroom with white bedding a wooden chair and a standing fan near a door.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:USVI_IMG_5173_-_Minimalist_bedroom_with_white_bedding_a_wooden_chair_and_a_standing_fan_near_a_door.jpg",
+   "sha1": "e7c6659a06d3123e97f27022571e40903426b8f8",
+   "licence": "Public domain",
+   "licence_url": "",
+   "author": "Category:Government of the United States Virgin Islands",
+   "query": "minimalist bedroom wooden",
+   "file": "/styles/japandi/2.webp"
+  },
+  {
+   "title": "File:Tatami1.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Tatami1.jpg",
+   "sha1": "24f462949b1268355373a175a371440ba9b8247f",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+   "author": "Vgenecr at Dutch Wikipedia",
+   "query": "tatami room modern",
+   "file": "/styles/japandi/3.webp"
+  }
+ ],
  "balinese": [
   {
    "title": "File:Little world, Aichi prefecture - Gentry House of Bali in Indonesia.jpg",
@@ -759,6 +790,26 @@
    "author": "zjctming",
    "query": "siheyuan courtyard",
    "file": "/styles/chinese_courtyard/3.webp"
+  },
+  {
+   "title": "File:Net garden hall of dewy grace.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Net_garden_hall_of_dewy_grace.jpg",
+   "sha1": "8c6d5170172843b0a2fd4157adeb9b4ff192c524",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "Lamassu Design Gurdjieff (talk)",
+   "query": "Chinese garden house Suzhou",
+   "file": "/styles/chinese_courtyard/4.webp"
+  },
+  {
+   "title": "File:Cultivation garden sweet grass house.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Cultivation_garden_sweet_grass_house.jpg",
+   "sha1": "a8efd67d0eb2207ca30bae0c0ae27193ec124557",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "Lamassu Design Gurdjieff (talk)",
+   "query": "Chinese garden house Suzhou",
+   "file": "/styles/chinese_courtyard/5.webp"
   }
  ],
  "korean_hanok": [
@@ -977,6 +1028,26 @@
    "author": "Wadimaktoob",
    "query": "Al Fahidi wind tower house",
    "file": "/styles/arabian_courtyard/3.webp"
+  },
+  {
+   "title": "File:Al Bastakiya-Dubai8887.JPG",
+   "page": "https://commons.wikimedia.org/wiki/File:Al_Bastakiya-Dubai8887.JPG",
+   "sha1": "50d41fa5e19f9130876cc6c0e518ce87200f63aa",
+   "licence": "CC BY-SA 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "author": "Diego Delso",
+   "query": "Bastakiya Dubai",
+   "file": "/styles/arabian_courtyard/4.webp"
+  },
+  {
+   "title": "File:Bastakiya, Old Dubai (8970753529).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Bastakiya,_Old_Dubai_(8970753529).jpg",
+   "sha1": "0aa6c98596961489bfdcad5fdc04ac5af0d0ee35",
+   "licence": "CC BY 2.0",
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "author": "Fabio Achilli from Milano, Italy",
+   "query": "Bastakiya Dubai",
+   "file": "/styles/arabian_courtyard/5.webp"
   }
  ],
  "persian": [
@@ -1123,6 +1194,26 @@
    "author": "Syrio",
    "query": "Tuscany villa",
    "file": "/styles/tuscan/2.webp"
+  },
+  {
+   "title": "File:Casa Alberto.JPG",
+   "page": "https://commons.wikimedia.org/wiki/File:Casa_Alberto.JPG",
+   "sha1": "0d9ade106c0c2b06de3c31a8fb5d29f44682d4fe",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "Lucarelli",
+   "query": "Tuscany farmhouse",
+   "file": "/styles/tuscan/3.webp"
+  },
+  {
+   "title": "File:Italien Toskana Innenansicht eines alten hauses.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Italien_Toskana_Innenansicht_eines_alten_hauses.jpg",
+   "sha1": "2818971c4850333a08110fabd787973cad9f17bd",
+   "licence": "CC BY-SA 3.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "author": "JonnyBrazil",
+   "query": "Tuscany farmhouse",
+   "file": "/styles/tuscan/4.webp"
   }
  ],
  "greek_cycladic": [
@@ -2025,6 +2116,16 @@
    "author": "Gotopark",
    "query": "minimalist house",
    "file": "/styles/minimalist/2.webp"
+  },
+  {
+   "title": "File:White minimal interior (Unsplash).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:White_minimal_interior_(Unsplash).jpg",
+   "sha1": "855ed5b490920ee4b3bf3607523aacb79f86e8d0",
+   "licence": "CC0",
+   "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "author": "Breather breather",
+   "query": "minimalist interior white",
+   "file": "/styles/minimalist/3.webp"
   }
  ],
  "brutalist": [
@@ -2123,16 +2224,6 @@
  ],
  "biophilic": [
   {
-   "title": "File:Green tiled house Alcochete.jpg",
-   "page": "https://commons.wikimedia.org/wiki/File:Green_tiled_house_Alcochete.jpg",
-   "sha1": "16ffcd4bf9f485e52cdb504dc5db34eeff6e0f29",
-   "licence": "CC BY-SA 4.0",
-   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "author": "PhotoSaguat",
-   "query": "green wall house",
-   "file": "/styles/biophilic/1.webp"
-  },
-  {
    "title": "File:Bloomberg London green wall.jpg",
    "page": "https://commons.wikimedia.org/wiki/File:Bloomberg_London_green_wall.jpg",
    "sha1": "b13c8da2ee4319b8f48943934768cfb90ebb6b20",
@@ -2140,6 +2231,16 @@
    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "author": "The wub",
    "query": "green wall house",
+   "file": "/styles/biophilic/1.webp"
+  },
+  {
+   "title": "File:Jerusalem Ticho House Entrance.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Jerusalem_Ticho_House_Entrance.jpg",
+   "sha1": "07e0c9a22485eddde618e3c9266df0a78b22d200",
+   "licence": "CC BY-SA 4.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "author": "Utilisateur:Djampa - User:Djampa",
+   "query": "house with courtyard garden trees",
    "file": "/styles/biophilic/2.webp"
   }
  ],
@@ -2205,7 +2306,38 @@
    "file": "/styles/wabi_sabi/6.webp"
   }
  ],
- "maximalist": [],
+ "maximalist": [
+  {
+   "title": "File:Sheffield Mayors Parlour.JPG",
+   "page": "https://commons.wikimedia.org/wiki/File:Sheffield_Mayors_Parlour.JPG",
+   "sha1": "77cfda0b0d4a36444caa0d933a40eec17ce13679",
+   "licence": "Public domain",
+   "licence_url": "",
+   "author": "Chemical Engineer",
+   "query": "Victorian parlour interior",
+   "file": "/styles/maximalist/1.webp"
+  },
+  {
+   "title": "File:Strangers' Hall Museum - Victorian Parlour - geograph.org.uk - 6271802.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Strangers%27_Hall_Museum_-_Victorian_Parlour_-_geograph.org.uk_-_6271802.jpg",
+   "sha1": "ac78ea6e86c558fa8b669feb6a47346388316220",
+   "licence": "CC BY-SA 2.0",
+   "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "author": "Evelyn Simak",
+   "query": "Victorian parlour interior",
+   "file": "/styles/maximalist/2.webp"
+  },
+  {
+   "title": "File:Dining Room, Kilkenny Castle, Cill Chainnigh, Éire (45680597075).jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Dining_Room,_Kilkenny_Castle,_Cill_Chainnigh,_%C3%89ire_(45680597075).jpg",
+   "sha1": "de8b6bed67c5e1e40f9d0b29b880afff51f43535",
+   "licence": "CC0",
+   "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "author": "Warren LeMay from Chicago, IL, United States",
+   "query": "ornate interior wallpaper room",
+   "file": "/styles/maximalist/3.webp"
+  }
+ ],
  "bohemian": [],
  "eco_passive": [
   {
@@ -2407,6 +2539,36 @@
    "author": "Mark Ahsmann",
    "query": "parametric architecture",
    "file": "/styles/parametric/1.webp"
+  },
+  {
+   "title": "File:Curved modern apartment building with glass stairwell tower.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Curved_modern_apartment_building_with_glass_stairwell_tower.jpg",
+   "sha1": "4696ab4e85a2c4cb003ed6a847cee63eba27337d",
+   "licence": "CC0",
+   "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "author": "Wiki.cullin",
+   "query": "curved facade apartment building",
+   "file": "/styles/parametric/2.webp"
+  },
+  {
+   "title": "File:Absolute Towers Mississauga (suburban Toronto) Canada.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Absolute_Towers_Mississauga_(suburban_Toronto)_Canada.jpg",
+   "sha1": "695dbb7cf86fad20e4f15e3c93a375a91c9757c6",
+   "licence": "CC BY 2.0",
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "author": "n.karim",
+   "query": "Absolute World towers",
+   "file": "/styles/parametric/3.webp"
+  },
+  {
+   "title": "File:Absolute Mississauga May 2012.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Absolute_Mississauga_May_2012.jpg",
+   "sha1": "3b476bc997756647011d94c59e2ad755c36992bb",
+   "licence": "CC BY 2.0",
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "author": "Terry Ozon from Toronto, Ontario, Canada",
+   "query": "Absolute World towers",
+   "file": "/styles/parametric/4.webp"
   }
  ],
  "contemporary": [
