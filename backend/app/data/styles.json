@@ -74,7 +74,8 @@
     "roof_material": "concrete_flat",
     "trim": "floor_band",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.79
   },
   {
    "id": "kerala_nalukettu",
@@ -140,7 +141,8 @@
     "roof_material": "mangalore_tile",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.5
   },
   {
    "id": "chettinad",
@@ -203,7 +205,8 @@
     "roof_material": "mangalore_tile",
     "trim": "cornice",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.2
   },
   {
    "id": "rajasthani_haveli",
@@ -253,7 +256,8 @@
     "Jaisalmer haveli carved yellow sandstone jharokha balcony",
     "Rajasthani courtyard chowk stone jaali pillars"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "goan_portuguese",
@@ -316,7 +320,8 @@
     "roof_material": "mangalore_tile",
     "trim": "window_surrounds",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.08
   },
   {
    "id": "konkan",
@@ -381,7 +386,8 @@
     "roof_material": "mangalore_tile",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.07
   },
   {
    "id": "bengali_traditional",
@@ -445,7 +451,8 @@
     "roof_material": "clay_barrel",
     "trim": "cornice",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "laurie_baker_vernacular",
@@ -510,7 +517,8 @@
     "roof_material": "mangalore_tile",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "tropical_modernism",
@@ -582,7 +590,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.26
   },
   {
    "id": "bombay_art_deco",
@@ -645,7 +654,8 @@
     "roof_material": "concrete_flat",
     "trim": "floor_band",
     "boundary": "railing_wall"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "indo_saracenic",
@@ -696,7 +706,8 @@
     "Bombay colonial revival mansion stone arches chhatri",
     "Indo gothic domestic building verandah jaali stone"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "mughal_indo_islamic",
@@ -731,7 +742,8 @@
     "persian",
     "rajasthani_haveli"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "kutchi_bhunga",
@@ -781,7 +793,8 @@
     "Lippan kaam mud mirror work interior wall kutch",
     "Banni village round hut conical roof gujarat"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "japanese",
@@ -846,7 +859,8 @@
     "roof_material": "slate",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.13
   },
   {
    "id": "japandi",
@@ -912,7 +926,8 @@
     "roof_material": "metal_seam",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.26
   },
   {
    "id": "balinese",
@@ -976,7 +991,8 @@
     "roof_material": "wood_shingle",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.38
   },
   {
    "id": "chinese_courtyard",
@@ -1041,7 +1057,8 @@
     "roof_material": "clay_barrel",
     "trim": "cornice",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "korean_hanok",
@@ -1105,7 +1122,8 @@
     "roof_material": "clay_barrel",
     "trim": "none",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "thai_traditional",
@@ -1168,7 +1186,8 @@
     "roof_material": "clay_barrel",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "moroccan_riad",
@@ -1232,7 +1251,8 @@
     "roof_material": "concrete_flat",
     "trim": "window_surrounds",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.06
   },
   {
    "id": "arabian_courtyard",
@@ -1294,7 +1314,8 @@
     "roof_material": "concrete_flat",
     "trim": "cornice",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "persian",
@@ -1357,7 +1378,8 @@
     "roof_material": "concrete_flat",
     "trim": "window_surrounds",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "mediterranean",
@@ -1421,7 +1443,8 @@
     "roof_material": "clay_barrel",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.32
   },
   {
    "id": "tuscan",
@@ -1485,7 +1508,8 @@
     "roof_material": "clay_barrel",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.06
   },
   {
    "id": "greek_cycladic",
@@ -1548,7 +1572,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.08
   },
   {
    "id": "scandinavian",
@@ -1612,7 +1637,8 @@
     "roof_material": "metal_seam",
     "trim": "none",
     "boundary": "open_lawn"
-   }
+   },
+   "popularity": 0.08
   },
   {
    "id": "english_cottage",
@@ -1676,7 +1702,8 @@
     "roof_material": "slate",
     "trim": "none",
     "boundary": "picket"
-   }
+   },
+   "popularity": 0.5
   },
   {
    "id": "french_provincial",
@@ -1739,7 +1766,8 @@
     "roof_material": "slate",
     "trim": "quoins",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.05
   },
   {
    "id": "spanish_colonial",
@@ -1803,7 +1831,8 @@
     "roof_material": "clay_barrel",
     "trim": "none",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.03
   },
   {
    "id": "bauhaus",
@@ -1867,7 +1896,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "open_lawn"
-   }
+   },
+   "popularity": 0.04
   },
   {
    "id": "art_deco",
@@ -1931,7 +1961,8 @@
     "roof_material": "concrete_flat",
     "trim": "floor_band",
     "boundary": "railing_wall"
-   }
+   },
+   "popularity": 0.04
   },
   {
    "id": "victorian",
@@ -1982,7 +2013,8 @@
     "Victorian interior ceiling rose cornicing fireplace minton tile",
     "High victorian living room chesterfield william morris"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "georgian",
@@ -2044,7 +2076,8 @@
     "roof_material": "slate",
     "trim": "cornice",
     "boundary": "railing_wall"
-   }
+   },
+   "popularity": 0.5
   },
   {
    "id": "mid_century_modern",
@@ -2110,7 +2143,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "open_lawn"
-   }
+   },
+   "popularity": 0.06
   },
   {
    "id": "craftsman",
@@ -2174,7 +2208,8 @@
     "roof_material": "wood_shingle",
     "trim": "window_surrounds",
     "boundary": "picket"
-   }
+   },
+   "popularity": 0.12
   },
   {
    "id": "farmhouse",
@@ -2238,7 +2273,8 @@
     "roof_material": "metal_seam",
     "trim": "none",
     "boundary": "picket"
-   }
+   },
+   "popularity": 0.99
   },
   {
    "id": "prairie",
@@ -2301,7 +2337,8 @@
     "roof_material": "mangalore_tile",
     "trim": "floor_band",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "pueblo",
@@ -2364,7 +2401,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.31
   },
   {
    "id": "brazilian_modernism",
@@ -2430,7 +2468,8 @@
     "roof_material": "green_roof",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "minimalist",
@@ -2496,7 +2535,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.17
   },
   {
    "id": "brutalist",
@@ -2561,7 +2601,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.02
   },
   {
    "id": "industrial",
@@ -2627,7 +2668,8 @@
     "roof_material": "metal_seam",
     "trim": "none",
     "boundary": "railing_wall"
-   }
+   },
+   "popularity": 0.14
   },
   {
    "id": "biophilic",
@@ -2681,7 +2723,8 @@
     "Biophilic living room vertical green wall natural light",
     "Nature centric modern house indoor water feature wood"
    ],
-   "scope": "interior"
+   "scope": "interior",
+   "popularity": 0.01
   },
   {
    "id": "wabi_sabi",
@@ -2733,7 +2776,8 @@
     "Wabi sabi architecture raw lime wall reclaimed wood",
     "Minimalist wabi sabi bedroom low platform bed stone"
    ],
-   "scope": "interior"
+   "scope": "interior",
+   "popularity": 0.01
   },
   {
    "id": "maximalist",
@@ -2786,7 +2830,8 @@
     "Eclectic maximalism interior pattern clashing brass",
     "Kelly wearstler maximalist apartment dramatic marble"
    ],
-   "scope": "interior"
+   "scope": "interior",
+   "popularity": 0.01
   },
   {
    "id": "bohemian",
@@ -2840,7 +2885,8 @@
     "Boho chic bedroom macrame cane headboard plants",
     "New bohemian interior eclectic textiles daybed"
    ],
-   "scope": "interior"
+   "scope": "interior",
+   "popularity": 0.01
   },
   {
    "id": "eco_passive",
@@ -2908,7 +2954,8 @@
     "roof_material": "green_roof",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.12
   },
   {
    "id": "old_world_heritage",
@@ -2943,7 +2990,8 @@
     "bengali_traditional",
     "rajasthani_haveli"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "feng_shui_modern",
@@ -2978,7 +3026,8 @@
     "minimalist",
     "biophilic"
    ],
-   "scope": "interior"
+   "scope": "interior",
+   "popularity": 0.01
   },
   {
    "id": "dravidian_residential",
@@ -3031,7 +3080,8 @@
     "A. Srivathsan, The Tamil Brahmin Agrahara: Spatial Pattern and Cultural Meaning (2002)",
     "V. Ganapati Sthapati, Building Architecture of Sthapatya Veda (2001)"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "ranch",
@@ -3097,7 +3147,8 @@
     "roof_material": "wood_shingle",
     "trim": "none",
     "boundary": "open_lawn"
-   }
+   },
+   "popularity": 0.25
   },
   {
    "id": "parametric",
@@ -3150,7 +3201,8 @@
     "Michael Hensel, Achim Menges, Michael Weinstock, Emergent Technologies and Design: Towards a Biological Paradigm for Architecture (2010)",
     "Zaha Hadid Design, Zaha Hadid Architects: Residential Architecture Compendium (2020)"
    ],
-   "scope": "retired"
+   "scope": "retired",
+   "popularity": 0.01
   },
   {
    "id": "contemporary",
@@ -3218,7 +3270,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "solid_wall_gate"
-   }
+   },
+   "popularity": 0.12
   },
   {
    "id": "desert_modern",
@@ -3277,7 +3330,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.05
   },
   {
    "id": "cape_cod",
@@ -3336,7 +3390,8 @@
     "roof_material": "wood_shingle",
     "trim": "window_surrounds",
     "boundary": "picket"
-   }
+   },
+   "popularity": 0.11
   },
   {
    "id": "tropical_brutalist",
@@ -3396,7 +3451,8 @@
     "roof_material": "green_roof",
     "trim": "none",
     "boundary": "low_wall_hedge"
-   }
+   },
+   "popularity": 0.01
   },
   {
    "id": "glass_box",
@@ -3456,7 +3512,8 @@
     "roof_material": "concrete_flat",
     "trim": "none",
     "boundary": "open_lawn"
-   }
+   },
+   "popularity": 0.39
   },
   {
    "id": "nordic_barn",
@@ -3515,7 +3572,70 @@
     "roof_material": "metal_seam",
     "trim": "none",
     "boundary": "open_lawn"
-   }
+   },
+   "popularity": 0.7
+  },
+  {
+   "id": "modern_indian_villa",
+   "name": "Modern Indian Villa",
+   "group": "Indian regional",
+   "climate": [
+    "hot-humid",
+    "hot-dry",
+    "monsoon"
+   ],
+   "features": [
+    "Flat roofs with thin projecting slabs",
+    "Large glazing with deep shading",
+    "Stone and wood cladding panels",
+    "Double-height entrance",
+    "Landscaped front with a deck or pool"
+   ],
+   "materials": {
+    "floor": "italian_marble",
+    "wall": "stone_cladding",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#EDEAE4",
+    "accent": "#6B4A33",
+    "wood": "#7A5236",
+    "floor": "#D8D2C6"
+   },
+   "cost": "premium",
+   "mumbai": "Deep slabs shade the large glass; stone and wood cladding weather well if sealed against monsoon damp.",
+   "compatible": [
+    "indian_contemporary",
+    "tropical_modernism",
+    "glass_box"
+   ],
+   "sources": [],
+   "aliases": [
+    "Luxury Villa",
+    "Modern Villa Elevation"
+   ],
+   "region": "Urban and suburban India",
+   "era": "2010s–Present",
+   "search_terms": [
+    "modern villa India elevation",
+    "luxury villa India stone cladding",
+    "modern villa facade wood cladding"
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "stone_cladding",
+     "plaster_paint"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "dark_metal",
+    "entrance": "recessed",
+    "railing": "glass",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   },
+   "popularity": 0.89
   }
  ]
 }

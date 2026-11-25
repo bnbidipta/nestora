@@ -36,6 +36,7 @@ SKIP = re.compile(r"temple|church|mosque|cathedral|chapel|shrine|gopuram|mandir|
 
 # Search phrases per catalogue style: exterior first, then interiors/details.
 Q = {
+    "modern_indian_villa": ["modern villa India", "luxury villa Kerala modern", "contemporary villa Bangalore"],
     "indian_contemporary": ['house in Bangalore', 'modern residence Mumbai', 'contemporary house Ahmedabad', 'modern house Kerala'],
     "kerala_nalukettu": ["Nalukettu", "Kerala traditional house", "Kerala house courtyard nadumuttam"],
     "chettinad": ["Chettinad house", "Chettinad mansion Karaikudi", "Chettinad house courtyard"],

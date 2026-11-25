@@ -42,6 +42,7 @@ OVERRIDES: Dict[str, Dict[str, Any]] = {
     "minimalist": {"w": (4, 0.5, 3, 1), "chhajja_m": 0.3},
     "japandi": {"w": (1, 3, 2, 2), "pitch": 22, "eave_m": 0.9},
     "eco_passive": {"w": (3, 1, 3, 3), "garden": True},
+    "modern_indian_villa": {"w": (4, 0.3, 4, 1.5), "chhajja_m": 1.0, "garden": True},
     "tropical_brutalist": {"w": (3, 0.5, 3, 2), "garden": True, "chhajja_m": 0.9},
     "nordic_barn": {"w": (0.3, 5, 0.5, 1), "pitch": 40, "eave_m": 0.1},
     "cape_cod": {"w": (0.3, 5, 0.5, 1), "pitch": 40, "eave_m": 0.3},

@@ -41,6 +41,9 @@ function readCountry(): string | null {
   return document.cookie.match(/(?:^|; )nestora_country=([A-Z]{2})/)?.[1] ?? null;
 }
 
+/** The API lists styles most-searched first (Google Trends, docs/research/style-search-trends.md). */
+const POPULAR = 'Most popular';
+
 export default function Questionnaire() {
   const router = useRouter();
   const [step, setStepRaw] = useState(0);
@@ -55,7 +58,7 @@ export default function Questionnaire() {
   const set = <K extends keyof Brief>(k: K, v: Brief[K]) => setB((x) => ({ ...x, [k]: v }));
   const [styles, setStyles] = useState<StyleEntry[]>([]);
   const [traditions, setTraditions] = useState<{ id: string; name: string; description: string }[]>([]);
-  const [group, setGroup] = useState('Indian regional');
+  const [group, setGroup] = useState(POPULAR);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [understood, setUnderstood] = useState<string[] | null>(null);
@@ -82,7 +85,7 @@ export default function Questionnaire() {
   useEffect(() => { if (hasElders && b.floors_wanted === 2) setB((x) => (x.lift === 'none' ? { ...x, lift: 'lift' } : x)); }, [hasElders, b.floors_wanted]);
   const plotOk = b.plot_width_ft >= 15 && b.plot_depth_ft >= 15 && b.plot_width_ft <= 200 && b.plot_depth_ft <= 300;
   const outsidePilot = b.build_type !== 'new_plot' || b.city !== 'mumbai';
-  const groups = useMemo(() => Array.from(new Set(styles.map((s) => s.group))), [styles]);
+  const groups = useMemo(() => [POPULAR, ...Array.from(new Set(styles.map((s) => s.group)))], [styles]);
 
   const toggleStyle = (id: string) =>
     setB((x) => {
@@ -252,7 +255,7 @@ export default function Questionnaire() {
               ))}
             </div>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
-              {styles.filter((s) => s.group === group).map((s) => {
+              {(group === POPULAR ? styles.slice(0, 12) : styles.filter((s) => s.group === group)).map((s) => {
                 const on = b.styles.includes(s.id);
                 return (
                   <button key={s.id} type="button" aria-pressed={on} onClick={() => toggleStyle(s.id)}

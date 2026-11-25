@@ -90,7 +90,7 @@ def dhash(im):
     return sum(1 << i for i in range(64) if px[(i // 8) * 9 + i % 8] > px[(i // 8) * 9 + i % 8 + 1])
 
 
-MIN_PER_STYLE, MAX_PER_STYLE = 300, 3000
+MIN_PER_STYLE, MAX_PER_STYLE, MAX_POPULAR, N_POPULAR = 300, 3000, 6000, 10
 
 
 def style_queries():
@@ -134,15 +134,18 @@ def by_style(a):
             if r.get("style"):
                 count[r["style"]] = count.get(r["style"], 0) + 1
     qs = style_queries()
+    cat = json.load(open(os.path.join(ROOT, "backend", "app", "data", "styles.json"), encoding="utf-8"))["styles"]
+    popular = {s["id"] for s in sorted(cat, key=lambda s: -s.get("popularity", 0))[:N_POPULAR]}  # most searched get a bigger cap
     state = json.load(open(state_p)) if os.path.exists(state_p) else {}
     for st in qs:  # cursor: [query index, source, page]
         state.setdefault(st, [0, "o", 1])
     with open(man, "a", encoding="utf-8") as out:
-        for cap in (MIN_PER_STYLE, MAX_PER_STYLE):
+        for base_cap in (MIN_PER_STYLE, MAX_PER_STYLE):
             active = True
             while active and n < a.target:
                 active = False
                 for st, queries in qs.items():
+                    cap = MAX_POPULAR if base_cap == MAX_PER_STYLE and st in popular else base_cap
                     qi, src, pg = state[st]
                     if count.get(st, 0) >= cap or qi >= len(queries) or n >= a.target:
                         continue
@@ -170,7 +173,7 @@ def by_style(a):
                     json.dump(state, open(state_p, "w"))
                     time.sleep(0.5)
                 thin = sorted(count.get(s, 0) for s in qs)
-                print(f"cap {cap}: {n} photos; thinnest styles {thin[:5]}", flush=True)
+                print(f"cap {base_cap}: {n} photos; thinnest styles {thin[:5]}", flush=True)
     print("done", n, json.dumps(dict(sorted(count.items()))))
 
 

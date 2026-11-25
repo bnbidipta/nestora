@@ -31,6 +31,7 @@ def list_styles():
     s = derive.styles()
     ph = swipe.photos()
     s = {k: x for k, x in s.items() if x.get("scope", "exterior") == "exterior"}  # retired + interior-only styles hidden
+    s = dict(sorted(s.items(), key=lambda kv: -kv[1].get("popularity", 0)))  # most searched first (Google Trends)
     rows = [{**x, "photo": ph[k][0]["file"] if ph.get(k) else None,
              "photo_credit": f"{ph[k][0]['author']} · {ph[k][0]['licence']}" if ph.get(k) else None} for k, x in s.items()]
     return {"groups": sorted({x["group"] for x in s.values()}), "styles": rows}
