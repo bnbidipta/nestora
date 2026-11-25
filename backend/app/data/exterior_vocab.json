@@ -1,0 +1,74 @@
+{
+  "note": "Exterior element vocabulary shared by photo labels, style defaults, the 3D model and the Customise exterior panel. Labels and names are user-facing.",
+  "elements": {
+    "wall": {"label": "Wall finish", "options": {
+      "plaster_paint": "Smooth plaster, painted",
+      "textured_stucco": "Textured stucco",
+      "whitewash_lime": "Lime wash",
+      "exposed_brick": "Exposed brick",
+      "laterite": "Laterite stone",
+      "stone_cladding": "Stone cladding",
+      "exposed_concrete": "Exposed concrete",
+      "wood_cladding": "Wood cladding",
+      "charred_timber": "Dark (charred) timber",
+      "metal_cladding": "Metal cladding",
+      "wood_shingle": "Wood shingles",
+      "adobe": "Earth / adobe",
+      "glass_curtain": "Full glass"
+    }},
+    "window": {"label": "Windows", "options": {
+      "casement_shutters": "Casement windows with shutters",
+      "large_glazing": "Large picture windows",
+      "floor_to_ceiling": "Floor-to-ceiling glass",
+      "arched": "Arched windows",
+      "small_punched": "Small deep-set windows",
+      "ribbon": "Ribbon (horizontal strip) windows",
+      "grid_paned": "Small-paned (grid) windows"
+    }},
+    "frame": {"label": "Window frames", "options": {
+      "dark_metal": "Black / dark metal",
+      "white": "White",
+      "natural_wood": "Natural wood",
+      "colour_accent": "Painted in the accent colour",
+      "aluminium": "Silver aluminium"
+    }},
+    "entrance": {"label": "Entrance", "options": {
+      "simple_canopy": "Simple canopy",
+      "portico_columns": "Portico with columns",
+      "verandah": "Front verandah",
+      "recessed": "Recessed doorway",
+      "pergola": "Timber pergola",
+      "arched_porch": "Arched porch"
+    }},
+    "railing": {"label": "Railings", "options": {
+      "ms_bars": "Metal bars",
+      "glass": "Glass",
+      "jaali": "Jaali (perforated screen)",
+      "wood_baluster": "Wooden balusters",
+      "solid_parapet": "Solid low wall"
+    }},
+    "roof_material": {"label": "Roof material", "options": {
+      "concrete_flat": "Flat concrete (terrace)",
+      "mangalore_tile": "Mangalore clay tiles",
+      "clay_barrel": "Curved clay (barrel) tiles",
+      "metal_seam": "Metal standing seam",
+      "slate": "Slate",
+      "wood_shingle": "Wood shingles",
+      "green_roof": "Planted (green) roof"
+    }},
+    "trim": {"label": "Trims", "options": {
+      "none": "None (clean edges)",
+      "floor_band": "Band at each floor",
+      "cornice": "Cornice at the roof",
+      "quoins": "Corner stones (quoins)",
+      "window_surrounds": "Window surrounds"
+    }},
+    "boundary": {"label": "Compound wall and gate", "options": {
+      "low_wall_hedge": "Low wall with hedge",
+      "solid_wall_gate": "Solid wall and gate",
+      "railing_wall": "Wall with railing on top",
+      "picket": "Picket fence",
+      "open_lawn": "Open, no wall"
+    }}
+  }
+}

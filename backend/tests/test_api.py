@@ -84,8 +84,8 @@ def test_style_deck_is_filtered_and_has_no_duplicate_photos():
     from backend.app.api.swipe import photos
     shas = [p["sha1"] for v in photos().values() for p in v]
     assert len(shas) == len(set(shas))  # no image used twice, across styles
-    two = client.get("/api/v1/swipe/cards", params={"styles": "goan_portuguese,victorian"}).json()["cards"]
-    assert two and {c["style"] for c in two} == {"goan_portuguese", "victorian"}
+    two = client.get("/api/v1/swipe/cards", params={"styles": "goan_portuguese,georgian"}).json()["cards"]
+    assert two and {c["style"] for c in two} == {"goan_portuguese", "georgian"}
 
 
 def test_what_if_preview_then_keep():
@@ -128,3 +128,14 @@ def test_vote_state_not_public():
     client.post(f"/api/v1/house/{hid}/vote", json={"token": tok, "voter": "browser-secret1", "name": "Amma", "likes": [opts[0]["id"]]})
     body = client.get(f"/api/v1/house/{hid}").text
     assert "vote" not in client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"] and "browser-secret1" not in body
+
+
+def test_exterior_choices_and_text():
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
+    r = client.post(f"/api/v1/house/{hid}/exterior", json={"choices": {"railing": "glass", "window": "nope"}, "text": "exposed brick walls"}, headers=auth)
+    assert r.status_code == 200, r.text
+    ex = client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"]["look"]["exterior"]
+    assert ex["railing"] == "glass" and ex["wall"][0] == "exposed_brick" and ex["window"] != "nope"

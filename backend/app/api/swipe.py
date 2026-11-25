@@ -36,7 +36,7 @@ def cards() -> List[Dict[str, Any]]:
     cat = derive.styles()
     out = []
     for st, ps in photos().items():
-        if st not in cat:
+        if st not in cat or cat[st].get("scope", "exterior") != "exterior":
             continue
         for i, p in enumerate(ps, 1):
             out.append({"id": f"{st}_{i}", "file": p["file"], "deck": "style", "style": st, "style_name": cat[st]["name"],

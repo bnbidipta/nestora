@@ -13,6 +13,8 @@ import { FILL, fitLabel, roomName } from '@/lib/rooms';
 import { MepLayer, MepLegend, MepOverlay } from '@/components/MepLayer';
 import Elevation from '@/components/Elevation';
 import WhatIf from '@/components/WhatIf';
+import type { Look } from '@/lib/house3d';
+import ExteriorPanel from '@/components/ExteriorPanel';
 import Versions from '@/components/Versions';
 const House3D = dynamic(() => import('@/components/House3D'), { ssr: false, loading: () => <p className="py-20 text-center text-sm text-slate-400">Loading 3D…</p> });
 
@@ -121,6 +123,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
 
   return (
     <div className="flex flex-col gap-6 print:block">
+      {canEdit && <ExteriorPanel houseId={twin.house_id} current={((twin.metadata as Record<string, any>)?.look as Look | undefined)?.exterior} onChanged={async () => setTwin(await getHouse(twin.house_id))} />}
       {canEdit && <WhatIf houseId={twin.house_id} onKept={async () => setTwin(await getHouse(twin.house_id))} />}
       {canEdit && <Versions houseId={twin.house_id} stamp={String((twin.metadata as Record<string, unknown>)?.candidate_id ?? '')} onRestored={async () => setTwin(await getHouse(twin.house_id))} />}
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">

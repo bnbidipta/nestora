@@ -200,3 +200,33 @@ def _propose(brief_json: str) -> Optional[Dict[str, Any]]:
 def propose_arrangement(brief: Brief) -> Optional[Dict[str, Any]]:
     b = brief.model_dump(exclude={"free_text", "budget_inr"})
     return _propose(json.dumps(b, sort_keys=True))
+
+
+COLOURS = {"white": "#F4F2EC", "off white": "#EDE7DA", "cream": "#EFE3C8", "beige": "#D9C7A7", "grey": "#9A9A96", "gray": "#9A9A96",
+           "charcoal": "#3A3B3C", "black": "#1E1E1E", "terracotta": "#B5563A", "red": "#9E3B2E", "yellow": "#E2B84B",
+           "ochre": "#C8913A", "blue": "#3E6A8A", "green": "#5D7A4A", "sage": "#9CAF88", "pink": "#E4B7B0", "brown": "#6E4B33"}
+
+
+def exterior_changes(text: str, vocab: Dict[str, Any], current: Dict[str, Any]) -> Dict[str, Any]:
+    """Free text ("exposed brick below, white above, black frames") -> exterior choices in the vocabulary, plus the parts
+    we can't do. Groq when configured; otherwise matches option names and colour words in the text."""
+    elems = {k: {o: lbl for o, lbl in v["options"].items()} for k, v in vocab.items()}
+    sys_p = ("You edit a house exterior. Map the user's request to these elements and option ids only: "
+             + json.dumps(elems) + ". 'wall' is a list of 1-2 ids, main (ground/most) first. Colours: 'wall_colour' and "
+             "'accent_colour' as #RRGGBB hex; when the user names a wall colour (e.g. 'white plaster'), set wall_colour too. Current choices: " + json.dumps(current) + ". Reply JSON: "
+             '{"changes": {element: id or list or hex}, "unsupported": ["short phrases you could not map, e.g. swimming pool"], '
+             '"reply": "one short sentence saying what you changed"}. Change only what was asked.')
+    out = _chat(sys_p, text)
+    if out and isinstance(out.get("changes"), dict):
+        return {"changes": out["changes"], "unsupported": [str(x)[:60] for x in out.get("unsupported") or []][:5],
+                "reply": str(out.get("reply") or "")[:200]}
+    t, ch = text.lower(), {}
+    for k, opts in elems.items():  # fallback: an option whose name appears in the text
+        hits = [o for o, lbl in opts.items() if lbl.lower().split(" (")[0] in t or o.replace("_", " ") in t]
+        if hits:
+            ch[k] = hits[:2] if k == "wall" else hits[0]
+    for name, hx in sorted(COLOURS.items(), key=lambda x: -len(x[0])):
+        if re.search(rf"\b{name}\b", t):
+            ch.setdefault("wall_colour", hx)
+            break
+    return {"changes": ch, "unsupported": [] if ch else [text[:60]], "reply": "Updated what I recognised." if ch else ""}

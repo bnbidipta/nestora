@@ -5,23 +5,36 @@
  * ponytail: doors sit near the start of the room's door wall; real door positions come with a full drawing set.
  */
 export interface PRoom { name: string; type?: string | null; x: number; y: number; length_ft: number; width_ft: number; exterior?: boolean; window_area_sqft?: number; door_width_mm?: number }
-export type Kind = 'wall' | 'parapet' | 'slab' | 'step' | 'lining' | 'glass' | 'chhajja' | 'jaali' | 'plinth' | 'band' | 'pergola' | 'tank' | 'garden' | 'mumty' | 'rail';
-export interface Box { x0: number; x1: number; y0: number; y1: number; z0: number; z1: number; kind: Kind; room?: string; colour?: string }
+export type Kind = 'wall' | 'parapet' | 'slab' | 'step' | 'lining' | 'glass' | 'chhajja' | 'jaali' | 'plinth' | 'band' | 'pergola' | 'tank' | 'garden' | 'mumty' | 'rail'
+  | 'frame' | 'shutter' | 'column' | 'canopy' | 'trim' | 'boundary' | 'hedge' | 'gate' | 'picket' | 'porchfloor';
+/** up: on an upper floor (takes the second wall finish). out: which face is outside (only that face gets the finish). */
+export interface Box { x0: number; x1: number; y0: number; y1: number; z0: number; z1: number; kind: Kind; room?: string; colour?: string; up?: boolean; out?: 'x+' | 'x-' | 'y+' | 'y-' }
 /** A roof plane or gable end as triangles in plan feet: [x, y, z] x 3 per triangle. */
 export interface Tri { kind: 'roof' | 'gable'; p: number[] }
 /** The architecture from the backend (services/look.py); metres. */
 export interface Look {
   archetype: 'terrace' | 'sloped' | 'stepped' | 'mixed';
-  roof: { form: 'flat' | 'gable' | 'hip'; pitch_deg: number; eave_m: number; tile: string; cover: number };
+  roof: { form: 'flat' | 'gable' | 'hip'; pitch_deg: number; eave_m: number; tile: string; cover: number; material?: string };
   terrace: { usable: boolean; parapet_m: number; pergola: boolean; garden: boolean; tank: boolean; mumty: boolean; pavilion: number };
   shading: { chhajja_m: number; jaali: boolean; fins: boolean };
   facade: { plinth_m: number; wall: string; accent: string; wood: string; rail: string; band: boolean };
+  exterior?: Exterior;
+}
+/** Exterior elements (backend/app/data/exterior_vocab.json ids) after the user's own choices. */
+export interface Exterior {
+  wall: string[]; window: string; frame: string; entrance: string; railing: string; roof_material: string; trim: string; boundary: string;
+  wall_colour: string; accent_colour: string; porch_m: number;
 }
 interface Opening { a: number; b: number; bottom: number; top: number }
 type Side = 'front' | 'rear' | 'left' | 'right';
 
 const EXT_T = 0.75, INT_T = 0.4, DOOR_H = 7, SILL = 3, VENT_SILL = 5.5, PARAPET = 3.5, SLAB = 0.45;
 const OPEN_TYPES = ['porch', 'balcony'];
+/** window type -> [width factor (9 = whole wall), sill, head] in feet */
+const WIN: Record<string, [number, number, number]> = {
+  floor_to_ceiling: [1.5, 0.4, DOOR_H + 0.5], large_glazing: [1.35, 2, DOOR_H], ribbon: [9, 4, 6.6], small_punched: [0.6, 3.5, 6.5],
+  arched: [0.9, SILL, DOOR_H + 0.6], casement_shutters: [1, SILL, DOOR_H], grid_paned: [1, SILL, DOOR_H],
+};
 const r1 = (v: number) => Math.round(v * 10) / 10;
 
 function edges(r: PRoom): { side: Side; horiz: boolean; c: number; a: number; b: number }[] {
@@ -86,8 +99,10 @@ function pitched(x0: number, y0: number, x1: number, y1: number, z0: number, for
   return out;
 }
 
-export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string | undefined, opts: { paint?: Record<string, { side: string; hex: string }[]>; terrace?: boolean; look?: Look } = {}) {
+export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string | undefined, opts: { paint?: Record<string, { side: string; hex: string }[]>; terrace?: boolean; look?: Look; plot?: [number, number, number, number] } = {}) {
   const look = opts.look;
+  const ex = look?.exterior;
+  let mainDoor: { a: number; b: number; c: number } | null = null;
   const boxes: Box[] = [];
   const tris: Tri[] = [];
   const win: { side: Side; horiz: boolean; c: number; a: number; b: number; bottom: number; top: number; base: number; t: string }[] = [];
@@ -114,6 +129,7 @@ export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string
         if (isExt(e.horiz, e.c) && !main) e = [...es].filter((x) => !isExt(x.horiz, x.c)).sort((p, q) => (q.b - q.a) - (p.b - p.a))[0] ?? e;
         const w = Math.min((r.door_width_mm ?? 900) / 304.8, e.b - e.a - 0.6);
         if (w > 1.5 && t !== 'stair' && t !== 'lift') addOp(e.horiz, e.c, { a: e.a + 0.4, b: e.a + 0.4 + w, bottom: 0, top: DOOR_H });
+        if (main && !mainDoor && e.side === 'front' && isExt(e.horiz, e.c)) mainDoor = { a: e.a + 0.4, b: e.a + 0.4 + w, c: e.c };
         if (t === 'stair' || t === 'lift') addOp(e.horiz, e.c, { a: e.a + 0.3, b: e.a + 0.3 + Math.min(3.2, e.b - e.a - 0.6), bottom: 0, top: DOOR_H });
       }
       for (const e of es) {  // windows on outside walls
@@ -121,10 +137,12 @@ export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string
         const L = e.b - e.a;
         if (L < 3) continue;
         const vent = t === 'toilet' || t === 'utility' || t === 'laundry';
-        const w = vent ? Math.min(2, L - 1) : Math.min(L - 2, Math.max(3, (r.window_area_sqft ?? 12) / 4 / (r.exterior ? 1 : 2)));
+        const w0 = vent ? Math.min(2, L - 1) : Math.min(L - 2, Math.max(3, (r.window_area_sqft ?? 12) / 4 / (r.exterior ? 1 : 2)));
+        const [k, bot, top] = vent ? [1, VENT_SILL, DOOR_H] : WIN[ex?.window ?? ''] ?? [1, SILL, DOOR_H];
+        const w = vent ? w0 : Math.max(2, Math.min(L - 2, k === 9 ? L - 2 : w0 * k));
         const mid = (e.a + e.b) / 2;
-        addOp(e.horiz, e.c, { a: mid - w / 2, b: mid + w / 2, bottom: vent ? VENT_SILL : SILL, top: DOOR_H });
-        win.push({ side: e.side, horiz: e.horiz, c: e.c, a: mid - w / 2, b: mid + w / 2, bottom: vent ? VENT_SILL : SILL, top: DOOR_H, base, t });
+        addOp(e.horiz, e.c, { a: mid - w / 2, b: mid + w / 2, bottom: bot, top });
+        win.push({ side: e.side, horiz: e.horiz, c: e.c, a: mid - w / 2, b: mid + w / 2, bottom: bot, top, base, t });
       }
     }
 
@@ -144,12 +162,13 @@ export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string
     }
     for (const [k, l] of Array.from(lines)) {
       const t = l.ext ? EXT_T : INT_T;
+      const out = !l.ext || l.parapet ? undefined : l.horiz ? (Math.abs(l.c - by0) < 0.1 ? 'y-' : 'y+') : (Math.abs(l.c - bx0) < 0.1 ? 'x-' : 'x+');
       const hh = l.parapet ? PARAPET : H;
       for (const [a, b] of union(l.iv)) {
         for (const p of pieces(a, b, hh, l.parapet ? [] : ops.get(k) ?? [])) {
           boxes.push(l.horiz
-            ? { kind: l.parapet ? (look ? 'rail' : 'parapet') : 'wall', x0: p.a, x1: p.b, y0: l.c - t / 2, y1: l.c + t / 2, z0: base + p.z0, z1: base + p.z1 }
-            : { kind: l.parapet ? (look ? 'rail' : 'parapet') : 'wall', x0: l.c - t / 2, x1: l.c + t / 2, y0: p.a, y1: p.b, z0: base + p.z0, z1: base + p.z1 });
+            ? { kind: l.parapet ? (look ? 'rail' : 'parapet') : 'wall', x0: p.a, x1: p.b, y0: l.c - t / 2, y1: l.c + t / 2, z0: base + p.z0, z1: base + p.z1, up: f.floor_no > 0, out }
+            : { kind: l.parapet ? (look ? 'rail' : 'parapet') : 'wall', x0: l.c - t / 2, x1: l.c + t / 2, y0: p.a, y1: p.b, z0: base + p.z0, z1: base + p.z1, up: f.floor_no > 0, out });
         }
       }
     }
@@ -287,9 +306,99 @@ export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string
       if (look.shading.fins && w.side === 'front') {
         for (const fx of [w.a - 0.3, w.b + 0.3]) boxes.push(along(fx - 0.15, fx + 0.15, w.c + out * t, w.c + out * (t + 1.5), w.base + w.bottom - 1, w.base + w.top + 0.5, 'chhajja'));
       }
+      if (ex) {  // frame, glazing bars, shutters and surrounds on the outer face
+        const f0 = w.c + out * t, f1 = w.c + out * (t + 0.18), fw = ex.trim === 'window_surrounds' ? 0.6 : 0.22, kf: Kind = ex.trim === 'window_surrounds' ? 'trim' : 'frame';
+        const z0 = w.base + w.bottom, z1 = w.base + w.top;
+        boxes.push(along(w.a - fw, w.b + fw, f0, f1, z1, z1 + fw, kf), along(w.a - fw, w.b + fw, f0, f1, z0 - fw, z0, kf),
+          along(w.a - fw, w.a, f0, f1, z0, z1, kf), along(w.b, w.b + fw, f0, f1, z0, z1, kf));
+        if (ex.window === 'grid_paned' || ex.window === 'casement_shutters') {
+          const n = Math.max(1, Math.round((w.b - w.a) / 1.6));
+          for (let i = 1; i < n; i++) { const x = w.a + ((w.b - w.a) * i) / n; boxes.push(along(x - 0.07, x + 0.07, w.c - 0.1, w.c + 0.1, z0, z1, 'frame')); }
+          if (ex.window === 'grid_paned') boxes.push(along(w.a, w.b, w.c - 0.1, w.c + 0.1, (z0 + z1) / 2 - 0.07, (z0 + z1) / 2 + 0.07, 'frame'));
+        }
+        if (ex.window === 'casement_shutters' && !['toilet', 'utility', 'laundry'].includes(w.t)) {
+          const sw = Math.min(2.2, (w.b - w.a) / 2);
+          boxes.push(along(w.a - fw - sw, w.a - fw, f0, f1 + 0.1, z0, z1, 'shutter'), along(w.b + fw, w.b + fw + sw, f0, f1 + 0.1, z0, z1, 'shutter'));
+        }
+        if (ex.window === 'arched') {  // ponytail: stepped arch head from 3 blocks; a true curve needs custom geometry
+          const m = (w.a + w.b) / 2, hw = (w.b - w.a) / 2;
+          boxes.push(along(w.a - fw, w.b + fw, f0, f1, z1 + fw, z1 + fw + 0.45, 'trim'), along(m - hw * 0.7, m + hw * 0.7, f0, f1, z1 + fw + 0.45, z1 + fw + 0.85, 'trim'),
+            along(m - hw * 0.35, m + hw * 0.35, f0, f1, z1 + fw + 0.85, z1 + fw + 1.15, 'trim'));
+        }
+      }
     }
+    if (ex && g) exteriorExtras(boxes, ex, g, levels, mainDoor, base, opts.plot);
   }
   return { boxes, tris, levels, roofZ: base + SLAB, roofTop };
+}
+
+/** Entrance porch, trims and the compound wall, from the exterior choices. Plan feet. */
+function exteriorExtras(boxes: Box[], ex: Exterior, g: { base: number; height: number; bbox: [number, number, number, number] },
+  levels: { base: number; height: number; bbox: [number, number, number, number] }[], door: { a: number; b: number; c: number } | null,
+  wallTop: number, plot?: [number, number, number, number]) {
+  const [a0, b0, a1, b1] = g.bbox, H = g.height, P = ex.porch_m * M;
+  const dc = door ? (door.a + door.b) / 2 : (a0 + a1) / 2, yf = door?.c ?? b0;
+  const col = (x: number, y: number, s = 1) => boxes.push({ kind: 'column', x0: x - s / 2, x1: x + s / 2, y0: y - s / 2, y1: y + s / 2, z0: 0, z1: H - 0.6 });
+  switch (ex.entrance) {
+    case 'simple_canopy':
+      boxes.push({ kind: 'canopy', x0: dc - 3, x1: dc + 3, y0: yf - 3, y1: yf, z0: DOOR_H + 0.4, z1: DOOR_H + 0.8 });
+      break;
+    case 'portico_columns': case 'arched_porch': {
+      if (P < 2) { boxes.push({ kind: 'canopy', x0: dc - 3, x1: dc + 3, y0: yf - 3, y1: yf, z0: DOOR_H + 0.4, z1: DOOR_H + 0.8 }); break; }
+      const hw = 5, s = ex.entrance === 'arched_porch' ? 1.4 : 1.1;
+      boxes.push({ kind: 'porchfloor', x0: dc - hw - 1, x1: dc + hw + 1, y0: yf - P, y1: yf, z0: -0.5, z1: 0.3 });
+      col(dc - hw, yf - P + 0.8, s); col(dc + hw, yf - P + 0.8, s);
+      boxes.push({ kind: 'canopy', x0: dc - hw - 1, x1: dc + hw + 1, y0: yf - P, y1: yf, z0: H - 0.6, z1: H });
+      if (ex.entrance === 'arched_porch') boxes.push({ kind: 'trim', x0: dc - hw, x1: dc + hw, y0: yf - P + 0.3, y1: yf - P + 1.3, z0: H - 2.2, z1: H - 0.6 });
+      break;
+    }
+    case 'verandah': {
+      if (P < 2) break;
+      boxes.push({ kind: 'porchfloor', x0: a0, x1: a1, y0: b0 - P, y1: b0, z0: -0.5, z1: 0.3 });
+      const n = Math.max(2, Math.round((a1 - a0) / 9));
+      for (let i = 0; i <= n; i++) col(a0 + 0.6 + ((a1 - a0 - 1.2) * i) / n, b0 - P + 0.6, 0.8);
+      boxes.push({ kind: 'canopy', x0: a0 - 0.5, x1: a1 + 0.5, y0: b0 - P - 0.5, y1: b0, z0: H - 0.6, z1: H - 0.1, colour: 'roof' });
+      break;
+    }
+    case 'pergola': {
+      if (P < 2) break;
+      const x0 = dc - 6, x1 = dc + 6, y0 = yf - P;
+      for (const [x, y] of [[x0, y0 + 0.4], [x1, y0 + 0.4]]) boxes.push({ kind: 'pergola', x0: x - 0.3, x1: x + 0.3, y0: y - 0.3, y1: y + 0.3, z0: 0, z1: H - 1 });
+      for (let x = x0; x <= x1 + 0.01; x += 1.5) boxes.push({ kind: 'pergola', x0: x - 0.12, x1: x + 0.12, y0, y1: yf, z0: H - 1, z1: H - 0.6 });
+      break;
+    }
+    default: break;  // recessed: the door alone
+  }
+  const topLv = levels[levels.length - 1];
+  if (ex.trim === 'cornice' && topLv) {
+    const [c0, d0, c1, d1] = topLv.bbox, o = 0.6, z = topLv.base + topLv.height;
+    boxes.push({ kind: 'trim', x0: c0 - o, x1: c1 + o, y0: d0 - o, y1: d0 + 0.2, z0: z - 0.9, z1: z },
+      { kind: 'trim', x0: c0 - o, x1: c1 + o, y0: d1 - 0.2, y1: d1 + o, z0: z - 0.9, z1: z },
+      { kind: 'trim', x0: c0 - o, x1: c0 + 0.2, y0: d0, y1: d1, z0: z - 0.9, z1: z }, { kind: 'trim', x0: c1 - 0.2, x1: c1 + o, y0: d0, y1: d1, z0: z - 0.9, z1: z });
+  }
+  if (ex.trim === 'quoins') {
+    for (let z = 0.5, i = 0; z < wallTop - 1; z += 1.2, i++) {
+      const L = i % 2 ? 1.2 : 2;
+      for (const [x, y, sx, sy] of [[a0, b0, 1, 1], [a1, b0, -1, 1]] as const) {
+        boxes.push({ kind: 'trim', x0: Math.min(x, x + sx * L), x1: Math.max(x, x + sx * L), y0: y - 0.15, y1: y + 0.25, z0: z, z1: z + 1 });
+        boxes.push({ kind: 'trim', x0: x - 0.15 * sx - (sx < 0 ? 0.25 : 0), x1: x + (sx > 0 ? 0.25 : 0.15), y0: Math.min(y, y + sy * L), y1: Math.max(y, y + sy * L), z0: z, z1: z + 1 });
+      }
+    }
+  }
+  if (plot && ex.boundary !== 'open_lawn') {
+    const [p0, q0, p1, q1] = plot, t = 0.6, gate = 12;
+    const gx0 = Math.max(p0 + 1, dc - gate / 2), gx1 = Math.min(p1 - 1, dc + gate / 2);
+    const h = { low_wall_hedge: 2, solid_wall_gate: 5, railing_wall: 2.5, picket: 3.5 }[ex.boundary] ?? 3;
+    const kind: Kind = ex.boundary === 'picket' ? 'picket' : 'boundary';
+    const runs: [number, number, number, number][] = [[p0, q0, gx0, q0 + t], [gx1, q0, p1, q0 + t], [p0, q1 - t, p1, q1], [p0, q0, p0 + t, q1], [p1 - t, q0, p1, q1]];
+    for (const [x0, y0, x1, y1] of runs) {
+      if (x1 - x0 < 0.3 || y1 - y0 < 0.3) continue;
+      boxes.push({ kind, x0, x1, y0, y1, z0: -0.5, z1: h - 0.5 });
+      if (ex.boundary === 'low_wall_hedge') boxes.push({ kind: 'hedge', x0: x0 + 0.1, x1: x1 - 0.1, y0: y0 + 0.1, y1: y1 + (y1 - y0 < 1 ? 0.6 : 0), z0: h - 0.5, z1: h + 1.5 });
+      if (ex.boundary === 'railing_wall') boxes.push({ kind: 'gate', x0, x1, y0: y0 + 0.2, y1: y1 - 0.2, z0: h - 0.5, z1: h + 2 });
+    }
+    if (ex.boundary === 'solid_wall_gate' || ex.boundary === 'railing_wall') boxes.push({ kind: 'gate', x0: gx0, x1: gx1, y0: q0 + 0.2, y1: q0 + 0.4, z0: -0.5, z1: 4.5 });
+  }
 }
 
 /** 2D blockers for walking at body height on one level (walls whose piece spans 1–5 ft above that floor). */

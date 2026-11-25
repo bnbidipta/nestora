@@ -53,9 +53,15 @@ class Brief(BaseModel):
     styles: List[str] = Field(default_factory=list, max_length=60)  # no cap: pick as many as you like
     styles_locked: bool = False  # true when the user picked styles by hand; swipes then don't override them
     free_text: str = Field(default="", max_length=2000)
+    # the user's own exterior choices (element -> option id, or a hex colour for "wall_colour"/"accent_colour");
+    # they win over the style's defaults. Validated against exterior_vocab.json.
+    exterior: Dict[str, object] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def _derive(self):
+        if self.exterior:
+            from backend.app.services import look  # lazy: look imports models
+            self.exterior = look.valid_overrides(self.exterior)
         if self.couples is not None or self.singles is not None:
             self.adults = min(12, max(1, 2 * (self.couples or 0) + (self.singles or 0)))
         if self.elder_couples is not None or self.elder_singles is not None:

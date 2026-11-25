@@ -60,7 +60,21 @@
     "Indian contemporary residential house exposed brick concrete jaali",
     "Modern indian home courtyard double height living room",
     "Contemporary indian villa kota stone cantilever facade"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint",
+     "stone_cladding"
+    ],
+    "window": "large_glazing",
+    "frame": "dark_metal",
+    "entrance": "simple_canopy",
+    "railing": "ms_bars",
+    "roof_material": "concrete_flat",
+    "trim": "floor_band",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "kerala_nalukettu",
@@ -112,7 +126,21 @@
     "Kerala nalukettu courtyard nadumuttam traditional house",
     "Kerala vernacular tharavadu wooden pillars red oxide",
     "Traditional Kerala house mangalore tiles charupadi verandah"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "whitewash_lime",
+     "laterite"
+    ],
+    "window": "casement_shutters",
+    "frame": "natural_wood",
+    "entrance": "verandah",
+    "railing": "wood_baluster",
+    "roof_material": "mangalore_tile",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "chettinad",
@@ -162,7 +190,20 @@
     "Chettinad mansion courtyard pillars athangudi tiles",
     "Chettiar house interior teak pillars tamil nadu",
     "Chettinad thinnai entrance carved wooden door"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "whitewash_lime"
+    ],
+    "window": "arched",
+    "frame": "natural_wood",
+    "entrance": "portico_columns",
+    "railing": "wood_baluster",
+    "roof_material": "mangalore_tile",
+    "trim": "cornice",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "rajasthani_haveli",
@@ -211,7 +252,8 @@
     "Shekhawati haveli painted courtyard frescoes architecture",
     "Jaisalmer haveli carved yellow sandstone jharokha balcony",
     "Rajasthani courtyard chowk stone jaali pillars"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "goan_portuguese",
@@ -261,7 +303,20 @@
     "Goan portuguese house balcao yellow facade colonial",
     "Casas de goa interior oyster shell window carepas",
     "Indo portuguese mansion verandah azulejos tiles goa"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint"
+    ],
+    "window": "casement_shutters",
+    "frame": "white",
+    "entrance": "verandah",
+    "railing": "ms_bars",
+    "roof_material": "mangalore_tile",
+    "trim": "window_surrounds",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "konkan",
@@ -312,7 +367,21 @@
     "Konkan house laterite stone mangalore tiles vernacular",
     "Traditional konkani house oti verandah red oxide floor",
     "Coastal maharashtra rural house courtyard tulsi"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "laterite",
+     "whitewash_lime"
+    ],
+    "window": "casement_shutters",
+    "frame": "natural_wood",
+    "entrance": "verandah",
+    "railing": "wood_baluster",
+    "roof_material": "mangalore_tile",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "bengali_traditional",
@@ -362,7 +431,21 @@
     "Kolkata traditional courtyard house thakurdalan red oxide",
     "Bengal terracotta temple curved roof char chala architecture",
     "North kolkata colonial mansion green louvered shutters khorkhori"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint",
+     "exposed_brick"
+    ],
+    "window": "casement_shutters",
+    "frame": "colour_accent",
+    "entrance": "verandah",
+    "railing": "ms_bars",
+    "roof_material": "clay_barrel",
+    "trim": "cornice",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "laurie_baker_vernacular",
@@ -414,7 +497,20 @@
     "Laurie Baker architecture exposed brick jaali kerala",
     "Costford rat trap bond brick vernacular house",
     "Laurie baker filler slab ceiling red oxide floor"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_brick"
+    ],
+    "window": "small_punched",
+    "frame": "natural_wood",
+    "entrance": "recessed",
+    "railing": "jaali",
+    "roof_material": "mangalore_tile",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "tropical_modernism",
@@ -472,7 +568,21 @@
     "Geoffrey bawa lunuganga tropical modernism architecture",
     "Tropical modernism villa open pavilion courtyard pool bawa",
     "Sri lankan modern house terracotta tile roof cement floor"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint",
+     "wood_cladding"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "dark_metal",
+    "entrance": "pergola",
+    "railing": "glass",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "bombay_art_deco",
@@ -522,7 +632,20 @@
     "Bombay art deco residential building marine drive curved balcony",
     "Mumbai art deco architecture eyebrow chajja terrazzo",
     "Art deco apartment interior bombay terrazzo floor geometric"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint"
+    ],
+    "window": "ribbon",
+    "frame": "white",
+    "entrance": "simple_canopy",
+    "railing": "ms_bars",
+    "roof_material": "concrete_flat",
+    "trim": "floor_band",
+    "boundary": "railing_wall"
+   }
   },
   {
    "id": "indo_saracenic",
@@ -572,7 +695,8 @@
     "Indo saracenic residential architecture colonial bungalow",
     "Bombay colonial revival mansion stone arches chhatri",
     "Indo gothic domestic building verandah jaali stone"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "mughal_indo_islamic",
@@ -606,7 +730,8 @@
     "moroccan_riad",
     "persian",
     "rajasthani_haveli"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "kutchi_bhunga",
@@ -655,7 +780,8 @@
     "Kutchi bhunga traditional circular mud house architecture",
     "Lippan kaam mud mirror work interior wall kutch",
     "Banni village round hut conical roof gujarat"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "japanese",
@@ -706,7 +832,21 @@
     "Traditional japanese sukiya house tatami room engawa",
     "Japanese minka house timber post beam courtyard",
     "Washitsu room shoji screen tokonoma alcove wood"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_cladding",
+     "whitewash_lime"
+    ],
+    "window": "grid_paned",
+    "frame": "natural_wood",
+    "entrance": "recessed",
+    "railing": "wood_baluster",
+    "roof_material": "slate",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "japandi",
@@ -758,7 +898,21 @@
     "Japandi living room interior light oak slatted wood",
     "Japandi bedroom low platform bed muted neutral",
     "Japanese scandinavian dining room paper pendant chair"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint",
+     "wood_cladding"
+    ],
+    "window": "large_glazing",
+    "frame": "natural_wood",
+    "entrance": "recessed",
+    "railing": "glass",
+    "roof_material": "metal_seam",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "balinese",
@@ -808,7 +962,21 @@
     "Balinese villa open pavilion bale alang alang thatch",
     "Bali tropical resort bathroom outdoor shower paras stone",
     "Balinese courtyard water garden carved stone candi bentar"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "stone_cladding",
+     "wood_cladding"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "natural_wood",
+    "entrance": "pergola",
+    "railing": "wood_baluster",
+    "roof_material": "wood_shingle",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "chinese_courtyard",
@@ -859,7 +1027,21 @@
     "Beijing siheyuan courtyard house traditional architecture",
     "Chinese courtyard house moon gate red pillars grey brick",
     "Siheyuan interior ming furniture grey tile roof"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_brick",
+     "plaster_paint"
+    ],
+    "window": "grid_paned",
+    "frame": "colour_accent",
+    "entrance": "recessed",
+    "railing": "wood_baluster",
+    "roof_material": "clay_barrel",
+    "trim": "cornice",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "korean_hanok",
@@ -909,7 +1091,21 @@
     "Korean hanok house bukchon courtyard curved roof",
     "Traditional korean hanok daecheong maru wooden floor",
     "Hanok interior hanji paper changho door pine"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "whitewash_lime",
+     "wood_cladding"
+    ],
+    "window": "grid_paned",
+    "frame": "natural_wood",
+    "entrance": "verandah",
+    "railing": "wood_baluster",
+    "roof_material": "clay_barrel",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "thai_traditional",
@@ -959,7 +1155,20 @@
     "Thai traditional house ruen thai teak wood stilts",
     "Traditional thai house elevated terrace chaan roof",
     "Jim Thompson house bangkok thai architecture teak"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_cladding"
+    ],
+    "window": "casement_shutters",
+    "frame": "natural_wood",
+    "entrance": "verandah",
+    "railing": "wood_baluster",
+    "roof_material": "clay_barrel",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "moroccan_riad",
@@ -1010,7 +1219,20 @@
     "Marrakech moroccan riad central courtyard fountain zellige",
     "Moroccan riad interior tadelakt plaster carved cedar",
     "Riad courtyard orange trees arches lantern mosaic"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "textured_stucco"
+    ],
+    "window": "arched",
+    "frame": "colour_accent",
+    "entrance": "arched_porch",
+    "railing": "jaali",
+    "roof_material": "concrete_flat",
+    "trim": "window_surrounds",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "arabian_courtyard",
@@ -1059,7 +1281,20 @@
     "Traditional gulf house wind tower barjeel dubai bastakiya",
     "Arabian courtyard house mashrabiya screen roshan",
     "Emirati majlis traditional interior coral stone gypsum"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "textured_stucco"
+    ],
+    "window": "small_punched",
+    "frame": "natural_wood",
+    "entrance": "arched_porch",
+    "railing": "jaali",
+    "roof_material": "concrete_flat",
+    "trim": "cornice",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "persian",
@@ -1108,7 +1343,21 @@
     "Kashan traditional persian courtyard house badgir pool",
     "Persian house interior orosi stained glass window ayeneh kari",
     "Traditional iranian house iwan muqarnas windcatcher"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "textured_stucco",
+     "exposed_brick"
+    ],
+    "window": "arched",
+    "frame": "natural_wood",
+    "entrance": "arched_porch",
+    "railing": "jaali",
+    "roof_material": "concrete_flat",
+    "trim": "window_surrounds",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "mediterranean",
@@ -1159,7 +1408,20 @@
     "Mediterranean coastal villa terracotta tile pergola",
     "Mediterranean house interior arched doorway cotto tile",
     "Spanish mediterranean home stucco exterior wrought iron"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "textured_stucco"
+    ],
+    "window": "arched",
+    "frame": "natural_wood",
+    "entrance": "arched_porch",
+    "railing": "ms_bars",
+    "roof_material": "clay_barrel",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "tuscan",
@@ -1209,7 +1471,21 @@
     "Tuscan farmhouse stone exterior terracotta roof cyprus",
     "Tuscan country kitchen wood beams travertine fireplace",
     "Casale toscano interior stone arches cotto floor"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "stone_cladding",
+     "textured_stucco"
+    ],
+    "window": "casement_shutters",
+    "frame": "natural_wood",
+    "entrance": "pergola",
+    "railing": "ms_bars",
+    "roof_material": "clay_barrel",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "greek_cycladic",
@@ -1259,7 +1535,20 @@
     "Santorini cycladic house white cubic architecture aegean blue",
     "Mykonos interior built-in plaster sofa microcement",
     "Greek island whitewashed villa rounded corners terrace"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "whitewash_lime"
+    ],
+    "window": "small_punched",
+    "frame": "colour_accent",
+    "entrance": "recessed",
+    "railing": "solid_parapet",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "scandinavian",
@@ -1310,7 +1599,20 @@
     "Scandinavian living room pale oak floor hygge white",
     "Nordic modern apartment interior large window light",
     "Danish dining room ph5 pendant wegner chair"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_cladding"
+    ],
+    "window": "large_glazing",
+    "frame": "white",
+    "entrance": "simple_canopy",
+    "railing": "glass",
+    "roof_material": "metal_seam",
+    "trim": "none",
+    "boundary": "open_lawn"
+   }
   },
   {
    "id": "english_cottage",
@@ -1360,7 +1662,21 @@
     "Cotswold stone cottage thatched roof english garden",
     "English country cottage kitchen exposed beams aga stove",
     "English cottage living room fireplace chintz floral"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_brick",
+     "textured_stucco"
+    ],
+    "window": "grid_paned",
+    "frame": "white",
+    "entrance": "simple_canopy",
+    "railing": "wood_baluster",
+    "roof_material": "slate",
+    "trim": "none",
+    "boundary": "picket"
+   }
   },
   {
    "id": "french_provincial",
@@ -1409,7 +1725,21 @@
     "French provincial manor house exterior hipped roof shutters",
     "French country kitchen tomettes tiles limestone fireplace",
     "Provencal bedroom bergere chair toile de jouy"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "stone_cladding",
+     "textured_stucco"
+    ],
+    "window": "casement_shutters",
+    "frame": "white",
+    "entrance": "portico_columns",
+    "railing": "ms_bars",
+    "roof_material": "slate",
+    "trim": "quoins",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "spanish_colonial",
@@ -1460,7 +1790,20 @@
     "Spanish colonial revival house courtyard red tile roof",
     "Spanish style home interior talavera tile saltillo floor",
     "Mission revival architecture stucco arches wrought iron"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "textured_stucco"
+    ],
+    "window": "arched",
+    "frame": "natural_wood",
+    "entrance": "arched_porch",
+    "railing": "ms_bars",
+    "roof_material": "clay_barrel",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "bauhaus",
@@ -1511,7 +1854,20 @@
     "Bauhaus dessau masters houses walter gropius architecture",
     "Bauhaus modern residential house flat roof ribbon window",
     "Bauhaus interior marcel breuer wassily chair tubular steel"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint"
+    ],
+    "window": "ribbon",
+    "frame": "dark_metal",
+    "entrance": "recessed",
+    "railing": "ms_bars",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "open_lawn"
+   }
   },
   {
    "id": "art_deco",
@@ -1562,7 +1918,20 @@
     "Classic art deco interior geometric brass marble",
     "Art deco living room macassar ebony velvet sunburst",
     "1930s art deco residential facade curved balcony speedlines"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint"
+    ],
+    "window": "ribbon",
+    "frame": "white",
+    "entrance": "simple_canopy",
+    "railing": "ms_bars",
+    "roof_material": "concrete_flat",
+    "trim": "floor_band",
+    "boundary": "railing_wall"
+   }
   },
   {
    "id": "victorian",
@@ -1612,7 +1981,8 @@
     "Victorian terraced house bay window red brick london",
     "Victorian interior ceiling rose cornicing fireplace minton tile",
     "High victorian living room chesterfield william morris"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "georgian",
@@ -1661,7 +2031,20 @@
     "Georgian townhouse architecture symmetry bath stone sash window",
     "Georgian interior drawing room classical cornice fireplace",
     "Colonial classical bungalow pediment portico symmetry"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_brick"
+    ],
+    "window": "grid_paned",
+    "frame": "white",
+    "entrance": "portico_columns",
+    "railing": "ms_bars",
+    "roof_material": "slate",
+    "trim": "cornice",
+    "boundary": "railing_wall"
+   }
   },
   {
    "id": "mid_century_modern",
@@ -1713,7 +2096,21 @@
     "Mid century modern house exterior flat roof glass walls",
     "Mid century modern living room eames chair stone fireplace",
     "Palm springs modern architecture post and beam clerestory"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_cladding",
+     "stone_cladding"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "dark_metal",
+    "entrance": "recessed",
+    "railing": "glass",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "open_lawn"
+   }
   },
   {
    "id": "craftsman",
@@ -1763,7 +2160,21 @@
     "Craftsman bungalow exterior tapered columns porch",
     "Craftsman interior built-in buffet quarter sawn oak",
     "Greene and greene gamble house pasadena architecture"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_shingle",
+     "stone_cladding"
+    ],
+    "window": "grid_paned",
+    "frame": "natural_wood",
+    "entrance": "verandah",
+    "railing": "wood_baluster",
+    "roof_material": "wood_shingle",
+    "trim": "window_surrounds",
+    "boundary": "picket"
+   }
   },
   {
    "id": "farmhouse",
@@ -1814,7 +2225,20 @@
     "Modern farmhouse exterior white board and batten black roof",
     "Modern farmhouse kitchen apron sink open shelves",
     "Farmhouse living room shiplap fireplace barn door"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_cladding"
+    ],
+    "window": "grid_paned",
+    "frame": "dark_metal",
+    "entrance": "verandah",
+    "railing": "wood_baluster",
+    "roof_material": "metal_seam",
+    "trim": "none",
+    "boundary": "picket"
+   }
   },
   {
    "id": "prairie",
@@ -1863,7 +2287,21 @@
     "Frank lloyd wright robie house prairie style horizontal",
     "Prairie school architecture cantilever eaves roman brick",
     "Prairie house interior art glass oak trim fireplace"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_brick",
+     "plaster_paint"
+    ],
+    "window": "ribbon",
+    "frame": "natural_wood",
+    "entrance": "recessed",
+    "railing": "solid_parapet",
+    "roof_material": "mangalore_tile",
+    "trim": "floor_band",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "pueblo",
@@ -1913,7 +2351,20 @@
     "Pueblo revival house santa fe adobe vigas canales",
     "Santa fe style interior kiva fireplace viga ceiling",
     "Adobe house rounded stucco exterior turquoise door"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "adobe"
+    ],
+    "window": "small_punched",
+    "frame": "natural_wood",
+    "entrance": "pergola",
+    "railing": "solid_parapet",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "brazilian_modernism",
@@ -1965,7 +2416,21 @@
     "Brazilian modernism house concrete pilotis cobogo",
     "Lina bo bardi casa de vidro glass house modern",
     "Paulo mendes da rocha house board formed concrete garden"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_concrete",
+     "plaster_paint"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "dark_metal",
+    "entrance": "pergola",
+    "railing": "glass",
+    "roof_material": "green_roof",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "minimalist",
@@ -2018,7 +2483,20 @@
     "Architectural minimalism house white pure geometry pawson",
     "Minimalist interior shadow gap seamless microcement floor",
     "Campo baeza house pure white light architecture"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "dark_metal",
+    "entrance": "recessed",
+    "railing": "glass",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "brutalist",
@@ -2070,7 +2548,20 @@
     "Brutalist house board formed concrete architecture",
     "Brutalist residential interior raw concrete wood",
     "Monumental modern house exposed concrete cantilever"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_concrete"
+    ],
+    "window": "ribbon",
+    "frame": "dark_metal",
+    "entrance": "recessed",
+    "railing": "solid_parapet",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   }
   },
   {
    "id": "industrial",
@@ -2122,7 +2613,21 @@
     "Industrial loft apartment exposed brick concrete floor",
     "Warehouse conversion living room crittall steel windows",
     "Urban industrial interior exposed ductwork reclaimed wood"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_brick",
+     "metal_cladding"
+    ],
+    "window": "grid_paned",
+    "frame": "dark_metal",
+    "entrance": "simple_canopy",
+    "railing": "ms_bars",
+    "roof_material": "metal_seam",
+    "trim": "none",
+    "boundary": "railing_wall"
+   }
   },
   {
    "id": "biophilic",
@@ -2175,7 +2680,8 @@
     "Biophilic residential house indoor garden courtyard tree",
     "Biophilic living room vertical green wall natural light",
     "Nature centric modern house indoor water feature wood"
-   ]
+   ],
+   "scope": "interior"
   },
   {
    "id": "wabi_sabi",
@@ -2226,7 +2732,8 @@
     "Wabi sabi interior axel vervoordt living room imperfect plaster",
     "Wabi sabi architecture raw lime wall reclaimed wood",
     "Minimalist wabi sabi bedroom low platform bed stone"
-   ]
+   ],
+   "scope": "interior"
   },
   {
    "id": "maximalist",
@@ -2278,7 +2785,8 @@
     "Maximalist living room jewel tones wallpaper velvet gallery wall",
     "Eclectic maximalism interior pattern clashing brass",
     "Kelly wearstler maximalist apartment dramatic marble"
-   ]
+   ],
+   "scope": "interior"
   },
   {
    "id": "bohemian",
@@ -2331,7 +2839,8 @@
     "Bohemian living room rattan plants moroccan rug",
     "Boho chic bedroom macrame cane headboard plants",
     "New bohemian interior eclectic textiles daybed"
-   ]
+   ],
+   "scope": "interior"
   },
   {
    "id": "eco_passive",
@@ -2385,7 +2894,21 @@
     "Passivhaus modern residential exterior solar panels shading",
     "Eco passive house interior triple glazed natural wood",
     "Net zero energy house green roof timber cladding"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_cladding",
+     "plaster_paint"
+    ],
+    "window": "large_glazing",
+    "frame": "natural_wood",
+    "entrance": "pergola",
+    "railing": "glass",
+    "roof_material": "green_roof",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
   },
   {
    "id": "old_world_heritage",
@@ -2419,7 +2942,8 @@
     "chettinad",
     "bengali_traditional",
     "rajasthani_haveli"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "feng_shui_modern",
@@ -2453,7 +2977,8 @@
     "chinese_courtyard",
     "minimalist",
     "biophilic"
-   ]
+   ],
+   "scope": "interior"
   },
   {
    "id": "dravidian_residential",
@@ -2505,7 +3030,8 @@
     "Bruno Dagens (trans.), Mayamatam: Treatise of Housing, Architecture and Iconography (1994)",
     "A. Srivathsan, The Tamil Brahmin Agrahara: Spatial Pattern and Cultural Meaning (2002)",
     "V. Ganapati Sthapati, Building Architecture of Sthapatya Veda (2001)"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "ranch",
@@ -2557,7 +3083,21 @@
     "Cliff May & Paul C. Johnson, Western Ranch Houses by Cliff May (1958)",
     "Alan Hess, The Ranch House (2004)",
     "National Park Service (NPS), Post-World War II Suburb and the Ranch House (2002)"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_cladding",
+     "stone_cladding"
+    ],
+    "window": "large_glazing",
+    "frame": "white",
+    "entrance": "verandah",
+    "railing": "wood_baluster",
+    "roof_material": "wood_shingle",
+    "trim": "none",
+    "boundary": "open_lawn"
+   }
   },
   {
    "id": "parametric",
@@ -2609,7 +3149,8 @@
     "Patrik Schumacher, The Autopoiesis of Architecture: A New Framework for Architecture (2011)",
     "Michael Hensel, Achim Menges, Michael Weinstock, Emergent Technologies and Design: Towards a Biological Paradigm for Architecture (2010)",
     "Zaha Hadid Design, Zaha Hadid Architects: Residential Architecture Compendium (2020)"
-   ]
+   ],
+   "scope": "retired"
   },
   {
    "id": "contemporary",
@@ -2663,7 +3204,318 @@
     "Philip Jodidio, Architecture Now! Vol 10 (2014)",
     "Phaidon Editors, The Phaidon Atlas of 21st Century World Architecture (2008)",
     "Architectural Record, Residential Building Excellence Reviews 2021–2025 (2024)"
-   ]
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "plaster_paint",
+     "wood_cladding"
+    ],
+    "window": "large_glazing",
+    "frame": "dark_metal",
+    "entrance": "simple_canopy",
+    "railing": "glass",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "solid_wall_gate"
+   }
+  },
+  {
+   "id": "desert_modern",
+   "name": "Desert Modern",
+   "group": "Americas",
+   "climate": [
+    "hot-dry"
+   ],
+   "features": [
+    "Low flat-roofed volumes",
+    "Deep shaded overhangs",
+    "Earth-toned stucco and stone",
+    "Floor-to-ceiling glass facing shade",
+    "Gravel and cactus landscaping"
+   ],
+   "materials": {
+    "floor": "concrete_polished",
+    "wall": "textured_stucco",
+    "accent": "corten_steel"
+   },
+   "palette": {
+    "wall": "#D9C3A5",
+    "accent": "#8A4B2A",
+    "wood": "#6B4A33",
+    "floor": "#B8A68F"
+   },
+   "cost": "premium",
+   "mumbai": "Deep overhangs and thick walls cut heat; glass needs shading in Indian sun.",
+   "compatible": [
+    "minimalist",
+    "pueblo",
+    "mid_century_modern"
+   ],
+   "sources": [],
+   "aliases": [
+    "Desert Contemporary",
+    "Palm Springs Modern"
+   ],
+   "region": "US Southwest, Middle East",
+   "era": "1950s–Present",
+   "search_terms": [
+    "desert modern house stucco flat roof",
+    "Palm Springs modern house",
+    "desert contemporary home stone glass"
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "textured_stucco",
+     "stone_cladding"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "dark_metal",
+    "entrance": "pergola",
+    "railing": "glass",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
+  },
+  {
+   "id": "cape_cod",
+   "name": "Cape Cod / Coastal",
+   "group": "Americas",
+   "climate": [
+    "temperate",
+    "coastal"
+   ],
+   "features": [
+    "Steep gable roof with dormers",
+    "Symmetrical facade, central door",
+    "Shingle or clapboard siding",
+    "Small-paned windows with shutters",
+    "White trim"
+   ],
+   "materials": {
+    "floor": "oak_wood",
+    "wall": "wood_shingle",
+    "accent": "white_trim"
+   },
+   "palette": {
+    "wall": "#E6E1D6",
+    "accent": "#3B5166",
+    "wood": "#8B6B4A",
+    "floor": "#A88B66"
+   },
+   "cost": "standard",
+   "mumbai": "Steep roofs shed monsoon rain; timber siding needs treatment against humidity and termites.",
+   "compatible": [
+    "english_cottage",
+    "farmhouse",
+    "craftsman"
+   ],
+   "sources": [],
+   "aliases": [
+    "Coastal Cottage",
+    "New England House"
+   ],
+   "region": "New England, USA",
+   "era": "1700s–Present",
+   "search_terms": [
+    "Cape Cod house",
+    "shingle style coastal cottage",
+    "New England cottage dormers"
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "wood_shingle"
+    ],
+    "window": "grid_paned",
+    "frame": "white",
+    "entrance": "simple_canopy",
+    "railing": "wood_baluster",
+    "roof_material": "wood_shingle",
+    "trim": "window_surrounds",
+    "boundary": "picket"
+   }
+  },
+  {
+   "id": "tropical_brutalist",
+   "name": "Tropical Brutalist",
+   "group": "Asian",
+   "climate": [
+    "hot-humid",
+    "monsoon"
+   ],
+   "features": [
+    "Exposed concrete frames",
+    "Deep verandahs and shaded courtyards",
+    "Planted terraces and creepers",
+    "Open-to-air living",
+    "Local stone and timber accents"
+   ],
+   "materials": {
+    "floor": "terrazzo",
+    "wall": "exposed_concrete",
+    "accent": "teak_wood"
+   },
+   "palette": {
+    "wall": "#A9A49A",
+    "accent": "#4F6B3A",
+    "wood": "#6E4B2E",
+    "floor": "#B9B2A3"
+   },
+   "cost": "standard",
+   "mumbai": "Concrete mass and deep shade suit the monsoon; plants on terraces keep it cool.",
+   "compatible": [
+    "tropical_modernism",
+    "brutalist",
+    "indian_contemporary"
+   ],
+   "sources": [],
+   "aliases": [
+    "Geoffrey Bawa style",
+    "Sri Lankan Modernism"
+   ],
+   "region": "Sri Lanka, South & Southeast Asia",
+   "era": "1960s–Present",
+   "search_terms": [
+    "Geoffrey Bawa house",
+    "tropical brutalist house concrete",
+    "Sri Lanka modern house verandah"
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "exposed_concrete",
+     "stone_cladding"
+    ],
+    "window": "large_glazing",
+    "frame": "natural_wood",
+    "entrance": "verandah",
+    "railing": "solid_parapet",
+    "roof_material": "green_roof",
+    "trim": "none",
+    "boundary": "low_wall_hedge"
+   }
+  },
+  {
+   "id": "glass_box",
+   "name": "Contemporary Glass Box",
+   "group": "Modern movements",
+   "climate": [
+    "temperate",
+    "hot-dry"
+   ],
+   "features": [
+    "Floor-to-ceiling glazing",
+    "Thin flat roof slabs",
+    "Cantilevered volumes",
+    "Steel or concrete frame",
+    "Minimal detailing"
+   ],
+   "materials": {
+    "floor": "concrete_polished",
+    "wall": "glass_curtain",
+    "accent": "black_steel"
+   },
+   "palette": {
+    "wall": "#E9ECEC",
+    "accent": "#222222",
+    "wood": "#7A5C40",
+    "floor": "#BDBDB8"
+   },
+   "cost": "premium",
+   "mumbai": "Needs external shading and low-E glass in Indian heat; best facing north.",
+   "compatible": [
+    "minimalist",
+    "bauhaus",
+    "contemporary"
+   ],
+   "sources": [],
+   "aliases": [
+    "Glass House",
+    "Modern Glass Villa"
+   ],
+   "region": "Global",
+   "era": "1950s–Present",
+   "search_terms": [
+    "glass house modern villa",
+    "contemporary glass box house",
+    "cantilever glass house"
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "glass_curtain",
+     "exposed_concrete"
+    ],
+    "window": "floor_to_ceiling",
+    "frame": "dark_metal",
+    "entrance": "recessed",
+    "railing": "glass",
+    "roof_material": "concrete_flat",
+    "trim": "none",
+    "boundary": "open_lawn"
+   }
+  },
+  {
+   "id": "nordic_barn",
+   "name": "Nordic Barn House",
+   "group": "European",
+   "climate": [
+    "cold",
+    "temperate"
+   ],
+   "features": [
+    "Simple steep gable form, no eaves",
+    "Dark timber or metal cladding",
+    "Large gable-end windows",
+    "Monolithic roof and wall material",
+    "Minimal trim"
+   ],
+   "materials": {
+    "floor": "oak_wood",
+    "wall": "charred_timber",
+    "accent": "black_metal"
+   },
+   "palette": {
+    "wall": "#2E2E2C",
+    "accent": "#C9A97A",
+    "wood": "#9A7A55",
+    "floor": "#C2A880"
+   },
+   "cost": "standard",
+   "mumbai": "Dark cladding heats up in Indian sun; choose lighter tones or ventilated cladding.",
+   "compatible": [
+    "scandinavian",
+    "farmhouse",
+    "minimalist"
+   ],
+   "sources": [],
+   "aliases": [
+    "Modern Barn",
+    "Scandi Barn"
+   ],
+   "region": "Scandinavia, UK, Netherlands",
+   "era": "2000s–Present",
+   "search_terms": [
+    "modern barn house black cladding",
+    "Scandinavian barn house gable",
+    "nordic barn house"
+   ],
+   "scope": "exterior",
+   "exterior": {
+    "wall": [
+     "charred_timber"
+    ],
+    "window": "large_glazing",
+    "frame": "dark_metal",
+    "entrance": "recessed",
+    "railing": "glass",
+    "roof_material": "metal_seam",
+    "trim": "none",
+    "boundary": "open_lawn"
+   }
   }
  ]
 }

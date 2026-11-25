@@ -203,6 +203,11 @@ export const listVersions = (houseId: string) =>
 export const restoreVersion = (houseId: string, n: number) =>
   call<{ status: string }>(`/api/v1/house/${houseId}/versions/${n}/restore`, { method: 'POST' }, houseId);
 
+export const exteriorVocab = () =>
+  call<{ elements: Record<string, { label: string; options: Record<string, string> }> }>('/api/v1/exterior/vocab');
+export const setExterior = (houseId: string, body: { choices?: Record<string, unknown>; text?: string; reset?: boolean }) =>
+  call<{ status: string; reply: string; unsupported: string[] }>(`/api/v1/house/${houseId}/exterior`, { method: 'POST', body: JSON.stringify(body) }, houseId);
+
 export const dxfUrl = (houseId: string) => `${API_BASE}/api/v1/house/${houseId}/export/dxf`;
 
 export const generateHouse = (houseId: string) =>

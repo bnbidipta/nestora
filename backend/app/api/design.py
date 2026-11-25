@@ -30,6 +30,7 @@ def _twin(house_id: str):
 def list_styles():
     s = derive.styles()
     ph = swipe.photos()
+    s = {k: x for k, x in s.items() if x.get("scope", "exterior") == "exterior"}  # retired + interior-only styles hidden
     rows = [{**x, "photo": ph[k][0]["file"] if ph.get(k) else None,
              "photo_credit": f"{ph[k][0]['author']} · {ph[k][0]['licence']}" if ph.get(k) else None} for k, x in s.items()]
     return {"groups": sorted({x["group"] for x in s.values()}), "styles": rows}
@@ -204,6 +205,39 @@ def edit(house_id: str, body: EditIn, _u: Optional[str] = Depends(require_edit))
     if body.action != "mirror" and abs(sum(r["w"] * r["d"] for r in c["layout"]["rooms"] if r["id"] == body.room) - before.get(body.room, 0)) < 0.05:
         raise HTTPException(status_code=422, detail="That room can't change size here: its row is already at its limits.")
     return orchestrator.commit_edit(house_id, brief, c, f"Edit: {body.action} {body.room or 'plan'}.")
+
+
+class ExteriorIn(BaseModel):
+    choices: Dict[str, Any] = Field(default_factory=dict)
+    text: str = Field(default="", max_length=500)
+    reset: bool = False
+
+
+@router.post("/house/{house_id}/exterior", dependencies=[Depends(rate_limit("edit", 30))])
+def set_exterior(house_id: str, body: ExteriorIn, _u: Optional[str] = Depends(require_edit)):
+    """Change exterior elements (panel choices and/or free text) on the chosen design; same plan, new look, re-checked."""
+    from backend.app.services import look
+    twin = _twin(house_id)
+    cand = twin.metadata.get("chosen_candidate")
+    if not cand:
+        raise HTTPException(status_code=409, detail="Choose a design first.")
+    brief = orchestrator.brief_of(twin)
+    cur = {} if body.reset else dict(brief.exterior)
+    said = {"unsupported": [], "reply": ""}
+    if body.text.strip():
+        current = (twin.metadata.get("look") or {}).get("exterior", {})
+        said = llm.exterior_changes(body.text, look.vocab(), current)
+        cur.update(said["changes"])
+    cur.update(body.choices)
+    nb = Brief(**{**brief.model_dump(), "exterior": cur})
+    res = orchestrator.commit_edit(house_id, nb, cand, "Changed the exterior.")
+    return {**res, "exterior": nb.exterior, "unsupported": said["unsupported"], "reply": said["reply"]}
+
+
+@router.get("/exterior/vocab")
+def exterior_vocab():
+    from backend.app.services import look
+    return {"elements": look.vocab()}
 
 
 class WhatIfIn(BaseModel):

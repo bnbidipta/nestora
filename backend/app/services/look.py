@@ -10,8 +10,12 @@ Archetypes:
 - mixed:   pitched roof over the rear part, flat terrace garden in front
 ponytail: stepping is at roof level only; per-floor setbacks need the new floor-plan engine.
 """
+import json
 import math
+import os
+import re
 import zlib
+from functools import lru_cache
 from typing import Any, Dict, List
 
 ARCHETYPES = ("terrace", "sloped", "stepped", "mixed")
@@ -37,8 +41,52 @@ OVERRIDES: Dict[str, Dict[str, Any]] = {
     "rajasthani_haveli": {"w": (4, 0.5, 3, 1), "jaali": True, "chhajja_m": 0.6},
     "minimalist": {"w": (4, 0.5, 3, 1), "chhajja_m": 0.3},
     "japandi": {"w": (1, 3, 2, 2), "pitch": 22, "eave_m": 0.9},
-    "biophilic": {"w": (3, 1, 3, 3), "garden": True},
+    "eco_passive": {"w": (3, 1, 3, 3), "garden": True},
+    "tropical_brutalist": {"w": (3, 0.5, 3, 2), "garden": True, "chhajja_m": 0.9},
+    "nordic_barn": {"w": (0.3, 5, 0.5, 1), "pitch": 40, "eave_m": 0.1},
+    "cape_cod": {"w": (0.3, 5, 0.5, 1), "pitch": 40, "eave_m": 0.3},
+    "glass_box": {"w": (5, 0.3, 3, 1), "chhajja_m": 0.9},
+    "desert_modern": {"w": (4, 0.5, 3, 1), "chhajja_m": 1.2},
 }
+
+
+@lru_cache(maxsize=1)
+def vocab() -> Dict[str, Any]:
+    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "exterior_vocab.json"), encoding="utf-8") as f:
+        return json.load(f)["elements"]
+
+
+HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")
+COLOUR_KEYS = ("wall_colour", "accent_colour")
+
+
+def valid_overrides(o: Dict[str, Any]) -> Dict[str, Any]:
+    """Only known elements with known options (wall: 1-2 finishes, main first); colours as #RRGGBB."""
+    v, out = vocab(), {}
+    for k, x in (o or {}).items():
+        if k in COLOUR_KEYS and isinstance(x, str) and HEX.match(x):
+            out[k] = x
+        elif k == "wall":
+            xs = [w for w in (x if isinstance(x, list) else [x]) if w in v["wall"]["options"]][:2]
+            if xs:
+                out[k] = xs
+        elif k in v and x in v[k]["options"]:
+            out[k] = x
+    return out
+
+
+TILE = {"mangalore_tile": "#A14B2F", "clay_barrel": "#B8643A", "metal_seam": "#4A4F55", "slate": "#4B5058",
+        "wood_shingle": "#7B5A3C", "green_roof": "#5E7D3E", "concrete_flat": "#9A9690"}
+
+
+def exterior(st: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:
+    """The style's default exterior elements with the user's own choices on top."""
+    e = dict(st.get("exterior") or {"wall": ["plaster_paint"], "window": "large_glazing", "frame": "dark_metal",
+                                      "entrance": "simple_canopy", "railing": "ms_bars", "roof_material": "concrete_flat",
+                                      "trim": "none", "boundary": "solid_wall_gate"})
+    e["wall_colour"], e["accent_colour"] = st["palette"]["wall"], st["palette"]["accent"]
+    e.update(valid_overrides(overrides))
+    return e
 
 
 def _text(st: Dict[str, Any]) -> str:
@@ -104,17 +152,25 @@ def build(brief, cand: Dict[str, Any], st: Dict[str, Any]) -> Dict[str, Any]:
     max_proj = max(0.0, min(r["setback_side_m"], r["setback_front_m"], r["setback_rear_m"]) - 0.3)
     eave = round(min(p["eave_m"], max_proj), 2)
     pal = st["palette"]
+    ex = exterior(st, getattr(brief, "exterior", {}) or {})
+    roof_mat = ex["roof_material"]
+    if pitched and roof_mat in ("concrete_flat", "green_roof"):
+        roof_mat = "mangalore_tile"  # a pitched roof needs a roof covering; flat-only choices apply to the terrace parts
+    # entrance porch projects into the front setback, kept 0.3 m short of the plot line
+    porch = round(min(2.0, max(0.0, r["setback_front_m"] - 0.3)), 2) if ex["entrance"] in ("portico_columns", "verandah", "pergola", "arched_porch") else 0
+    rail = {"glass": "glass", "jaali": "jaali"}.get(ex["railing"], "ms")
     return {
         "archetype": arch,
         "style": st["id"],
         "roof": {"form": ("hip" if span > 7 else "gable") if pitched else "flat", "pitch_deg": pitch if pitched else 0,
-                 "eave_m": eave if pitched else 0, "tile": p["tile"], "cover": 1.0 if arch == "sloped" else 0.55 if arch == "mixed" else 0},
+                 "eave_m": eave if pitched else 0, "tile": TILE.get(roof_mat, p["tile"]), "material": roof_mat, "cover": 1.0 if arch == "sloped" else 0.55 if arch == "mixed" else 0},
         "terrace": {"usable": arch != "sloped", "parapet_m": 1.05, "pergola": arch in ("terrace", "stepped"),
                     "garden": arch != "sloped" and (p["garden"] or arch in ("terrace", "mixed")), "tank": True,
                     "mumty": arch != "sloped", "pavilion": 0.45 if arch == "stepped" else 0},
         "shading": {"chhajja_m": round(min(p["chhajja_m"], max_proj), 2), "jaali": bool(p["jaali"]), "fins": arch == "stepped"},
-        "facade": {"plinth_m": PLINTH_M, "wall": pal["wall"], "accent": pal["accent"], "wood": pal.get("wood", "#7A4E2D"),
-                   "rail": p["rail"], "band": arch in ("terrace", "stepped")},
+        "facade": {"plinth_m": PLINTH_M, "wall": ex["wall_colour"], "accent": ex["accent_colour"], "wood": pal.get("wood", "#7A4E2D"),
+                   "rail": rail, "band": ex["trim"] in ("floor_band", "cornice") or arch in ("terrace", "stepped")},
+        "exterior": {**ex, "porch_m": porch},
         "height_m": round(walls_top + (rise(pitch) if pitched else 1.05), 2),
     }
 

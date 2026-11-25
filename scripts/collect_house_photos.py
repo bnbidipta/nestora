@@ -4,7 +4,8 @@ Only CC0, public domain, CC BY and CC BY-SA images; author and licence kept per 
 (default ../nestora-photos) as 640 px JPEGs with a manifest.jsonl; only the manifest's credits ever enter the repo.
 De-duplicated by SHA-1 and a perceptual hash. Re-runnable: skips what it already has.
 
-Usage: python scripts/collect_house_photos.py [--target 15000] [--out DIR]
+Usage: python scripts/collect_house_photos.py [--target 100000] [--out DIR] [--regions]
+Default: balanced per style (300 minimum, 3000 maximum each).
 """
 import argparse
 import hashlib
@@ -89,12 +90,99 @@ def dhash(im):
     return sum(1 << i for i in range(64) if px[(i // 8) * 9 + i % 8] > px[(i // 8) * 9 + i % 8 + 1])
 
 
+MIN_PER_STYLE, MAX_PER_STYLE = 300, 3000
+
+
+def style_queries():
+    """Per exterior style: hand queries, the catalogue's search terms and its names, each meant to find houses."""
+    cat = json.load(open(os.path.join(ROOT, "backend", "app", "data", "styles.json"), encoding="utf-8"))["styles"]
+    out = {}
+    for st in cat:
+        if st.get("scope", "exterior") != "exterior":
+            continue
+        qs = Q.get(st["id"], []) + st.get("search_terms", []) + [f"{st['name']} house"] + [f"{x} house" for x in st.get("aliases", [])[:2]]
+        out[st["id"]] = list(dict.fromkeys(qs))
+    return out
+
+
+def fetch_one(it, hashes):
+    """Downloads, filters and dedupes one image; returns (name, dhash) or None."""
+    try:
+        with urllib.request.urlopen(urllib.request.Request(it["url"], headers=UA), timeout=40) as r:
+            raw = r.read()
+        im = Image.open(io.BytesIO(raw)).convert("RGB")
+    except Exception:
+        return None
+    w, h = im.size
+    if not (0.6 <= w / h <= 2.2):
+        return None
+    dh = dhash(im)
+    if any(bin(dh ^ x).count("1") <= 4 for x in hashes[-8000:]):  # near-duplicate
+        return None
+    return im, hashlib.sha1(raw).hexdigest()[:16] + ".jpg", dh
+
+
+def by_style(a):
+    """Balanced collection: round-robin over styles, one result page per style per turn; first every style up to
+    MIN_PER_STYLE, then up to MAX_PER_STYLE. Cursors are saved in state.json so a re-run resumes."""
+    man, state_p = os.path.join(a.out, "manifest.jsonl"), os.path.join(a.out, "state.json")
+    seen, hashes, count, n = set(), [], {}, 0
+    if os.path.exists(man):
+        for line in open(man, encoding="utf-8"):
+            r = json.loads(line)
+            seen.add(r["id"]); hashes.append(r["dhash"]); n += 1
+            if r.get("style"):
+                count[r["style"]] = count.get(r["style"], 0) + 1
+    qs = style_queries()
+    state = json.load(open(state_p)) if os.path.exists(state_p) else {}
+    for st in qs:  # cursor: [query index, source, page]
+        state.setdefault(st, [0, "o", 1])
+    with open(man, "a", encoding="utf-8") as out:
+        for cap in (MIN_PER_STYLE, MAX_PER_STYLE):
+            active = True
+            while active and n < a.target:
+                active = False
+                for st, queries in qs.items():
+                    qi, src, pg = state[st]
+                    if count.get(st, 0) >= cap or qi >= len(queries) or n >= a.target:
+                        continue
+                    active = True
+                    items = list(openverse(queries[qi], pg) if src == "o" else commons(queries[qi], pg))
+                    # advance the cursor: Openverse pages 1..10, then Commons offsets 0..1950, then the next query
+                    if src == "o":
+                        state[st] = [qi, "o", pg + 1] if items and pg < 10 else [qi, "c", 0]
+                    else:
+                        state[st] = [qi, "c", pg + 50] if items and pg < 1950 else [qi + 1, "o", 1]
+                    for it in items:
+                        if it["id"] in seen or count.get(st, 0) >= cap:
+                            continue
+                        seen.add(it["id"])
+                        got = fetch_one(it, hashes)
+                        if not got:
+                            continue
+                        im, name, dh = got
+                        im.thumbnail((512, 512))
+                        im.save(os.path.join(a.out, "img", name), "JPEG", quality=85)
+                        it.update({"file": name, "dhash": dh, "style": st})
+                        out.write(json.dumps(it, ensure_ascii=False) + "\n")
+                        out.flush()
+                        hashes.append(dh); n += 1; count[st] = count.get(st, 0) + 1
+                    json.dump(state, open(state_p, "w"))
+                    time.sleep(0.5)
+                thin = sorted(count.get(s, 0) for s in qs)
+                print(f"cap {cap}: {n} photos; thinnest styles {thin[:5]}", flush=True)
+    print("done", n, json.dumps(dict(sorted(count.items()))))
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--target", type=int, default=15000)
+    ap.add_argument("--target", type=int, default=100000)
     ap.add_argument("--out", default=os.path.join(os.path.dirname(ROOT), "nestora-photos"))
+    ap.add_argument("--regions", action="store_true", help="the older region sweep instead of the balanced per-style run")
     a = ap.parse_args()
     os.makedirs(os.path.join(a.out, "img"), exist_ok=True)
+    if not a.regions:
+        return by_style(a)
     man = os.path.join(a.out, "manifest.jsonl")
     seen_ids, hashes, n = set(), [], 0
     if os.path.exists(man):
