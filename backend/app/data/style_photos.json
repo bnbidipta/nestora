@@ -133,6 +133,39 @@
    "author": "urbzoo",
    "query": "contemporary house India architecture",
    "file": "/styles/indian_contemporary/1.webp"
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "fe581634760aacf22e74c0ca66c8f67baa64805f",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/indian_contemporary/ai-1.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "4a07ce146aab1a7dd996a9c69e64b84e47a10f93",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/indian_contemporary/ai-2.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "fa55dc10801231704c6451ce8b79552dd0812271",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/indian_contemporary/ai-3.webp",
+   "ai": true
   }
  ],
  "rajasthani_haveli": [
@@ -644,6 +677,28 @@
    "author": "Nestora (AI-generated)",
    "query": "ai",
    "file": "/styles/kutchi_bhunga/ai-2.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "cce4033e38f77e6e0f14f43702b8132118062970",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/kutchi_bhunga/ai-3.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "9d005801cedd2ff5291cd2842fa0cb9728718380",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/kutchi_bhunga/ai-4.webp",
    "ai": true
   }
  ],
@@ -2265,6 +2320,28 @@
    "author": "Utilisateur:Djampa - User:Djampa",
    "query": "house with courtyard garden trees",
    "file": "/styles/biophilic/2.webp"
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "6b49006765c0018684d26f56ac3f88957009297f",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/biophilic/ai-1.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "943fa12d104703bafc52ea569540984135ab6898",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/biophilic/ai-2.webp",
+   "ai": true
   }
  ],
  "wabi_sabi": [
@@ -2511,6 +2588,39 @@
    "author": "Peachyeung316",
    "query": "modern Chinese house",
    "file": "/styles/feng_shui_modern/1.webp"
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "23e994e8c80f4a44a4a7ba4546cd4a8d40e36b88",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/feng_shui_modern/ai-1.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "5cc8995076f16424443fed7de9f1828a7064dfc1",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/feng_shui_modern/ai-2.webp",
+   "ai": true
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "f14a671cb781f0105c1dda5ac602727bde20b9c0",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/feng_shui_modern/ai-3.webp",
+   "ai": true
   }
  ],
  "dravidian_residential": [
@@ -2533,6 +2643,17 @@
    "author": "Fazi fazila",
    "query": "Agraharam houses Kumbakonam",
    "file": "/styles/dravidian_residential/2.webp"
+  },
+  {
+   "title": "AI-generated illustration",
+   "page": "",
+   "sha1": "f4bfc93c2d12a971ca4d786b8d67b8662b525587",
+   "licence": "AI-generated image, illustrative",
+   "licence_url": "",
+   "author": "Nestora (AI-generated)",
+   "query": "ai",
+   "file": "/styles/dravidian_residential/ai-1.webp",
+   "ai": true
   }
  ],
  "ranch": [
