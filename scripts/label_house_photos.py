@@ -74,7 +74,7 @@ def main():
     man = [json.loads(l) for l in open(os.path.join(a.photos, "manifest.jsonl"), encoding="utf-8")]
     todo = [m for m in man if m["file"] not in done]
     have = Counter(json.loads(l).get("style_hint") for l in open(lab_p, encoding="utf-8")) if os.path.exists(lab_p) else Counter()
-    todo.sort(key=lambda m: have.get(m.get("style"), 0))  # rarest styles first; untagged (region sweep) photos last-ish
+    todo.sort(key=lambda m: (m.get("style") is None, have.get(m.get("style"), 0)))  # rarest styles first; untagged photos last
     hint = {m["file"]: m.get("style") for m in man}
     n = 0
     with open(lab_p, "a", encoding="utf-8") as out:
