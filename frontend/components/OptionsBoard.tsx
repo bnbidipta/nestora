@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, Heart, Loader2, RefreshCw } from 'lucide-react';
-import { Option, OptionsResponse, chooseOption, selectOptions, startOptions } from '@/lib/api';
+import { Option, OptionsResponse, chooseOption, selectOptions, startOptions, makeVoteLink, ownerVotes } from '@/lib/api';
 import { formatINR } from '@/lib/twin';
 import { track } from '@/lib/analytics';
 import { area, useLengthUnit } from '@/lib/units';
@@ -23,6 +23,25 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   const [keep, setKeep] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<'start' | 'replace' | 'choose' | null>('start');
   const [cmp, setCmp] = useState<string[]>([]);
+  const [votes, setVotes] = useState<Record<string, string[]>>({});
+  const [voteMsg, setVoteMsg] = useState<string | null>(null);
+  useEffect(() => {  // family hearts, refreshed while the board is open
+    if (!res) return;
+    const load = () => ownerVotes(houseId).then((r) => setVotes(r.tally)).catch(() => {});
+    load();
+    const id = setInterval(load, 20000);
+    return () => clearInterval(id);
+  }, [houseId, res]);
+  const askFamily = async () => {
+    try {
+      const { token } = await makeVoteLink(houseId);
+      const url = `${window.location.origin}/vote/${houseId}?t=${token}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(`Help us choose our new home! Tap the heart on the designs you like: ${url}`)}`, '_blank', 'noopener');
+      await navigator.clipboard?.writeText(url).catch(() => {});
+      setVoteMsg('Voting link shared (and copied). Hearts from family will show on each option here.');
+      track('family_vote_shared');
+    } catch (e) { setVoteMsg(e instanceof Error ? e.message : 'Could not create a voting link.'); }
+  };
   const [phone, setPhone] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
@@ -91,12 +110,16 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
           <h1 className="text-2xl font-bold text-white">Your options</h1>
           <p className="text-sm text-slate-400">Like the ones you&apos;re drawn to and we&apos;ll show more like them, or pick one to open it.</p>
         </div>
+        <button type="button" onClick={askFamily} className="inline-flex items-center gap-2 rounded-lg border border-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-300 hover:bg-emerald-950">
+          Ask family on WhatsApp
+        </button>
         <button type="button" onClick={replace} disabled={busy !== null || keep.size === res.options.length}
           className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-50">
           {busy === 'replace' ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           {keep.size ? 'Show more like my liked ones' : 'Show different options'}
         </button>
       </div>
+      {voteMsg && <p role="status" className="mb-4 text-sm text-emerald-300">{voteMsg}</p>}
       {res.exhausted && <p className="mb-4 text-sm text-amber-300">That&apos;s every distinct layout this plot allows with your brief.</p>}
       {!res.exhausted && res.options.length < 4 && (
         <p className="mb-4 text-sm text-amber-300">
@@ -119,7 +142,7 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
           {res.options.map((o, n) => (
             <OptionCard key={o.id} o={o} n={n + 1} kept={keep.has(o.id)} busy={busy !== null}
               onKeep={() => setKeep((s) => { const x = new Set(s); x.has(o.id) ? x.delete(o.id) : x.add(o.id); return x; })}
-              onChoose={() => choose(o.id)} comparing={cmp.includes(o.id)}
+              onChoose={() => choose(o.id)} comparing={cmp.includes(o.id)} family={votes[o.id]}
               onCompare={() => setCmp((c) => (c.includes(o.id) ? c.filter((x) => x !== o.id) : [...c, o.id].slice(-2)))} />
           ))}
         </div>
@@ -128,7 +151,7 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   );
 }
 
-function OptionCard({ o, n, kept, busy, onKeep, onChoose, comparing, onCompare }: { o: Option; n: number; kept: boolean; busy: boolean; onKeep: () => void; onChoose: () => void; comparing?: boolean; onCompare?: () => void }) {
+function OptionCard({ o, n, kept, busy, onKeep, onChoose, comparing, onCompare, family = [] }: { o: Option; n: number; kept: boolean; busy: boolean; onKeep: () => void; onChoose: () => void; comparing?: boolean; onCompare?: () => void; family?: string[] }) {
   const u = useLengthUnit();
   const [floor, setFloor] = useState(0);
   const floors = Array.from(new Set(o.preview.map((r) => r.f))).sort();
@@ -154,6 +177,7 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose, comparing, onCompare }
           ))}
         </div>
       </header>
+      {family.length > 0 && <p className="mt-2 rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700">♥ Family likes it: {family.join(', ')}</p>}
       <ExteriorStill o={o} />
       <div className="mt-3 aspect-[4/3] rounded-lg bg-white p-2">
         <PlanThumb rooms={o.preview} floor={floor} envelope={s.envelope_ft} />

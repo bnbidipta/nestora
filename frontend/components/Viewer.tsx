@@ -13,6 +13,7 @@ import { FILL, fitLabel, roomName } from '@/lib/rooms';
 import { MepLayer, MepLegend, MepOverlay } from '@/components/MepLayer';
 import Elevation from '@/components/Elevation';
 import WhatIf from '@/components/WhatIf';
+import Versions from '@/components/Versions';
 const House3D = dynamic(() => import('@/components/House3D'), { ssr: false, loading: () => <p className="py-20 text-center text-sm text-slate-400">Loading 3D…</p> });
 
 type ViewMode = 'plan' | 'structure' | LayerMode;
@@ -121,6 +122,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   return (
     <div className="flex flex-col gap-6 print:block">
       {canEdit && <WhatIf houseId={twin.house_id} onKept={async () => setTwin(await getHouse(twin.house_id))} />}
+      {canEdit && <Versions houseId={twin.house_id} stamp={String((twin.metadata as Record<string, unknown>)?.candidate_id ?? '')} onRestored={async () => setTwin(await getHouse(twin.house_id))} />}
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
           <div role="radiogroup" aria-label="Plan, elevation or 3D" className="flex rounded-lg border border-slate-700 p-0.5">
@@ -318,6 +320,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
           <a href={`https://wa.me/?text=${encodeURIComponent('My Nestora house concept: ' + (typeof window !== 'undefined' ? window.location.href.split('?')[0] : ''))}`} target="_blank" rel="noopener noreferrer"
             onClick={() => track('design_shared', { via: 'whatsapp' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Share2 className="h-3.5 w-3.5" />WhatsApp</a>
           <button type="button" onClick={share} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Copy className="h-3.5 w-3.5" />Copy link</button>
+          <a href={`/house/${twin.house_id}/poster`} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Printer className="h-3.5 w-3.5" />Poster &amp; architect pack</a>
           <a href={`/house/${twin.house_id}/boq`} className="col-span-2 flex items-center justify-between rounded-xl bg-blue-600 sm:col-span-4 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500">
             <span>Cost estimate (3 finish levels)</span><ChevronRight className="h-4 w-4" />
           </a>

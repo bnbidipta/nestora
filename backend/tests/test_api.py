@@ -101,3 +101,20 @@ def test_what_if_preview_then_keep():
     assert r.status_code == 200 and r.json()["status"] in ("ready", "needs_review")
     twin = client.get(f"/api/v1/house/{hid}").json()["data"]
     assert any(rm["type"] == "study" for f in twin["floors"] for rm in f["rooms"])
+
+
+def test_family_vote_and_versions():
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    tok = client.post(f"/api/v1/house/{hid}/vote-link", headers=auth).json()["token"]
+    assert client.get(f"/api/v1/house/{hid}/vote", params={"t": "wrong"}).status_code == 403
+    assert len(client.get(f"/api/v1/house/{hid}/vote", params={"t": tok}).json()["options"]) == len(opts)
+    r = client.post(f"/api/v1/house/{hid}/vote", json={"token": tok, "voter": "browser-aaaa1", "name": "Amma", "likes": [opts[1]["id"], "bogus"]})
+    assert r.json()["tally"] == {opts[1]["id"]: ["Amma"]}
+    assert client.get(f"/api/v1/house/{hid}/votes", headers=auth).json()["people"] == 1
+    client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
+    assert client.post(f"/api/v1/house/{hid}/edit", json={"action": "mirror"}, headers=auth).status_code == 200
+    vs = client.get(f"/api/v1/house/{hid}/versions").json()["versions"]
+    assert len(vs) == 1
+    assert client.post(f"/api/v1/house/{hid}/versions/0/restore", headers=auth).status_code == 200

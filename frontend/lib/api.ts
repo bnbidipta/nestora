@@ -190,6 +190,19 @@ export interface WhatIf {
 export const whatIf = (houseId: string, change: 'study' | 'guest' | 'floor' | 'kitchen', apply = false) =>
   call<WhatIf & { success?: boolean; status?: string }>(`/api/v1/house/${houseId}/whatif`, { method: 'POST', body: JSON.stringify({ change, apply }) }, houseId);
 
+export const makeVoteLink = (houseId: string) =>
+  call<{ token: string }>(`/api/v1/house/${houseId}/vote-link`, { method: 'POST' }, houseId);
+export const readVote = (houseId: string, t: string) =>
+  call<{ options: Option[]; tally: Record<string, string[]> }>(`/api/v1/house/${houseId}/vote?t=${encodeURIComponent(t)}`);
+export const castVote = (houseId: string, body: { token: string; voter: string; name: string; likes: string[] }) =>
+  call<{ tally: Record<string, string[]> }>(`/api/v1/house/${houseId}/vote`, { method: 'POST', body: JSON.stringify(body) });
+export const ownerVotes = (houseId: string) =>
+  call<{ tally: Record<string, string[]>; people: number }>(`/api/v1/house/${houseId}/votes`, {}, houseId);
+export const listVersions = (houseId: string) =>
+  call<{ versions: { n: number; note: string; at: number }[] }>(`/api/v1/house/${houseId}/versions`);
+export const restoreVersion = (houseId: string, n: number) =>
+  call<{ status: string }>(`/api/v1/house/${houseId}/versions/${n}/restore`, { method: 'POST' }, houseId);
+
 export const dxfUrl = (houseId: string) => `${API_BASE}/api/v1/house/${houseId}/export/dxf`;
 
 export const generateHouse = (houseId: string) =>

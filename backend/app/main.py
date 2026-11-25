@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 import os
 import logging
 
-from backend.app.api import house, swipe, orchestrator_api, design, stages
+from backend.app.api import house, swipe, orchestrator_api, design, stages, family
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -67,4 +67,5 @@ app.include_router(house.router)
 app.include_router(swipe.router)
 app.include_router(orchestrator_api.router)
 app.include_router(design.router)
+app.include_router(family.router)
 app.include_router(stages.router)

@@ -237,7 +237,16 @@ def choose(house_id: str, cand_id: str) -> Dict[str, Any]:
     return _commit(twin, brief, cand, [f"Option {cand_id} chosen by the user."])
 
 
+VERSIONS = 10
+
+
 def _commit(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], trace: List[str]) -> Dict[str, Any]:
+    prev = twin.metadata.get("chosen_candidate")
+    if prev:  # keep the design this one replaces, so it can be restored
+        import time
+        twin.metadata["versions"] = ([{"note": twin.metadata.get("last_note", "Earlier design"), "at": time.time(),
+                                       "brief": twin.metadata.get("brief"), "cand": prev}] + twin.metadata.get("versions", []))[:VERSIONS]
+    twin.metadata["last_note"] = trace[-1] if trace else "Design"
     decisions = derive.apply(twin, brief, cand)
     trace.append(f"Derived structure ({len(twin.structure.columns)} columns, {twin.structure.foundation.type}), MEP and BOQ.")
     trad = traditions.evaluate(cand, brief.facing, brief.traditions)
