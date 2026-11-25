@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+const PlotHouse3D = dynamic(() => import('@/components/landing/PlotHouse3D'), { ssr: false });
 import { ArrowLeft, ArrowRight, Check, Loader2, MapPin, Sparkles } from 'lucide-react';
 import {
   Brief, StyleEntry, Strictness, createHouse, extractBrief, getStyles, getTraditions, joinWaitlist, saveBrief,
@@ -127,7 +130,8 @@ export default function Questionnaire() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-6xl lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
+    <div className="min-w-0">
       <ol className="mb-6 flex flex-wrap gap-1.5" aria-label="Steps">
         {STEPS.map((s, i) => (
           <li key={s}>
@@ -311,6 +315,42 @@ export default function Questionnaire() {
         </div>
       </section>
     </div>
+    <LiveHouse b={b} elders={hasElders} />
+    </div>
+  );
+}
+
+/** The house growing as the questions are answered: plot size, floors, car porch, terrace; what was added, listed. */
+function LiveHouse({ b, elders }: { b: Brief; elders: boolean }) {
+  const [grow, setGrow] = useState(0);
+  const key = `${b.plot_width_ft}x${b.plot_depth_ft}x${b.floors_wanted}x${b.cars}`;
+  useEffect(() => {
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => { const p = Math.min(1, (t - t0) / 1600); setGrow(p); if (p < 1) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [key]);
+  const notes = [
+    `${b.plot_width_ft} × ${b.plot_depth_ft} ft plot`,
+    `${b.floors_wanted} floor${b.floors_wanted > 1 ? 's' : ''}${b.floors_wanted >= 3 ? ', with a lift' : ''}`,
+    b.cars > 0 ? `Car porch for ${b.cars}` : b.two_wheelers > 0 ? `Two-wheeler parking` : null,
+    elders ? 'Ground-floor bedroom for elders' : null,
+    b.floors_wanted > 1 ? 'Terrace on the top floor' : null,
+  ].filter(Boolean) as string[];
+  return (
+    <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0 lg:self-start" aria-label="Your house so far">
+      <div className="overflow-hidden rounded-2xl bg-[#F2EDE4] text-slate-900 shadow-xl">
+        <PlotHouse3D plotW={b.plot_width_ft} plotD={b.plot_depth_ft} floors={b.floors_wanted} car={b.cars > 0} progress={grow} className="h-56 w-full lg:h-80" />
+        <div className="space-y-1.5 p-4">
+          <p className="font-mono text-[11px] uppercase tracking-widest text-slate-500">Your house so far</p>
+          <ul className="space-y-1 text-sm">
+            {notes.map((n) => <li key={n} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-700" aria-hidden />{n}</li>)}
+          </ul>
+          <p className="pt-1 text-[11px] text-slate-500">A sketch to picture it; your real designs come next.</p>
+        </div>
+      </div>
+    </aside>
   );
 }
 

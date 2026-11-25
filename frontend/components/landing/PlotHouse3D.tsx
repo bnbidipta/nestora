@@ -18,31 +18,36 @@ const LOOK: Look = {
   facade: { plinth_m: 0.45, wall: '#F2EDE4', accent: '#B4532A', wood: '#7A4E2D', rail: 'glass', band: true },
 };
 
-/** A plausible two-floor house for a plot (feet): setbacks, a front terrace on the upper floor. */
-function rooms(W: number, D: number) {
+/** A plausible house for a plot (feet): setbacks, car porch if wanted, upper floors with a front terrace. */
+function rooms(W: number, D: number, floors: number, car: boolean) {
   const w = Math.max(14, W - 6), d = Math.max(18, D - 14), x0 = 3, y0 = 9;
   const cw = w / 2, rd = d / 3;
-  const g = [
-    { name: 'living', type: 'living', x: x0, y: y0, length_ft: cw, width_ft: rd },
-    { name: 'porch', type: 'porch', x: x0 + cw, y: y0, length_ft: cw, width_ft: rd },
+  const stair = (n: number) => ({ name: `stair${n}`, type: 'stair', x: x0 + cw, y: y0 + rd, length_ft: Math.min(7, cw), width_ft: rd });
+  const out = [{ floor_no: 0, floor_height_ft: 10, rooms: [
+    { name: 'living', type: 'living', x: x0, y: y0, length_ft: car ? cw : w, width_ft: rd },
+    ...(car ? [{ name: 'porch', type: 'porch', x: x0 + cw, y: y0, length_ft: cw, width_ft: rd }] : []),
     { name: 'dining', type: 'dining', x: x0, y: y0 + rd, length_ft: cw, width_ft: rd },
-    { name: 'stair', type: 'stair', x: x0 + cw, y: y0 + rd, length_ft: Math.min(7, cw), width_ft: rd },
+    ...(floors > 1 ? [stair(0)] : [{ name: 'bed0', type: 'bedroom', x: x0 + cw, y: y0 + rd, length_ft: cw, width_ft: rd }]),
     { name: 'kitchen', type: 'kitchen', x: x0, y: y0 + 2 * rd, length_ft: cw, width_ft: rd },
     { name: 'bedroom_elder', type: 'bedroom', x: x0 + cw, y: y0 + 2 * rd, length_ft: cw, width_ft: rd },
-  ];
-  const f = [
-    { name: 'stair1', type: 'stair', x: x0 + cw, y: y0 + rd, length_ft: Math.min(7, cw), width_ft: rd },
-    { name: 'lounge', type: 'lounge', x: x0, y: y0 + rd, length_ft: cw, width_ft: rd },
-    { name: 'bed1', type: 'bedroom', x: x0, y: y0 + 2 * rd, length_ft: cw, width_ft: rd },
-    { name: 'bed2', type: 'bedroom', x: x0 + cw, y: y0 + 2 * rd, length_ft: cw, width_ft: rd },
-  ];
-  return [{ floor_no: 0, floor_height_ft: 10, rooms: g }, { floor_no: 1, floor_height_ft: 10, rooms: f }];
+  ] }];
+  for (let f = 1; f < floors; f++) {
+    const top = f === floors - 1;  // the top floor steps back: its front becomes a terrace
+    out.push({ floor_no: f, floor_height_ft: 10, rooms: [
+      stair(f),
+      ...(top ? [] : [{ name: `front${f}`, type: 'bedroom', x: x0, y: y0, length_ft: w, width_ft: rd }]),
+      { name: `lounge${f}`, type: 'lounge', x: x0, y: y0 + rd, length_ft: cw, width_ft: rd },
+      { name: `bed${f}a`, type: 'bedroom', x: x0, y: y0 + 2 * rd, length_ft: cw, width_ft: rd },
+      { name: `bed${f}b`, type: 'bedroom', x: x0 + cw, y: y0 + 2 * rd, length_ft: cw, width_ft: rd },
+    ] });
+  }
+  return out;
 }
 
-export default function PlotHouse3D({ plotW, plotD, progress, className = '' }: { plotW: number; plotD: number; progress: number; className?: string }) {
+export default function PlotHouse3D({ plotW, plotD, progress, floors = 2, car = true, className = '' }: { plotW: number; plotD: number; progress: number; floors?: number; car?: boolean; className?: string }) {
   const mount = useRef<HTMLDivElement>(null);
   const prog = useRef(progress);
-  const house = useMemo(() => buildHouse(rooms(plotW, plotD) as never, () => undefined, { look: LOOK }), [plotW, plotD]);
+  const house = useMemo(() => buildHouse(rooms(plotW, plotD, Math.max(1, Math.min(5, floors)), car) as never, () => undefined, { look: LOOK }), [plotW, plotD, floors, car]);
   const draw = useRef<(() => void) | null>(null);
 
   useEffect(() => { prog.current = progress; draw.current?.(); }, [progress]);
@@ -59,7 +64,7 @@ export default function PlotHouse3D({ plotW, plotD, progress, className = '' }: 
     el.appendChild(renderer.domElement);
     const cx = plotW / 2, cy = plotD / 2;
     const P = (x: number, y: number, z: number) => new THREE.Vector3(x - cx, z, cy - y);
-    const R = Math.max(plotW, plotD) * 2.3;
+    const R = Math.max(plotW, plotD, house.roofTop * 1.2) * 2.3;
     const camera = new THREE.PerspectiveCamera(32, w / h, 1, R * 10);
     const mats = materials(LOOK, undefined);
     const sun = new THREE.DirectionalLight(0xfff1dc, 2.4);
@@ -86,7 +91,7 @@ export default function PlotHouse3D({ plotW, plotD, progress, className = '' }: 
       const top = p >= 0.999 ? Infinity : p < 0.15 ? -1 : ((p - 0.15) / 0.85) * house.roofTop;
       geos = addHouse(scene, house, P, mats.byKind, { topShown: top });
       camera.position.set(Math.sin(angle) * R, R * 0.55, Math.cos(angle) * R);
-      camera.lookAt(0, 8, 0);
+      camera.lookAt(0, house.roofTop * 0.4, 0);
       renderer.render(scene, camera);
     };
     draw.current = frame;
