@@ -17,7 +17,7 @@ export default function ExteriorPanel({ houseId, current, onChanged }: { houseId
   const [text, setText] = useState('');
   const [msg, setMsg] = useState<string | null>(null);
   useEffect(() => { exteriorVocab().then((r) => setVocab(r.elements)).catch(() => {}); }, []);
-  if (!vocab || !current) return null;
+  if (!vocab) return null;
 
   const send = async (body: { choices?: Record<string, unknown>; text?: string; reset?: boolean }) => {
     setBusy(true); setMsg(null);
@@ -29,6 +29,15 @@ export default function ExteriorPanel({ houseId, current, onChanged }: { houseId
       onChanged();
     } catch (e) { setMsg(e instanceof Error ? e.message : 'Could not change the exterior.'); } finally { setBusy(false); }
   };
+  if (!current) {  // designs made before exterior styling: one click applies the style's exterior
+    return (
+      <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-[#131926] p-4 print:hidden" aria-label="Customise exterior">
+        <p className="text-sm text-slate-300">This design was made before exterior styling. Add its style's walls, windows, entrance and compound wall?</p>
+        <button type="button" disabled={busy} onClick={() => send({ reset: true })} className="rounded-lg bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-50">{busy ? 'Applying…' : 'Turn on exterior styling'}</button>
+        {msg && <p role="status" className="w-full text-sm text-amber-200">{msg}</p>}
+      </section>
+    );
+  }
   const sel = 'h-10 w-full rounded-lg border border-slate-600 bg-white px-2 text-sm text-slate-900';
 
   return (
