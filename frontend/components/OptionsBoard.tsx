@@ -124,6 +124,7 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: numb
           ))}
         </div>
       </header>
+      <ExteriorStill o={o} />
       <div className="mt-3 aspect-[4/3] rounded-lg bg-white p-2">
         <PlanThumb rooms={o.preview} floor={floor} envelope={s.envelope_ft} />
       </div>
@@ -153,5 +154,28 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: numb
         </button>
       </div>
     </article>
+  );
+}
+
+const LOOK_NAME: Record<string, string> = { terrace: 'Terrace roof', sloped: 'Sloped tiled roof', stepped: 'Stepped, with roof pavilion', mixed: 'Part sloped, part terrace' };
+
+/** The option's exterior, rendered once in the browser from its plan and architecture. */
+function ExteriorStill({ o }: { o: Option }) {
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    import('@/lib/houseStill').then(({ renderStill }) => {
+      try { const url = renderStill(o.id, o.preview, o.look); if (live) setSrc(url); } catch { /* no WebGL: plan only */ }
+    });
+    return () => { live = false; };
+  }, [o]);
+  return (
+    <figure className="mt-3 overflow-hidden rounded-lg bg-[#EFE8DC]">
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt={`Exterior of this option: ${LOOK_NAME[o.look?.archetype ?? ''] ?? 'house'}`} className="aspect-[64/42] w-full object-cover" />
+      ) : <div className="aspect-[64/42] w-full animate-pulse" aria-hidden />}
+      {o.look && <figcaption className="px-3 py-1.5 text-xs font-semibold text-slate-700">{LOOK_NAME[o.look.archetype]}</figcaption>}
+    </figure>
   );
 }

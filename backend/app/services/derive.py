@@ -243,6 +243,8 @@ def apply(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], engines: bool = T
                    cost_breakdown={k: float(v) for k, v in exp.items() if k != "total"},
                    total_cost_inr=float(exp["total"]), monthly_emi_inr=round(emi(0.8 * exp["total"])))
     st = style_for(brief, cand)
+    from backend.app.services import look  # look reads the style catalogue from this module
+    twin.metadata["look"] = look.build(brief, cand, st)
     twin.style = StyleInfo(primary_style=st["id"], secondary_style=next((x for x in brief.styles if x != st["id"]), st["compatible"][0]),
                            mix_pct="70/30", taste_vector=twin.style.taste_vector)
     built = generator.built_up_m2(cand["layout"]) / SQFT

@@ -14,7 +14,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { ChevronLeft, ChevronRight, Footprints, Map as MapIcon, Move3d, Palette, Sofa, X } from 'lucide-react';
 import { HouseTwin } from '@/lib/twin';
 import { StyleEntry, getStyles } from '@/lib/api';
-import { blockers, buildHouse, collides } from '@/lib/house3d';
+import { Look, blockers, buildHouse, collides } from '@/lib/house3d';
+import { addHouse, materials } from '@/lib/houseScene';
 import { roomName } from '@/lib/rooms';
 import { area, lenShort, useLengthUnit } from '@/lib/units';
 
@@ -65,7 +66,8 @@ export default function House3D({ twin }: { twin: HouseTwin }) {
   const house = useMemo(() => buildHouse(
     twin.floors.map((f) => ({ floor_no: f.floor_no, floor_height_ft: f.floor_height_ft, rooms: f.rooms as any })),
     (name) => t.furniture?.rooms?.[name]?.door_wall,
-    { paint: paint ? Object.fromEntries(Object.entries(t.paint ?? {}).map(([k, v]: [string, any]) => [k, v.walls ?? []])) : undefined },
+    { paint: paint ? Object.fromEntries(Object.entries(t.paint ?? {}).map(([k, v]: [string, any]) => [k, v.walls ?? []])) : undefined,
+      look: md(twin).look as Look | undefined },
   ), [twin, paint, t]);
 
   const sun = useMemo(() => {
@@ -134,16 +136,9 @@ export default function House3D({ twin }: { twin: HouseTwin }) {
     const lvl = levels[levelOf] ?? levels[0];
     const topShown = inside ? (lvl?.base ?? 0) + (lvl?.height ?? 10) - 0.5
       : upTo > floorsN ? Infinity : (levels[upTo - 1]?.base ?? 0) + (levels[upTo - 1]?.height ?? 0) - 0.5;
-    const wallM = mat(pal?.wall ?? '#F1EDE4'), slabM = mat('#CFCAC0'), stepM = mat('#B9B3A8');
-    for (const b of house.boxes) {
-      if (b.z0 >= topShown) continue;
-      const g = new THREE.BoxGeometry(b.x1 - b.x0, b.z1 - b.z0, b.y1 - b.y0);
-      disposables.push(g);
-      const mesh = new THREE.Mesh(g, b.kind === 'slab' ? slabM : b.kind === 'step' ? stepM : b.kind === 'lining' ? mat(b.colour!) : wallM);
-      mesh.position.copy(P((b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2, (b.z0 + b.z1) / 2));
-      mesh.castShadow = !night; mesh.receiveShadow = true;
-      scene.add(mesh);
-    }
+    const lookMats = materials(md(twin).look as Look | undefined, pal, night);
+    disposables.push({ dispose: lookMats.dispose });
+    disposables.push(...addHouse(scene, house, P, lookMats.byKind, { topShown, shadows: !night }));
     for (const lv of levels) {
       if (lv.base >= topShown) continue;
       const f = twin.floors.find((x) => x.floor_no === lv.floor);

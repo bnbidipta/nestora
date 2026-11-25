@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from backend.app.models.brief import Brief
 from backend.app.models.twin import HouseTwin
-from backend.app.services import derive, generator, layoutgen, llm, pack, rank, traditions
+from backend.app.services import derive, generator, layoutgen, llm, look, pack, rank, traditions
 from backend.app.services.judge import JudgeService
 from backend.app.services.repository import HouseTwinRepository
 
@@ -53,6 +53,7 @@ def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[s
             "envelope_ft": [twin.metadata["envelope_width_ft"], twin.metadata["envelope_depth_ft"]],
         },
         "preview": _preview(c),
+        "look": twin.metadata["look"],
     }
 
 
@@ -141,6 +142,8 @@ def start_options(house_id: str, seed: Optional[int] = None) -> Dict[str, Any]:
         HouseTwinRepository.save(twin)
         return {"success": False, "status": "infeasible", "reason": twin.metadata["infeasible_reason"], "options": []}
     shown = _diverse(good, SHOW, set())
+    look.assign(brief, [c for c, _ in shown])
+    shown = [(c, evaluate(brief, c, prefs)) for c, _ in shown]
     twin.metadata.update({
         "pool": [c for c, _ in good[:POOL_KEEP]] + [c for c, _ in shown if c not in [g[0] for g in good[:POOL_KEEP]]],
         "options": [e for _, e in shown], "round": 1, "seed": seed, "prefs": prefs,
@@ -183,6 +186,8 @@ def select(house_id: str, keep: List[str], discard: List[str]) -> Dict[str, Any]
             rest.sort(key=lambda x: -x[1]["score"]["total"])
             found = rest[0] if rest else None
         if found:
+            look.assign(brief, [found[0]], [current[k].get("look", {}).get("archetype") for k in keep] + [n[0].get("look_archetype") for n in new])
+            found = (found[0], evaluate(brief, found[0], prefs))
             new.append(found)
             seen.add(found[0]["id"])
             pool[found[0]["id"]] = found[0]

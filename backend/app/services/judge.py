@@ -3,6 +3,7 @@ Judge: pure-Python rule engine. No ML. Every threshold comes from the city code 
 and every geometric check reads the actual room rectangles in the House Twin.
 Rule ids: A_ area/geometry, B_ law, C_ structure, D_ MEP, E_ ergonomics.
 """
+import math
 from typing import Any, Dict, List
 
 from backend.app.models.brief import LIFT_FROM_FLOORS
@@ -110,9 +111,21 @@ class JudgeService:
         elif built > plot_sqft * r["fsi_base"] * (1 + TOL):
             result.add_warning("B_FSI_PREMIUM", f"Built-up {built:.0f} sqft uses more than base FSI {r['fsi_base']}; premium FSI/TDR must be purchased.")
 
-        height_m = sum(f.floor_height_ft for f in twin.floors) * FT
+        # height from the drawn floors plus plinth and any pitched roof (parapets and the stair room are excluded, as usual)
+        lk = md.get("look") or {}
+        height_m = sum(f.floor_height_ft for f in twin.floors) * FT + (lk.get("facade") or {}).get("plinth_m", 0)
+        roof = lk.get("roof") or {}
+        top = max(twin.floors, key=lambda f: f.floor_no) if twin.floors else None
+        if top and top.rooms and roof.get("pitch_deg"):
+            w = (max(rm.x + rm.length_ft for rm in top.rooms) - min(rm.x for rm in top.rooms)) * FT
+            d = (max(rm.y + rm.width_ft for rm in top.rooms) - min(rm.y for rm in top.rooms)) * FT
+            height_m += min(w, d) / 2 * math.tan(math.radians(roof["pitch_deg"]))
         if height_m > r["max_height_m"] + 0.01:
-            result.add_failure("B_HEIGHT", f"Building height {height_m:.1f} m exceeds {r['max_height_m']} m.")
+            result.add_failure("B_HEIGHT", f"Building height {height_m:.1f} m (with plinth and roof) exceeds {r['max_height_m']} m.")
+        reach = max((lk.get("roof") or {}).get("eave_m", 0), (lk.get("shading") or {}).get("chhajja_m", 0))
+        room_out = min(r["setback_side_m"], r["setback_front_m"], r["setback_rear_m"])
+        if reach > room_out + 1e-6:
+            result.add_failure("B_PROJECTION", f"Eaves/chhajjas project {reach} m, more than the {room_out} m setback allows.")
 
         hab_min = r["habitable_min_m2"] / SQFT
         hab_w = r["habitable_min_width_m"] / FT

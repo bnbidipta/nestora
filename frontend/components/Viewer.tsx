@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Box, ChevronRight, Copy, Download, FlipHorizontal, Info, Layers, Lightbulb, Minus, Palette, Plus, Printer, Ruler, Share2, ShieldCheck, Sofa, Sun, Volume2, Zap } from 'lucide-react';
+import { Box, ChevronRight, Home, Copy, Download, FlipHorizontal, Info, Layers, Lightbulb, Minus, Palette, Plus, Printer, Ruler, Share2, ShieldCheck, Sofa, Sun, Volume2, Zap } from 'lucide-react';
 import { LayerMode, Legend, Overlay, RoomDetail, SunPath, roomFill } from '@/components/ModeLayers';
 import { HouseTwin, getJudge, builtUpSqft } from '@/lib/twin';
 import { canEditLocally, dxfUrl, editHouse, getHouse } from '@/lib/api';
@@ -11,6 +11,7 @@ import { track } from '@/lib/analytics';
 import { area, len, lenShort, loadRegional, plotArea, useLengthUnit } from '@/lib/units';
 import { FILL, fitLabel, roomName } from '@/lib/rooms';
 import { MepLayer, MepLegend, MepOverlay } from '@/components/MepLayer';
+import Elevation from '@/components/Elevation';
 const House3D = dynamic(() => import('@/components/House3D'), { ssr: false, loading: () => <p className="py-20 text-center text-sm text-slate-400">Loading 3D…</p> });
 
 type ViewMode = 'plan' | 'structure' | LayerMode;
@@ -39,7 +40,8 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [canEdit, setCanEdit] = useState(false);
-  const [view3d, setView3d] = useState(false);
+  const [view, setView] = useState<'plan' | 'elev' | '3d'>('plan');
+  const view3d = view === '3d';
   const u = useLengthUnit();
   const [mepLayers, setMepLayers] = useState<Set<MepLayer>>(new Set<MepLayer>(['drain']));
   const toggleMep = (l: MepLayer) => setMepLayers((s) => { const x = new Set(s); x.has(l) ? x.delete(l) : x.add(l); return x; });
@@ -115,15 +117,15 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
     <div className="flex flex-col gap-6 print:block">
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
-          <div role="radiogroup" aria-label="2D or 3D" className="flex rounded-lg border border-slate-700 p-0.5">
-            {([[false, '2D plan'], [true, '3D']] as const).map(([v, text]) => (
-              <button key={text} type="button" role="radio" aria-checked={view3d === v} onClick={() => setView3d(v)}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs ${view3d === v ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white'}`}>
-                {v ? <Box className="h-3.5 w-3.5" aria-hidden /> : <Ruler className="h-3.5 w-3.5" aria-hidden />}{text}
+          <div role="radiogroup" aria-label="Plan, elevation or 3D" className="flex rounded-lg border border-slate-700 p-0.5">
+            {([['plan', '2D plan', Ruler], ['elev', 'Elevation', Home], ['3d', '3D', Box]] as const).map(([v, text, Icon]) => (
+              <button key={v} type="button" role="radio" aria-checked={view === v} onClick={() => setView(v)}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs ${view === v ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white'}`}>
+                <Icon className="h-3.5 w-3.5" aria-hidden />{text}
               </button>
             ))}
           </div>
-          {!view3d && <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
+          {view === 'plan' && <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
             {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'Services', Zap], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2]] as const).map(([id, text, Icon]) => (
               <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${mode === id ? 'bg-blue-600 text-white' : 'border border-slate-700 text-slate-300 hover:text-white'}`}>
@@ -131,7 +133,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
               </button>
             ))}
           </div>}
-          {!view3d && (
+          {view === 'plan' && (
             <div className="flex gap-1.5" role="tablist" aria-label="Floor">
               {twin.floors.map((f) => (
                 <button key={f.floor_no} type="button" role="tab" aria-selected={f.floor_no === floorNo} onClick={() => { setFloorNo(f.floor_no); setSelected(null); }}
@@ -154,6 +156,8 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
         <div className="relative mt-4 overflow-hidden rounded-xl bg-[#FAFAF7] print:mt-0">
           {view3d ? (
             <div className="bg-[#131926] pt-1"><House3D twin={twin} /></div>
+          ) : view === 'elev' ? (
+            <Elevation twin={twin} />
           ) : (
             <svg viewBox={`-3 -3 ${PW + 10} ${PD + 8}`} className="max-h-[560px] w-full" role="img" aria-label={`Floor ${floorNo} plan`}>
               <rect x={0} y={0} width={PW} height={PD} fill="#EFEDE6" stroke="#475569" strokeWidth={0.25} strokeDasharray="1 0.6" />

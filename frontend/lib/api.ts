@@ -135,6 +135,7 @@ export interface Option {
     bedrooms: number; cost_inr: { low: number; expected: number; high: number }; dropped: string[]; envelope_ft: [number, number];
   };
   preview: { f: number; id: string; t: string; x: number; y: number; w: number; d: number }[];
+  look?: import('./house3d').Look;
   tradition_relaxed?: boolean;
 }
 
