@@ -86,3 +86,11 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+@keyframes kenburns {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.12) translate(-2%, -1%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[kenburns_18s_ease-in-out_infinite_alternate\] { animation: none; }
+}

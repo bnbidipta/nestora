@@ -1,0 +1,82 @@
+[
+ {
+  "style": "kerala_nalukettu",
+  "name": "Kerala Nalukettu",
+  "src": "/styles/kerala_nalukettu/1.webp",
+  "author": "Sankarkeloth",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Varanda_nalukettu.jpg"
+ },
+ {
+  "style": "chettinad",
+  "name": "Chettinad",
+  "src": "/styles/chettinad/1.webp",
+  "author": "HussainNellikkal",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Biggest_house_in_Chettinadu_Tamilnadu.jpg"
+ },
+ {
+  "style": "goan_portuguese",
+  "name": "Goan Portuguese",
+  "src": "/styles/goan_portuguese/1.webp",
+  "author": "Portugal Editor Exploration",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Costa_Residence_Margao.jpg"
+ },
+ {
+  "style": "tropical_modernism",
+  "name": "Tropical Modernism",
+  "src": "/styles/tropical_modernism/1.webp",
+  "author": "P1898",
+  "licence": "CC BY 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Torres-Tolentino_House_2026-06-09_Calumpit_03.jpg"
+ },
+ {
+  "style": "rajasthani_haveli",
+  "name": "Rajasthani Haveli",
+  "src": "/styles/rajasthani_haveli/1.webp",
+  "author": "SolReyes",
+  "licence": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Nathmal_ki_Haveli,_Jaisalmer_-_SolReyes20100917_501.jpg"
+ },
+ {
+  "style": "konkan",
+  "name": "Konkan Coastal",
+  "src": "/styles/konkan/1.webp",
+  "author": "PP Yoonus",
+  "licence": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Konkan_Region_207.JPG"
+ },
+ {
+  "style": "laurie_baker_vernacular",
+  "name": "Laurie Baker Brick Vernacular",
+  "src": "/styles/laurie_baker_vernacular/1.webp",
+  "author": "IM3847",
+  "licence": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Vernacular_Structures_in_Laurie_Baker_Workshop_2.jpg"
+ },
+ {
+  "style": "japandi",
+  "name": "Japandi",
+  "src": "/styles/japandi/1.webp",
+  "author": "Federal Bureau of Investigation",
+  "licence": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:EFTA00001765_-_Neatly_made_bed_in_a_minimalist_bedroom_with_white_linens_wooden_nightstands_and_soft_lighting.jpg"
+ },
+ {
+  "style": "mediterranean",
+  "name": "Mediterranean",
+  "src": "/styles/mediterranean/1.webp",
+  "author": "John Phelan",
+  "licence": "CC BY 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Chester_Carnes_House,_Albuquerque_NM.jpg"
+ },
+ {
+  "style": "greek_cycladic",
+  "name": "Greek Cycladic",
+  "src": "/styles/greek_cycladic/1.webp",
+  "author": "sailko",
+  "licence": "CC BY 2.5",
+  "page": "https://commons.wikimedia.org/wiki/File:Mykonos,_chora_03.JPG"
+ }
+]

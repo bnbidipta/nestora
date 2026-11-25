@@ -41,7 +41,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ["'Helvetica Neue'", "Helvetica", "Arial", "sans-serif"],
+        sans: ["var(--font-body)", "'Helvetica Neue'", "Helvetica", "Arial", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
         mono: ["'JetBrains Mono'", "Courier New", "monospace"],
       }
     },

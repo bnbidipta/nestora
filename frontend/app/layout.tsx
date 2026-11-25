@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Fraunces, Inter } from 'next/font/google';
 import ConsentBanner from '@/components/ConsentBanner';
+
+const display = Fraunces({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
+const body = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'Nestora: concept house design and cost estimates',
@@ -13,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body className="min-h-screen bg-[#F7F6F2] text-[#1A241E] font-sans antialiased selection:bg-[#26352C] selection:text-[#F7F6F2]">
         {children}
         <ConsentBanner />
