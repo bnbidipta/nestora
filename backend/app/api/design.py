@@ -206,6 +206,68 @@ def edit(house_id: str, body: EditIn, _u: Optional[str] = Depends(require_edit))
     return orchestrator.commit_edit(house_id, brief, c, f"Edit: {body.action} {body.room or 'plan'}.")
 
 
+class WhatIfIn(BaseModel):
+    change: Literal["study", "guest", "floor", "kitchen"]
+    apply: bool = False
+
+
+WHATIF_NOTE = {"study": "Added a study", "guest": "Added a guest room", "floor": "Added a floor", "kitchen": "Made the kitchen bigger"}
+
+
+@router.post("/house/{house_id}/whatif", dependencies=[Depends(rate_limit("edit", 20))])
+def what_if(house_id: str, body: WhatIfIn, _u: Optional[str] = Depends(require_edit)):
+    """Preview a change to the chosen design (re-solved near the current plan, then checked); apply=True keeps it."""
+    twin = _twin(house_id)
+    cand = twin.metadata.get("chosen_candidate")
+    if not cand:
+        raise HTTPException(status_code=409, detail="Choose a design first.")
+    brief = orchestrator.brief_of(twin)
+    pending = twin.metadata.get("whatif")
+    if body.apply:
+        if not pending or pending["change"] != body.change:
+            raise HTTPException(status_code=409, detail="Preview this change first.")
+        twin.metadata.pop("whatif", None)
+        HouseTwinRepository.save(twin)
+        return orchestrator.commit_edit(house_id, Brief(**pending["brief"]), pending["cand"], f"What if: {WHATIF_NOTE[body.change]}.")
+    upd, strat, resize = {}, dict(cand["strategy"]), None
+    if body.change == "study":
+        upd["wfh_people"] = brief.wfh_people + 1
+    elif body.change == "guest":
+        if brief.guest_room:
+            raise HTTPException(status_code=422, detail="This design already has a guest room.")
+        upd["guest_room"] = True
+    elif body.change == "floor":
+        r = pack.rules(brief.plot_width_ft * pack.FT, brief.plot_depth_ft * pack.FT, brief.road_width_m, brief.city)
+        if strat["floors"] + 1 > int(r["max_height_m"] // pack.FLOOR_HEIGHT_M):
+            raise HTTPException(status_code=422, detail="The height limit on this plot doesn't allow another floor.")
+        strat["floors"] += 1
+        upd["floors_wanted"] = strat["floors"]
+    else:
+        k = next((rm for rm in cand["layout"]["rooms"] if rm["type"] == "kitchen"), None)
+        if not k:
+            raise HTTPException(status_code=404, detail="No kitchen in this design.")
+        a = k["w"] * k["d"]
+        resize = {k["id"]: (a * 1.25, a * 1.8)}
+    nb = Brief(**{**brief.model_dump(), **upd})
+    s = solver.solve(nb, strat, random.Random(), hint=cand, step_m=cand["layout"].get("upper_step_m", 0), resize=resize)
+    if s is None:
+        raise HTTPException(status_code=422, detail="That change doesn't fit on this plot with every room still reachable.")
+    trial = copy.deepcopy(twin)
+    derive.apply(trial, nb, s)
+    j = JudgeService.validate_house(trial)
+    if not j.passed:
+        raise HTTPException(status_code=422, detail="That change breaks a rule: " + j.failures[0]["message"])
+    twin.metadata["whatif"] = {"change": body.change, "brief": nb.model_dump(), "cand": s}
+    HouseTwinRepository.save(twin)
+    tier = trial.metadata["boq"]["tiers"][nb.tier]
+    before = twin.metadata["boq"]["tiers"][brief.tier]
+    return {"change": body.change, "note": WHATIF_NOTE[body.change], "preview": orchestrator._preview(s), "envelope_ft": [
+        trial.metadata["envelope_width_ft"], trial.metadata["envelope_depth_ft"]], "dropped": s["layout"]["dropped"],
+        "cost_inr": {k: tier[k]["total"] for k in ("low", "expected", "high")},
+        "cost_before_inr": {k: before[k]["total"] for k in ("low", "expected", "high")},
+        "built_up_sqft": trial.metadata["fsi_built_up_sqft"], "built_up_before_sqft": twin.metadata["fsi_built_up_sqft"]}
+
+
 @router.get("/house/{house_id}/export/dxf")
 def export_dxf(house_id: str):
     """AutoCAD R12 DXF in metres: plot, setback line, rooms with labels, columns. Floors side by side."""

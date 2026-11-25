@@ -12,6 +12,7 @@ import { area, len, lenShort, loadRegional, plotArea, useLengthUnit } from '@/li
 import { FILL, fitLabel, roomName } from '@/lib/rooms';
 import { MepLayer, MepLegend, MepOverlay } from '@/components/MepLayer';
 import Elevation from '@/components/Elevation';
+import WhatIf from '@/components/WhatIf';
 const House3D = dynamic(() => import('@/components/House3D'), { ssr: false, loading: () => <p className="py-20 text-center text-sm text-slate-400">Loading 3D…</p> });
 
 type ViewMode = 'plan' | 'structure' | LayerMode;
@@ -119,6 +120,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
 
   return (
     <div className="flex flex-col gap-6 print:block">
+      {canEdit && <WhatIf houseId={twin.house_id} onKept={async () => setTwin(await getHouse(twin.house_id))} />}
       <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
           <div role="radiogroup" aria-label="Plan, elevation or 3D" className="flex rounded-lg border border-slate-700 p-0.5">

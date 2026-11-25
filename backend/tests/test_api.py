@@ -86,3 +86,18 @@ def test_style_deck_is_filtered_and_has_no_duplicate_photos():
     assert len(shas) == len(set(shas))  # no image used twice, across styles
     two = client.get("/api/v1/swipe/cards", params={"styles": "goan_portuguese,victorian"}).json()["cards"]
     assert two and {c["style"] for c in two} == {"goan_portuguese", "victorian"}
+
+
+def test_what_if_preview_then_keep():
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json={**BRIEF, "plot_width_ft": 40, "plot_depth_ft": 60}, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
+    assert client.post(f"/api/v1/house/{hid}/whatif", json={"change": "study", "apply": True}, headers=auth).status_code == 409  # preview first
+    r = client.post(f"/api/v1/house/{hid}/whatif", json={"change": "study"}, headers=auth)
+    assert r.status_code == 200, r.text
+    assert any(p["t"] == "study" for p in r.json()["preview"])
+    r = client.post(f"/api/v1/house/{hid}/whatif", json={"change": "study", "apply": True}, headers=auth)
+    assert r.status_code == 200 and r.json()["status"] in ("ready", "needs_review")
+    twin = client.get(f"/api/v1/house/{hid}").json()["data"]
+    assert any(rm["type"] == "study" for f in twin["floors"] for rm in f["rooms"])

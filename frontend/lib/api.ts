@@ -182,6 +182,14 @@ export const chooseOption = (houseId: string, id: string) =>
 export const editHouse = (houseId: string, action: 'grow' | 'shrink' | 'mirror', room?: string) =>
   call<{ success: boolean; status: string }>(`/api/v1/house/${houseId}/edit`, { method: 'POST', body: JSON.stringify({ action, room }) }, houseId);
 
+export interface WhatIf {
+  change: string; note: string; preview: Option['preview']; envelope_ft: [number, number]; dropped: string[];
+  cost_inr: { low: number; expected: number; high: number }; cost_before_inr: { low: number; expected: number; high: number };
+  built_up_sqft: number; built_up_before_sqft: number;
+}
+export const whatIf = (houseId: string, change: 'study' | 'guest' | 'floor' | 'kitchen', apply = false) =>
+  call<WhatIf & { success?: boolean; status?: string }>(`/api/v1/house/${houseId}/whatif`, { method: 'POST', body: JSON.stringify({ change, apply }) }, houseId);
+
 export const dxfUrl = (houseId: string) => `${API_BASE}/api/v1/house/${houseId}/export/dxf`;
 
 export const generateHouse = (houseId: string) =>
