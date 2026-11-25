@@ -22,7 +22,7 @@ export interface StageData {
 
 export default function StageComparisonCard({ data }: { data: StageData }) {
   return (
-    <article className="w-full bg-white/95 backdrop-blur-xl rounded-2xl md:rounded-3xl border border-stone-border p-5 md:p-6 shadow-xl flex flex-col justify-between max-h-[min(510px,68vh)] overflow-y-auto space-y-4">
+    <article className="w-full bg-white rounded-2xl md:rounded-3xl border border-stone-border p-5 md:p-6 shadow-xl flex flex-col justify-between max-h-[min(510px,68vh)] overflow-y-auto space-y-4">
       {/* Header & Metric Tag */}
       <div className="space-y-1.5 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">

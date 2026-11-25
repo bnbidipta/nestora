@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { motion, useScroll } from 'framer-motion';
 import ProgressiveStageCanvas from './ProgressiveStageCanvas';
 import StageComparisonCard, { StageData } from './StageComparisonCard';
 import { CompassRoseIcon, ArrowFolioLeftIcon, ArrowFolioRightIcon } from './BespokeIcons';
@@ -147,19 +147,12 @@ export default function UnifiedHorizontalStack() {
     offset: ["start start", "end end"]
   });
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    damping: 26,
-    stiffness: 120,
-    mass: 0.8
-  });
-
-  // Track active index smoothly from scroll progress
+  // Active folio follows scroll directly (no spring: springs on scroll feel laggy)
   useEffect(() => {
-    return smoothProgress.on("change", (latest) => {
-      const idx = Math.min(total - 1, Math.floor(latest * total));
-      setActiveIdx(idx);
+    return scrollYProgress.on("change", (latest) => {
+      setActiveIdx(Math.min(total - 1, Math.floor(latest * total)));
     });
-  }, [smoothProgress, total]);
+  }, [scrollYProgress, total]);
 
   const scrollToSpread = (targetIndex: number) => {
     if (!containerRef.current) return;
@@ -221,29 +214,20 @@ export default function UnifiedHorizontalStack() {
           {STAGES_DATA.map((stage, i) => {
             const isCurrent = activeIdx === i;
             const isPast = activeIdx > i;
-            const isUpcoming = activeIdx < i;
+            if (Math.abs(activeIdx - i) > 1) return null;  // off-stage folios aren't rendered
 
             return (
               <motion.div
                 key={stage.id}
                 initial={false}
                 animate={{
-                  x: isCurrent ? '0%' : isPast ? '-25%' : '100%',
-                  scale: isCurrent ? 1 : isPast ? 0.88 : 0.95,
-                  rotateY: isCurrent ? 0 : isPast ? -8 : 8,
-                  opacity: isCurrent ? 1 : isPast ? 0.12 : 0,
-                  filter: isCurrent ? 'blur(0px)' : 'blur(5px)',
+                  x: isCurrent ? '0%' : isPast ? '-12%' : '12%',
+                  opacity: isCurrent ? 1 : 0,
                   pointerEvents: isCurrent ? 'auto' : 'none'
                 }}
-                transition={{
-                  type: 'spring',
-                  damping: 26,
-                  stiffness: 120,
-                  mass: 0.8
-                }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute inset-0 w-full h-full flex items-center justify-center will-change-transform"
                 style={{
-                  transformStyle: 'preserve-3d',
                   zIndex: isCurrent ? 20 : isPast ? 10 - (activeIdx - i) : 5
                 }}
               >
@@ -268,7 +252,7 @@ export default function UnifiedHorizontalStack() {
         </div>
 
         {/* BOTTOM FLOATING DOCK (Positioned safely to prevent collisions) */}
-        <div className="relative z-20 flex items-center justify-between bg-white/95 backdrop-blur-xl border border-stone-border px-4 py-2 rounded-full shadow-xl max-w-2xl mx-auto w-full">
+        <div className="relative z-20 flex items-center justify-between bg-white border border-stone-border px-4 py-2 rounded-full shadow-xl max-w-2xl mx-auto w-full">
           {/* Active Folio Number */}
           <div className="flex items-center space-x-1.5 pr-3 border-r border-stone-border">
             <span className="text-xs font-mono font-bold text-sage-900">

@@ -17,22 +17,15 @@ export default function ProgressiveStageCanvas({
 }: ProgressiveStageCanvasProps) {
   // 3D Mouse Parallax Tilt state
   const containerRef = useRef<HTMLDivElement>(null);
-  const [rotateX, setRotateX] = useState<number>(0);
-  const [rotateY, setRotateY] = useState<number>(0);
-
+  const tilt = (rx: number, ry: number) => {
+    if (containerRef.current) containerRef.current.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  };
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setRotateX(-y * 0.015);
-    setRotateY(x * 0.015);
+    tilt(-(e.clientY - rect.top - rect.height / 2) * 0.01, (e.clientX - rect.left - rect.width / 2) * 0.01);
   };
-
-  const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
-  };
+  const handleMouseLeave = () => tilt(0, 0);
 
   return (
     <div
@@ -40,9 +33,6 @@ export default function ProgressiveStageCanvas({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className="relative w-full aspect-[16/11] max-h-[min(480px,64vh)] rounded-2xl md:rounded-3xl overflow-hidden border border-stone-border shadow-2xl bg-ivory-100 transition-transform duration-200 ease-out will-change-transform"
-      style={{
-        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
-      }}
     >
       {/* =========================================================================
           SPREAD 0: PLATFORM OVERVIEW (TWILIGHT VILLA + SKELETON TOGGLE)
