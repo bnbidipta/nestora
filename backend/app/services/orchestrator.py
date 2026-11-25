@@ -58,6 +58,7 @@ def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[s
 
 
 LEARNED = True  # add the learned layout generator's arrangement to the pool
+SOLVE = 3  # the best generator layouts are re-solved by the constraint solver (reachability, store/puja kept, stacked baths)
 VARIANTS = 4  # layouts tried per strategy/arrangement/mirror; the most realistic is kept
 
 
@@ -76,6 +77,31 @@ def _learned_arrangements(brief: Brief) -> List[Dict[str, Any]]:
         return []
 
 
+def _solved(brief: Brief, prefs: Dict[str, float], scored, seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
+    """Merge: the generator's best layouts (one per strategy) become hints for the solver, which returns guaranteed
+    versions of them; with no usable generator layout, the solver works from the brief alone."""
+    from backend.app.services import solver
+    best: Dict[str, Dict[str, Any]] = {}
+    for c, e in sorted(scored, key=lambda x: -x[1]["score"]["total"]):
+        best.setdefault(str(c["strategy"]), c)
+    jobs = list(best.values())[:SOLVE]
+    r = pack.rules(brief.plot_width_ft * pack.FT, brief.plot_depth_ft * pack.FT, brief.road_width_m, brief.city)
+    if not jobs:
+        jobs = [{"strategy": s} for s in generator.strategies(brief, r)[:SOLVE]]
+    rng = random.Random(seed)
+
+    def one(i_h):
+        i, h = i_h
+        try:
+            return solver.solve(brief, h["strategy"], random.Random(seed + i), hint=h if "layout" in h else None)
+        except Exception:  # the solver is an addition; never block options
+            log.warning("solver failed", exc_info=True)
+            return None
+    sols = [s for s in map(one, enumerate(jobs)) if s]  # sequential: building CP-SAT models from threads is not safe
+    rng.shuffle(sols)
+    return [(s, evaluate(brief, s, prefs)) for s in sols]
+
+
 def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
     extra = []
     if any(v != "off" for v in brief.traditions.values()):
@@ -87,6 +113,7 @@ def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[s
         extra.extend(_learned_arrangements(brief))
     cands = generator.candidates(brief, n=24, seed=seed, extra_arrangements=extra, score=rank.realism, variants=VARIANTS)
     scored = [(c, evaluate(brief, c, prefs)) for c in cands]
+    scored += _solved(brief, prefs, scored, seed)
     good = [x for x in scored if x[1]["pass"]]
     if len(good) < SHOW:  # strict traditions vetoed most code-compliant layouts: top up with the closest, flagged
         relaxed = sorted((x for x in scored if x[1]["judge"]["pass"] and not x[1]["pass"]), key=lambda x: -x[1]["score"]["total"])

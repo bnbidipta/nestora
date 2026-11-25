@@ -8,7 +8,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from backend.app.models.brief import Brief
-from backend.app.services import derive, generator, llm, orchestrator, pack, traditions
+from backend.app.services import derive, generator, llm, orchestrator, pack, traditions, solver
 from backend.app.api import swipe
 from backend.app.services.access import rate_limit, require_edit
 from backend.app.services.judge import JudgeService
@@ -179,12 +179,22 @@ def edit(house_id: str, body: EditIn, _u: Optional[str] = Depends(require_edit))
             raise HTTPException(status_code=404, detail="Room not found in this design.")
         for r in target:
             r["weight"] = max(0.05, r["weight"] * (1.8 if body.action == "grow" else 0.5))
-    layout = generator.fit(rooms, c["envelope"], c["rules"], c["layout"]["depths"], {}, stair_left)
-    if layout is None:
-        raise HTTPException(status_code=422, detail="That change doesn't fit within the setbacks and minimum room sizes.")
     before = {r["id"]: r["w"] * r["d"] for r in cand["layout"]["rooms"]}
-    layout.update(stilt=c["layout"].get("stilt"), dropped=c["layout"]["dropped"] + layout["dropped"])
-    c["layout"] = layout
+    if body.action == "mirror":
+        solver.mirror(c)
+    elif c["layout"].get("engine") == "solver":
+        a = before[body.room]
+        bounds = (a * 1.2, a * 2.0) if body.action == "grow" else (a * 0.4, a * 0.8)
+        s = solver.solve(brief, c["strategy"], random.Random(), hint=c, step_m=c["layout"].get("upper_step_m", 0), resize={body.room: bounds})
+        if s is None:
+            raise HTTPException(status_code=422, detail="That change doesn't fit within the setbacks and minimum room sizes.")
+        c["layout"] = s["layout"]
+    else:
+        layout = generator.fit(rooms, c["envelope"], c["rules"], c["layout"]["depths"], {}, stair_left)
+        if layout is None:
+            raise HTTPException(status_code=422, detail="That change doesn't fit within the setbacks and minimum room sizes.")
+        layout.update(stilt=c["layout"].get("stilt"), dropped=c["layout"]["dropped"] + layout["dropped"])
+        c["layout"] = layout
     c["id"] = f"e{random.randrange(16**6):06x}"
     trial = copy.deepcopy(twin)
     derive.apply(trial, brief, c)
