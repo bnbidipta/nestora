@@ -212,9 +212,9 @@ export default function MobileLanding() {
           </p>
         </section>
       </main>
-      <ScrollVideo src="/video/walkthrough.mp4" poster="/video/walkthrough-poster.jpg" cta={{ href: '/house/nest_f24390ae0f', text: 'Walk through a sample home' }}>
-        <h2 className="max-w-2xl text-3xl font-black leading-tight tracking-tight md:text-5xl">Walk through your home before a single brick is laid.</h2>
-        <p className="mt-3 max-w-xl text-white/85">Every design opens in 3D: look around, walk room to room, and watch the light move from morning to night.</p>
+      <ScrollVideo src="/video/family.mp4" mobileSrc="/video/family-mobile.mp4" poster="/video/family-poster.jpg" cta={{ href: '/house/nest_f24390ae0f', text: 'Walk through a sample home' }}>
+        <h2 className="max-w-2xl text-3xl font-black leading-tight tracking-tight md:text-5xl">A home the whole family grows into.</h2>
+        <p className="mt-3 max-w-xl text-white/85">Room for the grandparents downstairs, the kids to play, and evenings together on the terrace. See it in 3D before a brick is laid.</p>
       </ScrollVideo>
 
       {/* Semantic Footer */}
