@@ -160,7 +160,7 @@ class EditIn(BaseModel):
     action: Literal["grow", "shrink", "mirror"]
 
 
-@router.post("/house/{house_id}/edit")
+@router.post("/house/{house_id}/edit", dependencies=[Depends(rate_limit("edit", 20))])
 def edit(house_id: str, body: EditIn, _u: Optional[str] = Depends(require_edit)):
     """Simple edits: make a room bigger/smaller (others adjust), or mirror the plan. Re-judged before saving."""
     twin = _twin(house_id)
@@ -201,7 +201,7 @@ def edit(house_id: str, body: EditIn, _u: Optional[str] = Depends(require_edit))
     j = JudgeService.validate_house(trial)
     if not j.passed:
         raise HTTPException(status_code=422, detail="That change breaks a rule: " + j.failures[0]["message"])
-    if body.action != "mirror" and abs(sum(r["w"] * r["d"] for r in layout["rooms"] if r["id"] == body.room) - before.get(body.room, 0)) < 0.05:
+    if body.action != "mirror" and abs(sum(r["w"] * r["d"] for r in c["layout"]["rooms"] if r["id"] == body.room) - before.get(body.room, 0)) < 0.05:
         raise HTTPException(status_code=422, detail="That room can't change size here: its row is already at its limits.")
     return orchestrator.commit_edit(house_id, brief, c, f"Edit: {body.action} {body.room or 'plan'}.")
 

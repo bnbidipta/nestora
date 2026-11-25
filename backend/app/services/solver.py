@@ -12,6 +12,7 @@ Grid: 20 cm; a final pass grows rooms into any gap the solver left. Coordinates:
 """
 import logging
 import random
+import threading
 from typing import Any, Dict, List, Optional
 
 from ortools.sat.python import cp_model
@@ -97,8 +98,23 @@ def _needs(rm, floor_rooms):
     return []
 
 
+_LOCK = threading.Lock()  # one solve at a time: CP-SAT models must not be built from parallel threads, and it bounds CPU
+
+
 def solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Optional[Dict[str, Any]] = None,
           step_m: Optional[float] = None, resize: Optional[Dict[str, tuple]] = None) -> Optional[Dict[str, Any]]:
+    """Serialised entry point; None when busy for too long (callers fall back to the generator's layouts)."""
+    if not _LOCK.acquire(timeout=30):
+        log.warning("solver busy; skipped")
+        return None
+    try:
+        return _solve(brief, strat, rng, hint, step_m, resize)
+    finally:
+        _LOCK.release()
+
+
+def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Optional[Dict[str, Any]] = None,
+           step_m: Optional[float] = None, resize: Optional[Dict[str, tuple]] = None) -> Optional[Dict[str, Any]]:
     """A guaranteed plan for one strategy, near the generator candidate `hint` (its positions) when given.
     Floors are solved bottom-up: the stair/lift position is chosen on the first floor and fixed above, and each
     upper floor sees the wet rooms below it, so bathrooms can stack."""
