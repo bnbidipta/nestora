@@ -79,9 +79,10 @@ class VoteIn(BaseModel):
 def cast_vote(house_id: str, body: VoteIn):
     twin = _twin(house_id)
     v = _vote(twin, body.token)
-    if body.voter not in v["voters"] and len(v["voters"]) >= MAX_VOTERS:
+    key = _h(body.voter)  # only a hash of the voter's browser id is stored
+    if key not in v["voters"] and len(v["voters"]) >= MAX_VOTERS:
         raise HTTPException(status_code=429, detail="This vote already has the maximum number of people.")
-    v["voters"][body.voter] = {"name": body.name.strip()[:30], "likes": [i for i in body.likes if i in v["options"]], "at": time.time()}
+    v["voters"][key] = {"name": body.name.strip()[:30], "likes": [i for i in body.likes if i in v["options"]], "at": time.time()}
     HouseTwinRepository.save(twin)
     return {"tally": _tally(v)}
 

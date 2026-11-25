@@ -55,7 +55,9 @@ def get_house(house_id: str):
     twin = HouseTwinRepository.get(house_id)
     if not twin:
         raise HTTPException(status_code=404, detail=f"House '{house_id}' not found.")
-    return {"success": True, "data": twin.model_dump()}
+    data = twin.model_dump()
+    data["metadata"].pop("vote", None)  # voter names and vote state are owner-only (see /votes)
+    return {"success": True, "data": data}
 
 
 @router.delete("/{house_id}", response_model=Dict[str, Any])

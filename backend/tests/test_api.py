@@ -118,3 +118,13 @@ def test_family_vote_and_versions():
     vs = client.get(f"/api/v1/house/{hid}/versions").json()["versions"]
     assert len(vs) == 1
     assert client.post(f"/api/v1/house/{hid}/versions/0/restore", headers=auth).status_code == 200
+
+
+def test_vote_state_not_public():
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    tok = client.post(f"/api/v1/house/{hid}/vote-link", headers=auth).json()["token"]
+    client.post(f"/api/v1/house/{hid}/vote", json={"token": tok, "voter": "browser-secret1", "name": "Amma", "likes": [opts[0]["id"]]})
+    body = client.get(f"/api/v1/house/{hid}").text
+    assert "vote" not in client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"] and "browser-secret1" not in body
