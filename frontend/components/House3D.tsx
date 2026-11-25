@@ -31,12 +31,12 @@ const EYE = 5.3, SPEED = 7;
 type Mode = 'orbit' | 'walk' | 'tour';
 const md = (twin: HouseTwin) => (twin.metadata ?? {}) as Record<string, any>;
 
-export default function House3D({ twin }: { twin: HouseTwin }) {
+export default function House3D({ twin, intro = false }: { twin: HouseTwin; intro?: boolean }) {
   const t = twin as any;
   const u = useLengthUnit();
   const mount = useRef<HTMLDivElement>(null);
-  const [mode, setMode] = useState<Mode>('orbit');
-  const [welcome, setWelcome] = useState(true);
+  const [mode, setMode] = useState<Mode>(intro ? 'tour' : 'orbit');
+  const [welcome, setWelcome] = useState(!intro);
   const [paint, setPaint] = useState(false);
   const [furniture, setFurniture] = useState(true);
   const [season, setSeason] = useState<'summer' | 'equinox' | 'winter'>('equinox');

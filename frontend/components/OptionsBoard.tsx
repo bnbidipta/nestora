@@ -8,6 +8,7 @@ import { formatINR } from '@/lib/twin';
 import { track } from '@/lib/analytics';
 import { area, useLengthUnit } from '@/lib/units';
 import PlanThumb from '@/components/PlanThumb';
+import Designing from '@/components/Designing';
 
 const FIT_LABEL: Record<string, string> = {
   floors: 'Floors as asked', parking: 'Parking as asked', bedrooms: 'All bedrooms', study: 'Study', puja: 'Puja', guest: 'Guest room',
@@ -52,14 +53,14 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
     try {
       await chooseOption(houseId, id);
       track('design_chosen', { round: res?.round ?? 1 });
-      router.push(`/house/${houseId}`);
+      router.push(`/house/${houseId}?intro=1`);  // open straight into the 3D walk-in
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save your choice.');
       setBusy(null);
     }
   };
 
-  if (busy === 'start') return <p className="flex items-center justify-center gap-2 py-20 text-slate-300"><Loader2 className="h-5 w-5 animate-spin" /> Designing and checking layouts…</p>;
+  if (busy === 'start') return <Designing />;
   if (error && !res) return <p role="alert" className="py-20 text-center text-red-400">{error}</p>;
   if (res && res.status === 'infeasible') {
     return (
@@ -164,9 +165,10 @@ function ExteriorStill({ o }: { o: Option }) {
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
-    import('@/lib/houseStill').then(({ renderStill }) => {
-      try { const url = renderStill(o.id, o.preview, o.look); if (live) setSrc(url); } catch { /* no WebGL: plan only */ }
-    });
+    import('@/lib/houseStill')
+      .then(({ renderStillQueued }) => renderStillQueued(o.id, o.preview, o.look))
+      .then((url) => { if (live) setSrc(url); })
+      .catch(() => { /* no WebGL: plan only */ });
     return () => { live = false; };
   }, [o]);
   return (

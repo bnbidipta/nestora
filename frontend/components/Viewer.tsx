@@ -41,6 +41,10 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [canEdit, setCanEdit] = useState(false);
   const [view, setView] = useState<'plan' | 'elev' | '3d'>('plan');
+  const [intro, setIntro] = useState(false);
+  useEffect(() => {  // just chosen: start in 3D with the guided tour
+    if (new URLSearchParams(window.location.search).get('intro') === '1') { setView('3d'); setIntro(true); }
+  }, []);
   const view3d = view === '3d';
   const u = useLengthUnit();
   const [mepLayers, setMepLayers] = useState<Set<MepLayer>>(new Set<MepLayer>(['drain']));
@@ -155,7 +159,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
 
         <div className="relative mt-4 overflow-hidden rounded-xl bg-[#FAFAF7] print:mt-0">
           {view3d ? (
-            <div className="bg-[#131926] pt-1"><House3D twin={twin} /></div>
+            <div className="bg-[#131926] pt-1"><House3D twin={twin} intro={intro} /></div>
           ) : view === 'elev' ? (
             <Elevation twin={twin} />
           ) : (

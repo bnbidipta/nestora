@@ -61,3 +61,13 @@ export function renderStill(key: string, rooms: PRoom[], look: Look | undefined,
   cache.set(key, url);
   return url;
 }
+
+let queue: Promise<unknown> = Promise.resolve();
+/** Same picture, but queued: one render per frame, so a board of cards never freezes the page. */
+export function renderStillQueued(key: string, rooms: PRoom[], look: Look | undefined): Promise<string> {
+  const job = queue.then(() => new Promise<string>((ok, fail) => requestAnimationFrame(() => {
+    try { ok(renderStill(key, rooms, look)); } catch (e) { fail(e); }
+  })));
+  queue = job.catch(() => undefined);
+  return job;
+}
