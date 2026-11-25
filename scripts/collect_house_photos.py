@@ -100,7 +100,7 @@ def style_queries():
     for st in cat:
         if st.get("scope", "exterior") != "exterior":
             continue
-        qs = Q.get(st["id"], []) + st.get("search_terms", []) + [f"{st['name']} house"] + [f"{x} house" for x in st.get("aliases", [])[:2]]
+        qs = [q for q in Q.get(st["id"], []) + st.get("search_terms", []) if "interior" not in q.lower()] + [f"{st['name']} house"] + [f"{x} house" for x in st.get("aliases", [])[:2]]
         out[st["id"]] = list(dict.fromkeys(qs))
     return out
 
@@ -127,12 +127,21 @@ def by_style(a):
     MIN_PER_STYLE, then up to MAX_PER_STYLE. Cursors are saved in state.json so a re-run resumes."""
     man, state_p = os.path.join(a.out, "manifest.jsonl"), os.path.join(a.out, "state.json")
     seen, hashes, count, n = set(), [], {}, 0
+    # labels so far (label_house_photos.py): photos labelled "not a house" don't count towards a style, and searches
+    # whose labelled photos are under 10% houses (20+ labelled) are skipped
+    lab_p = os.path.join(a.out, "labels.jsonl")
+    labels = {json.loads(l)["file"]: json.loads(l)["house"] for l in open(lab_p, encoding="utf-8")} if os.path.exists(lab_p) else {}
+    yield_q = {}
     if os.path.exists(man):
         for line in open(man, encoding="utf-8"):
             r = json.loads(line)
             seen.add(r["id"]); hashes.append(r["dhash"]); n += 1
-            if r.get("style"):
+            if r["file"] in labels:
+                y = yield_q.setdefault(r.get("query", ""), [0, 0]); y[0] += labels[r["file"]]; y[1] += 1
+            if r.get("style") and labels.get(r["file"], True):
                 count[r["style"]] = count.get(r["style"], 0) + 1
+    bad_q = {q for q, (h, t) in yield_q.items() if t >= 20 and h / t < 0.1}
+    print(f"skipping {len(bad_q)} low-yield searches", flush=True)
     qs = style_queries()
     cat = json.load(open(os.path.join(ROOT, "backend", "app", "data", "styles.json"), encoding="utf-8"))["styles"]
     popular = {s["id"] for s in sorted(cat, key=lambda s: -s.get("popularity", 0))[:N_POPULAR]}  # most searched get a bigger cap
@@ -147,6 +156,9 @@ def by_style(a):
                 for st, queries in qs.items():
                     cap = MAX_POPULAR if base_cap == MAX_PER_STYLE and st in popular else base_cap
                     qi, src, pg = state[st]
+                    while qi < len(queries) and queries[qi] in bad_q:  # skip searches that return few houses
+                        qi, src, pg = qi + 1, "o", 1
+                    state[st] = [qi, src, pg]
                     if count.get(st, 0) >= cap or qi >= len(queries) or n >= a.target:
                         continue
                     active = True
