@@ -45,6 +45,10 @@ export default function Questionnaire() {
   const [roadKind, setRoadKind] = useState<string>('street');
   const setStep = (f: number | ((s: number) => number)) => { setStepRaw(f); window.scrollTo({ top: 0 }); };
   const [b, setB] = useState<Brief>(DEFAULT);
+  useEffect(() => {  // plot size typed on the landing page (?w=30&d=40)
+    const q = new URLSearchParams(window.location.search), w = Number(q.get('w')), d = Number(q.get('d'));
+    if (w >= 15 && w <= 200 && d >= 15 && d <= 300) setB((x) => ({ ...x, plot_width_ft: w, plot_depth_ft: d }));
+  }, []);
   const set = <K extends keyof Brief>(k: K, v: Brief[K]) => setB((x) => ({ ...x, [k]: v }));
   const [styles, setStyles] = useState<StyleEntry[]>([]);
   const [traditions, setTraditions] = useState<{ id: string; name: string; description: string }[]>([]);

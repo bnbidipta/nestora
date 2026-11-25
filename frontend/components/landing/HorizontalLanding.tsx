@@ -9,7 +9,11 @@ import Link from 'next/link';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import styles from '@/content/landing-styles.json';
+
+const PlotHouse3D = dynamic(() => import('./PlotHouse3D'), { ssr: false });
+const BUILD_STEPS = ['Your plot', 'Plinth and foundation', 'Ground floor walls', 'Upper floor', 'Roof terrace'];
 
 const C = { paper: '#FAF7F2', ink: '#1F1B16', muted: '#6B6358', terra: '#B4532A', green: '#1F4D45', gold: '#C9962B', line: '#E6DFD3' };
 const SCENES = ['Home', 'How it works', 'Designs', 'Family', 'In numbers', 'Styles', 'Start'];
@@ -97,10 +101,25 @@ function Carousel({ on }: { on: boolean }) {
   );
 }
 
-export default function HorizontalLanding() {
+/** v1: the films lead. v2: the visitor's own plot grows a 3D house, and "How it works" builds it as you scroll. */
+export default function HorizontalLanding({ variant = 'v1' }: { variant?: 'v1' | 'v2' }) {
+  const v2 = variant === 'v2';
   const track = useRef<HTMLDivElement>(null);
   const [cur, setCur] = useState(0);
   const lock = useRef(0);
+  const [plot, setPlot] = useState({ w: 30, d: 40 });
+  const [grow, setGrow] = useState(0);
+  const [step, setStep] = useState(0);
+  const stepRef = useRef(0);
+  stepRef.current = step;
+  useEffect(() => {  // the hero house grows again whenever the plot size changes
+    if (!v2) return;
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => { const p = Math.min(1, (t - t0) / 3200); setGrow(p); if (p < 1) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [v2, plot.w, plot.d]);
 
   const go = useCallback((n: number) => {
     const el = track.current;
@@ -121,23 +140,28 @@ export default function HorizontalLanding() {
       const now = Date.now();
       if (now - lock.current < 750 || Math.abs(e.deltaY) < 8) return;
       lock.current = now;
-      go(Math.round(el.scrollLeft / el.clientWidth) + (e.deltaY > 0 ? 1 : -1));
+      const i = Math.round(el.scrollLeft / el.clientWidth), fwd = e.deltaY > 0;
+      if (v2 && i === 1 && (fwd ? stepRef.current < BUILD_STEPS.length - 1 : stepRef.current > 0)) { setStep((s) => s + (fwd ? 1 : -1)); return; }
+      go(i + (fwd ? 1 : -1));
     };
     const onKey = (e: KeyboardEvent) => {
       const i = Math.round(el.scrollLeft / el.clientWidth);
-      if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(i + 1); }
-      if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(i - 1); }
+      const fwd = ['ArrowRight', 'PageDown', ' '].includes(e.key), back = ['ArrowLeft', 'PageUp'].includes(e.key);
+      if (!fwd && !back) return;
+      e.preventDefault();
+      if (v2 && i === 1 && (fwd ? stepRef.current < BUILD_STEPS.length - 1 : stepRef.current > 0)) { setStep((s) => s + (fwd ? 1 : -1)); return; }
+      go(i + (fwd ? 1 : -1));
     };
     el.addEventListener('scroll', onScroll, { passive: true });
     el.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('keydown', onKey);
     return () => { el.removeEventListener('scroll', onScroll); el.removeEventListener('wheel', onWheel); window.removeEventListener('keydown', onKey); cancelAnimationFrame(raf); };
-  }, [go]);
+  }, [go, v2]);
 
   const scene = 'relative h-[100svh] w-screen flex-none snap-start overflow-hidden';
   return (
     <div className="fixed inset-0 overflow-hidden" style={{ background: C.paper, color: C.ink }}>
-      <header className={`fixed inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-4 md:px-10 ${[0, 3, 4].includes(cur) ? 'text-white' : ''}`}>
+      <header className={`fixed inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-4 md:px-10 ${(v2 ? [3, 4] : [0, 3, 4]).includes(cur) ? 'text-white' : ''}`}>
         <Link href="/" className="flex items-center gap-2.5" aria-label="Nestora home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo-mark.png" alt="" width={30} height={30} className="h-[30px] w-[30px]" />
@@ -151,8 +175,44 @@ export default function HorizontalLanding() {
 
       <div ref={track} className="flex h-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" tabIndex={0}
         aria-label="Nestora, scroll sideways">
-        {/* 01 hero: the house being built on the plot */}
-        <section className={scene} aria-label={SCENES[0]}>
+        {/* 01 hero (v2): your plot, a house growing on it */}
+        {v2 && (
+          <section className={scene} aria-label={SCENES[0]}>
+            <div className="grid h-full grid-rows-[auto_1fr] px-6 pb-16 pt-24 md:grid-cols-[1fr_1.15fr] md:grid-rows-1 md:px-14 md:pt-24">
+              <div className="flex flex-col justify-center gap-6">
+                <Reveal on={cur === 0}><Plate n={1} label="Home" /></Reveal>
+                <Reveal on={cur === 0} delay={0.1}>
+                  <h1 className="font-display text-5xl leading-[1.02] md:text-7xl">Your family.<br />Your plot.<br /><em className="not-italic" style={{ color: C.terra }}>A home that fits.</em></h1>
+                </Reveal>
+                <Reveal on={cur === 0} delay={0.2}>
+                  <p className="text-sm font-semibold" style={{ color: C.muted }}>How big is your plot?</p>
+                  <div className="mt-2 flex items-center gap-2 text-lg">
+                    {(['w', 'd'] as const).map((k, n) => (
+                      <span key={k} className="contents">
+                        {n === 1 && <span style={{ color: C.muted }}>×</span>}
+                        <input type="number" inputMode="numeric" min={15} max={120} value={plot[k]} aria-label={k === 'w' ? 'Plot width in feet' : 'Plot depth in feet'}
+                          onChange={(e) => { const v = Math.max(15, Math.min(120, Number(e.target.value) || 0)); setPlot((p) => ({ ...p, [k]: v })); }}
+                          className="h-12 w-24 rounded-xl border bg-white px-3 text-center font-semibold" style={{ borderColor: C.line }} />
+                      </span>
+                    ))}
+                    <span style={{ color: C.muted }}>ft</span>
+                  </div>
+                </Reveal>
+                <Reveal on={cur === 0} delay={0.3} className="flex flex-wrap gap-3">
+                  <Cta href={`/questionnaire?w=${plot.w}&d=${plot.d}`}>Design my home</Cta>
+                  <Link href="/house/nest_f24390ae0f" className="inline-flex items-center rounded-full border px-6 py-3 text-sm font-semibold" style={{ borderColor: C.ink }}>See a sample home</Link>
+                </Reveal>
+              </div>
+              <div className="relative min-h-0">
+                <PlotHouse3D plotW={plot.w} plotD={plot.d} progress={grow} className="absolute inset-0" />
+                <p className="absolute bottom-2 right-2 text-[11px]" style={{ color: C.muted }}>{plot.w} × {plot.d} ft, an example home drawn by Nestora</p>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* 01 hero (v1): the house being built on the plot */}
+        {!v2 && <section className={scene} aria-label={SCENES[0]}>
           <Film src="/video/hero.mp4" mobile="/video/hero-mobile.mp4" poster="/video/hero-poster.jpg" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
           <div className="relative flex h-full max-w-3xl flex-col justify-end gap-6 px-6 pb-24 text-white md:px-14 md:pb-28">
@@ -163,7 +223,7 @@ export default function HorizontalLanding() {
             <Reveal on={cur === 0} delay={0.2}><p className="max-w-md text-base text-white/85 md:text-lg">Answer a few questions. Get four house designs that follow the building rules, with a cost estimate and a walk-through in 3D.</p></Reveal>
             <Reveal on={cur === 0} delay={0.3} className="flex flex-wrap gap-3"><Cta href="/questionnaire">Design my home</Cta><Cta href="/house/nest_f24390ae0f" ghost>See a sample home</Cta></Reveal>
           </div>
-        </section>
+        </section>}
 
         {/* 02 how it works: three big numbered steps */}
         <section className={scene} aria-label={SCENES[1]}>
@@ -184,10 +244,24 @@ export default function HorizontalLanding() {
                 ))}
               </ol>
             </div>
-            <Reveal on={cur === 1} delay={0.2} className="relative hidden overflow-hidden rounded-3xl md:block">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/video/hero-poster.jpg" alt="A finished house on its plot" className="h-full w-full animate-[kenburns_18s_ease-in-out_infinite_alternate] object-cover" />
-            </Reveal>
+            {v2 ? (
+              <div className="relative min-h-0 overflow-hidden rounded-3xl bg-[#F2EDE4]">
+                <PlotHouse3D plotW={plot.w} plotD={plot.d} progress={step / (BUILD_STEPS.length - 1)} className="absolute inset-0" />
+                <ol className="absolute left-4 top-4 space-y-1 text-xs">
+                  {BUILD_STEPS.map((s, k) => (
+                    <li key={s} className="flex items-center gap-2" style={{ color: k <= step ? C.ink : C.muted, fontWeight: k === step ? 700 : 400 }}>
+                      <span className="h-1.5 w-1.5 rounded-full" style={{ background: k <= step ? C.terra : C.line }} />{s}
+                    </li>
+                  ))}
+                </ol>
+                <p className="absolute bottom-3 right-4 text-[11px]" style={{ color: C.muted }}>Keep scrolling to build</p>
+              </div>
+            ) : (
+              <Reveal on={cur === 1} delay={0.2} className="relative hidden overflow-hidden rounded-3xl md:block">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/video/hero-poster.jpg" alt="A finished house on its plot" className="h-full w-full animate-[kenburns_18s_ease-in-out_infinite_alternate] object-cover" />
+              </Reveal>
+            )}
           </div>
         </section>
 
@@ -265,7 +339,7 @@ export default function HorizontalLanding() {
       </div>
 
       {/* progress and arrows */}
-      <div className={`fixed inset-x-0 bottom-0 z-30 flex items-center gap-4 px-5 pb-5 md:px-10 ${[0, 3, 4].includes(cur) ? 'text-white' : ''}`}>
+      <div className={`fixed inset-x-0 bottom-0 z-30 flex items-center gap-4 px-5 pb-5 md:px-10 ${(v2 ? [3, 4] : [0, 3, 4]).includes(cur) ? 'text-white' : ''}`}>
         <button type="button" onClick={() => go(cur - 1)} disabled={cur === 0} aria-label="Previous" className="rounded-full border border-current p-2 disabled:opacity-30"><ArrowLeft className="h-4 w-4" /></button>
         <div className="h-px flex-1 bg-current/30 relative"><div className="absolute inset-y-0 left-0 bg-current transition-all duration-500" style={{ width: `${((cur + 1) / SCENES.length) * 100}%`, height: 2, top: -0.5 }} /></div>
         <span className="font-mono text-xs tabular-nums">{String(cur + 1).padStart(2, '0')} / {String(SCENES.length).padStart(2, '0')}</span>
