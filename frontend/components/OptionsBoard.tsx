@@ -9,6 +9,8 @@ import { track } from '@/lib/analytics';
 import { area, useLengthUnit } from '@/lib/units';
 import PlanThumb from '@/components/PlanThumb';
 import Designing from '@/components/Designing';
+import Compare from '@/components/Compare';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const FIT_LABEL: Record<string, string> = {
   floors: 'Floors as asked', parking: 'Parking as asked', bedrooms: 'All bedrooms', study: 'Study', puja: 'Puja', guest: 'Guest room',
@@ -20,6 +22,15 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   const [res, setRes] = useState<OptionsResponse | null>(null);
   const [keep, setKeep] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<'start' | 'replace' | 'choose' | null>('start');
+  const [cmp, setCmp] = useState<string[]>([]);
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const on = () => setPhone(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const started = Date.now();
 
@@ -95,18 +106,29 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
         </p>
       )}
       {error && <p role="alert" className="mb-4 text-sm text-red-400">{error}</p>}
-      <div className="grid gap-4 md:grid-cols-2">
-        {res.options.map((o, n) => (
-          <OptionCard key={o.id} o={o} n={n + 1} kept={keep.has(o.id)} busy={busy !== null}
-            onKeep={() => setKeep((s) => { const x = new Set(s); x.has(o.id) ? x.delete(o.id) : x.add(o.id); return x; })}
-            onChoose={() => choose(o.id)} />
-        ))}
-      </div>
+      {cmp.length === 2 && (() => {
+        const ia = res.options.findIndex((o) => o.id === cmp[0]), ib = res.options.findIndex((o) => o.id === cmp[1]);
+        return ia >= 0 && ib >= 0 ? <Compare a={res.options[ia]} b={res.options[ib]} na={ia + 1} nb={ib + 1} onClose={() => setCmp([])} /> : null;
+      })()}
+      {cmp.length === 1 && <p className="mb-4 hidden text-sm text-slate-300 md:block">Tick one more option to compare.</p>}
+      {phone ? (
+        <SwipeDeck options={res.options} keep={keep} busy={busy !== null} onChoose={choose} onMore={replace}
+          onLike={(id) => setKeep((s) => new Set(s).add(id))} />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {res.options.map((o, n) => (
+            <OptionCard key={o.id} o={o} n={n + 1} kept={keep.has(o.id)} busy={busy !== null}
+              onKeep={() => setKeep((s) => { const x = new Set(s); x.has(o.id) ? x.delete(o.id) : x.add(o.id); return x; })}
+              onChoose={() => choose(o.id)} comparing={cmp.includes(o.id)}
+              onCompare={() => setCmp((c) => (c.includes(o.id) ? c.filter((x) => x !== o.id) : [...c, o.id].slice(-2)))} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: number; kept: boolean; busy: boolean; onKeep: () => void; onChoose: () => void }) {
+function OptionCard({ o, n, kept, busy, onKeep, onChoose, comparing, onCompare }: { o: Option; n: number; kept: boolean; busy: boolean; onKeep: () => void; onChoose: () => void; comparing?: boolean; onCompare?: () => void }) {
   const u = useLengthUnit();
   const [floor, setFloor] = useState(0);
   const floors = Array.from(new Set(o.preview.map((r) => r.f))).sort();
@@ -115,7 +137,14 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose }: { o: Option; n: numb
   return (
     <article className={`rounded-2xl border bg-ivory-50 p-4 text-slate-900 ${kept ? 'border-rose-400 ring-2 ring-rose-400' : 'border-transparent'}`}>
       <header className="flex items-center justify-between">
-        <h2 className="font-bold">Option {n}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-bold">Option {n}</h2>
+          {onCompare && (
+            <label className="hidden cursor-pointer items-center gap-1 text-xs text-slate-600 md:flex">
+              <input type="checkbox" checked={!!comparing} onChange={onCompare} className="accent-[#B4532A]" /> Compare
+            </label>
+          )}
+        </div>
         <div className="flex gap-1" role="tablist" aria-label="Floors">
           {floors.map((f) => (
             <button key={f} type="button" role="tab" aria-selected={f === floor} onClick={() => setFloor(f)}
@@ -179,5 +208,44 @@ function ExteriorStill({ o }: { o: Option }) {
       ) : <div className="aspect-[64/42] w-full animate-pulse" aria-hidden />}
       {o.look && <figcaption className="px-3 py-1.5 text-xs font-semibold text-slate-700">{LOOK_NAME[o.look.archetype]}</figcaption>}
     </figure>
+  );
+}
+
+/** Phones: one option at a time. Swipe right to like, left to pass; after the last, see more like the liked ones. */
+function SwipeDeck({ options, keep, busy, onLike, onChoose, onMore }: {
+  options: Option[]; keep: Set<string>; busy: boolean; onLike: (id: string) => void; onChoose: (id: string) => void; onMore: () => void;
+}) {
+  const [i, setI] = useState(0);
+  const o = options[i];
+  const next = (like: boolean) => { if (like && o) onLike(o.id); setI((x) => x + 1); };
+  if (!o) {
+    return (
+      <div className="rounded-2xl bg-ivory-50 p-6 text-center text-slate-900">
+        <p className="font-semibold">You liked {keep.size} of {options.length}.</p>
+        <div className="mt-4 flex flex-col gap-2">
+          <button type="button" onClick={onMore} disabled={busy} className="rounded-lg bg-sage-800 px-4 py-2.5 text-sm font-semibold text-white">
+            {keep.size ? 'Show more like my liked ones' : 'Show different options'}
+          </button>
+          <button type="button" onClick={() => setI(0)} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold">Look again</button>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <p className="mb-2 text-center text-xs text-slate-400">Swipe right to like, left to pass · {i + 1} of {options.length}</p>
+      <AnimatePresence mode="popLayout">
+        <motion.div key={o.id} drag="x" dragConstraints={{ left: 0, right: 0 }} dragElastic={0.8}
+          onDragEnd={(_, info) => { if (info.offset.x > 110) next(true); else if (info.offset.x < -110) next(false); }}
+          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, x: 0 }}
+          whileDrag={{ rotate: 3 }} className="touch-pan-y">
+          <OptionCard o={o} n={i + 1} kept={keep.has(o.id)} busy={busy} onKeep={() => next(true)} onChoose={() => onChoose(o.id)} />
+        </motion.div>
+      </AnimatePresence>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button type="button" onClick={() => next(false)} className="rounded-lg border border-slate-600 py-2 text-sm text-slate-200">Pass</button>
+        <button type="button" onClick={() => next(true)} className="rounded-lg bg-rose-500 py-2 text-sm font-semibold text-white">Like</button>
+      </div>
+    </div>
   );
 }
