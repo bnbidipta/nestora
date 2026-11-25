@@ -62,7 +62,7 @@ export default function MobileLanding() {
       </header>
 
       {/* Main Single-Column Stack */}
-      <ScrollVideo src="/video/hero.mp4" poster="/video/hero-poster.jpg" cta={{ href: '/questionnaire', text: 'Design my home' }}>
+      <ScrollVideo src="/video/hero.mp4" mobileSrc="/video/hero-mobile.mp4" poster="/video/hero-poster.jpg" cta={{ href: '/questionnaire', text: 'Design my home' }}>
         <h2 className="max-w-2xl text-4xl font-black leading-tight tracking-tight md:text-6xl">Your family. Your plot.<br />A home that fits.</h2>
         <p className="mt-4 max-w-xl text-base text-white/85 md:text-lg">Answer a few questions. Get a house design that follows the building rules, a cost estimate, and a walk-through in 3D.</p>
       </ScrollVideo>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      :root { --ground: #1a1510; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--ground); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      #camera { position: absolute; inset: 0; transform-origin: 55% 55%; }
+      #camera img {
+        position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+        --reveal: 0;
+        -webkit-mask-image: linear-gradient(to top, #000 calc(var(--reveal) * 1%), transparent calc(var(--reveal) * 1% + 22%));
+        mask-image: linear-gradient(to top, #000 calc(var(--reveal) * 1%), transparent calc(var(--reveal) * 1% + 22%));
+      }
+      #camera img.full { -webkit-mask-image: none; mask-image: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1920" data-height="1080"
+         data-layout-allow-overflow>
+      <!-- One aerial camera over the same plot; each construction stage is a layer revealed over the last. -->
+      <div id="camera" class="clip" data-start="0" data-duration="15" data-track-index="0" data-track-kind="graphics">
+        <img id="s0" class="full" src="assets/0-plot.jpg" alt="" />
+        <img id="s1" src="assets/1-layout.jpg" alt="" />
+        <img id="s2" src="assets/2-foundation.jpg" alt="" />
+        <img id="s3" src="assets/3-structure.jpg" alt="" />
+        <img id="s4" src="assets/4-walls.jpg" alt="" />
+        <img id="s5" src="assets/5-finished.jpg" alt="" />
+        <img id="s6" src="assets/0-plot.jpg" alt="" />
+      </div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      // Slow continuous push in, then a gentle pull-back while the plot returns, so the loop seams.
+      tl.fromTo("#camera", { scale: 1.0 }, { scale: 1.1, duration: 13.2, ease: "sine.inOut" }, 0);
+      tl.to("#camera", { scale: 1.0, duration: 1.75, ease: "sine.inOut" }, 13.2);
+
+      // Layout lines settle onto the soil (dissolve), structure rises bottom-up (wipes), paint arrives (dissolve).
+      const dissolve = (id, at, dur) => {
+        tl.set(id, { "--reveal": 0, opacity: 0 }, 0);
+        tl.set(id, { "--reveal": 100 }, at);
+        tl.to(id, { opacity: 1, duration: dur, ease: "sine.inOut" }, at);
+      };
+      const rise = (id, at, dur) => {
+        tl.set(id, { "--reveal": -22, opacity: 1 }, 0);
+        tl.to(id, { "--reveal": 100, duration: dur, ease: "power2.inOut" }, at);
+      };
+      dissolve("#s1", 1.5, 1.0);
+      rise("#s2", 3.6, 1.3);
+      rise("#s3", 5.9, 1.4);
+      rise("#s4", 8.2, 1.4);
+      dissolve("#s5", 10.4, 1.3);
+      dissolve("#s6", 13.2, 1.75);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

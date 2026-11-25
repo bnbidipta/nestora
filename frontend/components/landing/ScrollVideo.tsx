@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { ReactNode, useEffect, useRef } from 'react';
 
 /** A full-width video scene: muted, looping, plays while on screen and pauses when scrolled away (saves battery and CPU). */
-export default function ScrollVideo({ src, poster, children, cta }: {
-  src: string; poster: string; children: ReactNode; cta?: { href: string; text: string };
+export default function ScrollVideo({ src, mobileSrc, poster, children, cta }: {
+  src: string; mobileSrc?: string; poster: string; children: ReactNode; cta?: { href: string; text: string };
 }) {
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
@@ -19,8 +19,11 @@ export default function ScrollVideo({ src, poster, children, cta }: {
 
   return (
     <section className="relative h-[88vh] min-h-[480px] w-full overflow-hidden bg-black">
-      <video ref={video} src={src} poster={poster} muted loop playsInline autoPlay preload="metadata" aria-hidden
-        className="absolute inset-0 h-full w-full object-cover" />
+      <video ref={video} poster={poster} muted loop playsInline autoPlay preload="metadata" aria-hidden
+        className="absolute inset-0 h-full w-full object-cover">
+        {mobileSrc && <source src={mobileSrc} type="video/mp4" media="(max-width: 767px)" />}
+        <source src={src} type="video/mp4" />
+      </video>
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl px-6 pb-16 text-white md:px-12">
         {children}
