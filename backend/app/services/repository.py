@@ -147,10 +147,11 @@ class HouseTwinRepository:
 
     @classmethod
     def add_waitlist(cls, kind: str, email: Optional[str] = None, city: Optional[str] = None,
-                     house_id: Optional[str] = None, user_id: Optional[str] = None) -> None:
+                     house_id: Optional[str] = None, user_id: Optional[str] = None,
+                     topic: Optional[str] = None, message: Optional[str] = None) -> None:
         if not USE_SUPABASE:
             return  # ponytail: file mode drops leads; dev only
-        row = {"kind": kind, "email": email, "city": city, "house_id": house_id, "user_id": user_id}
+        row = {"kind": kind, "email": email, "city": city, "house_id": house_id, "user_id": user_id, "topic": topic, "message": message}
         with _rest() as c:
             c.post("/waitlist", json={k: v for k, v in row.items() if v is not None}).raise_for_status()
 

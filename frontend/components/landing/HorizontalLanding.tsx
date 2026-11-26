@@ -333,7 +333,7 @@ export default function HorizontalLanding({ variant = 'v1' }: { variant?: 'v1' |
               <Link href="/house/nest_f24390ae0f" className="inline-flex items-center rounded-full border px-6 py-3 text-sm font-semibold" style={{ borderColor: C.ink }}>See a sample home</Link>
             </Reveal>
             <p className="max-w-md text-xs" style={{ color: C.muted }}>Concept designs and estimates. A licensed architect and structural engineer must review any plan before you build.</p>
-            <nav className="flex gap-5 text-xs" style={{ color: C.muted }}><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></nav>
+            <nav className="flex gap-5 text-xs" style={{ color: C.muted }}><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link><Link href="/contact">Contact</Link></nav>
           </div>
         </section>
       </div>

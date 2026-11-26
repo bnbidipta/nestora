@@ -12,6 +12,7 @@ export default function RouteError({ error, reset }: { error: Error; reset: () =
       <button type="button" onClick={reset} className="rounded-full bg-terra px-5 py-2.5 text-sm font-semibold text-white hover:bg-terra-dark">
         Try again
       </button>
+      <a href="/contact" className="text-sm text-muted underline">Tell us what happened</a>
     </main>
   );
 }

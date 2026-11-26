@@ -19,6 +19,8 @@ const FIT_LABEL: Record<string, string> = {
   help: "Help's room", elder_ground: 'Elder on ground floor',
 };
 
+const PENDING = 'nestora_pending_choice';  // {house, id, at}: the design picked just before signing in
+
 export default function OptionsBoard({ houseId }: { houseId: string }) {
   const router = useRouter();
   const [res, setRes] = useState<OptionsResponse | null>(null);
@@ -71,9 +73,14 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   const [loginFor, setLoginFor] = useState<string | null>(null);
 
   useEffect(() => {
-    const back = new URLSearchParams(window.location.search).get('choose');
-    if (back) {  // returning from sign-in: finish the choice, keep the existing options
-      void finish(back);
+    // Back from sign-in: finish only a choice this browser started (a crafted link can't choose for anyone).
+    let pend: { house?: string; id?: string; at?: number } = {};
+    try { pend = JSON.parse(localStorage.getItem(PENDING) || '{}'); localStorage.removeItem(PENDING); } catch { /* none */ }
+    if (new URLSearchParams(window.location.search).has('resume') && pend.house === houseId && pend.id && Date.now() - (pend.at ?? 0) < 1_800_000) {
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) void finish(pend.id!);
+        else router.replace(`/house/${houseId}/options`);
+      });
       return;
     }
     startOptions(houseId)
@@ -102,7 +109,11 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   // Choosing a design needs an account, so the house is never lost to a cleared browser or a new phone.
   const choose = async (id: string) => {
     const { data } = await supabase.auth.getSession();
-    if (!data.session) { setLoginFor(id); return; }
+    if (!data.session) {
+      try { localStorage.setItem(PENDING, JSON.stringify({ house: houseId, id, at: Date.now() })); } catch { /* private mode */ }
+      setLoginFor(id);
+      return;
+    }
     await finish(id);
   };
 
@@ -117,7 +128,7 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save your choice.');
       setBusy(null);
-      if (new URLSearchParams(window.location.search).has('choose')) router.replace(`/house/${houseId}/options`);
+      if (new URLSearchParams(window.location.search).has('resume')) router.replace(`/house/${houseId}/options`);
     }
   };
 
@@ -197,7 +208,7 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
           <div className="w-full max-w-sm rounded-3xl bg-card p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h2 id="login-title" className="text-2xl text-ink">Save this design to your account</h2>
             <p className="mt-2 mb-5 text-sm text-muted">So you can open it on any phone and never lose it. We&apos;ll take you straight to your house.</p>
-            <LoginOptions next={`/house/${houseId}/options?choose=${loginFor}`} />
+            <LoginOptions next={`/house/${houseId}/options?resume=1`} />
             <button type="button" onClick={() => setLoginFor(null)} className="mt-4 w-full text-center text-xs text-muted">Not now</button>
           </div>
         </div>

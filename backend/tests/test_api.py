@@ -188,3 +188,10 @@ def test_photo_rejects_huge_png_header_and_repeat_requests():
     first = client.post(f"/api/v1/house/{hid}/photo", json={"image": img}, headers=auth).json()["render"]
     again = client.post(f"/api/v1/house/{hid}/photo", json={"image": img}, headers=auth).json()["render"]
     assert again.get("fallback") and again["key"] == first["key"]  # already queued: no second job
+
+
+def test_contact_form_validates_and_accepts():
+    assert client.post("/api/v1/contact", json={"message": "hi"}).status_code == 422  # too short
+    assert client.post("/api/v1/contact", json={"message": "How do I share my design?", "email": "not-an-email"}).status_code == 422
+    assert client.post("/api/v1/contact", json={"topic": "question", "message": "How do I share my design?"}).json()["success"]
+    assert client.post("/api/v1/contact", json={"message": "buy cheap pills now", "website": "spam.example"}).json()["success"]

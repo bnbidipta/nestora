@@ -128,6 +128,21 @@ def join_waitlist(body: WaitlistIn):
     return {"success": True}
 
 
+class ContactIn(BaseModel):
+    topic: Literal["question", "problem", "architect", "other"] = "question"
+    message: str = Field(min_length=5, max_length=4000)
+    email: Optional[str] = Field(default=None, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$", max_length=200)
+    website: str = Field(default="", max_length=200)  # honeypot: people never see or fill it
+
+
+@router.post("/contact", dependencies=[Depends(rate_limit("contact", 3))])
+def contact(body: ContactIn):
+    """Contact form; stored with the other leads (Supabase table waitlist, kind 'contact')."""
+    if not body.website:  # bots that fill every field get a silent success
+        HouseTwinRepository.add_waitlist("contact", email=body.email or None, topic=body.topic, message=body.message.strip())
+    return {"success": True}
+
+
 @router.post("/house/{house_id}/options", dependencies=[Depends(rate_limit("options", 20))])
 def start_options(house_id: str, bg: BackgroundTasks, _u: Optional[str] = Depends(require_edit)):
     _twin(house_id)

@@ -195,6 +195,9 @@ export const submitSwipe = (houseId: string, swipe: { card_id: string; direction
 export const startOptions = (houseId: string) =>
   call<OptionsResponse>(`/api/v1/house/${houseId}/options`, { method: 'POST' }, houseId);
 
+export const sendContact = (body: { topic: string; message: string; email?: string; website?: string }) =>
+  call<{ success: boolean }>('/api/v1/contact', { method: 'POST', body: JSON.stringify(body) });
+
 export const optionsProgress = (houseId: string) =>
   call<{ round: number; options: Option[]; pending: number }>(`/api/v1/house/${houseId}/options`, {}, houseId);
 
