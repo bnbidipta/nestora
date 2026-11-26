@@ -186,10 +186,11 @@ mins = Vector((min(v[0] for o in house for v in o.bound_box), min(v[1] for o in 
 maxs = Vector((max(v[0] for o in house for v in o.bound_box), max(v[1] for o in house for v in o.bound_box), scene_info["roof_top_m"]))
 center = (mins + maxs) / 2
 span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z * 1.4)
-cam = bpy.data.cameras.new("cam"); cam.lens = 35
+# like an architectural photo: from across the road at a little above eye level, wide lens, house filling the frame
+cam = bpy.data.cameras.new("cam"); cam.lens = 28
 co = bpy.data.objects.new("cam", cam); sc.collection.objects.link(co); sc.camera = co
-co.location = center + Vector((span * 1.15, -span * 1.55, span * 0.55))
-direction = (center + Vector((0, 0, maxs.z * 0.1))) - co.location
+co.location = Vector((center.x + span * 0.42, mins.y - span * 0.62, 1.8))  # close enough that the house fills the frame
+direction = Vector((center.x, center.y, maxs.z * 0.42)) - co.location
 co.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
 
 sc.render.filepath = os.path.join(OUT, f"{hid}_{QUALITY}.png")
