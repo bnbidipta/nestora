@@ -51,7 +51,8 @@ export default function Poster({ params }: { params: { id: string } }) {
         </header>
         <div className="mt-6 grid gap-6 md:grid-cols-2 print:grid-cols-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {still ? <img src={still} alt="Exterior of the home" className="w-full rounded-xl" /> : <div className="aspect-[12/7.6] animate-pulse rounded-xl bg-[#EFE8DC]" />}
+          {md.render?.photo ? <img src={md.render.photo} alt="Photoreal picture of the home" className="w-full rounded-xl" />
+            : still ? <img src={still} alt="Exterior of the home" className="w-full rounded-xl" /> : <div className="aspect-[12/7.6] animate-pulse rounded-xl bg-[#EFE8DC]" />}
           <Elevation twin={twin} />
         </div>
         <div className={`mt-6 grid gap-4 ${twin.floors.length > 2 ? 'grid-cols-3' : 'grid-cols-2'}`}>

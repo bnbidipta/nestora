@@ -139,3 +139,15 @@ def test_exterior_choices_and_text():
     assert r.status_code == 200, r.text
     ex = client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"]["look"]["exterior"]
     assert ex["railing"] == "glass" and ex["wall"][0] == "exposed_brick" and ex["window"] != "nope"
+
+
+def test_render_queued_and_requeued_on_change():
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
+    r1 = client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"]["render"]
+    assert r1["status"] == "queued" and r1["key"]
+    client.post(f"/api/v1/house/{hid}/exterior", json={"choices": {"railing": "glass"}}, headers=auth)
+    r2 = client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"]["render"]
+    assert r2["status"] == "queued" and r2["key"] != r1["key"]  # a changed look needs a new photo

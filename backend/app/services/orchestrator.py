@@ -6,6 +6,7 @@ Stages are plain functions; the Judge gates every candidate (failing candidates 
 Generators: A = template arrangements + row fitter (generator.py), B = LLM topology proposer (llm.py),
 C1 = learned ranker (rank.py).
 """
+import json
 import logging
 import random
 from typing import Any, Dict, List, Optional, Tuple
@@ -257,6 +258,11 @@ def _commit(twin: HouseTwin, brief: Brief, cand: Dict[str, Any], trace: List[str
     twin.metadata["chosen_candidate"] = cand
     twin.metadata.pop("pool", None)  # keep the stored twin small once a design is chosen
     twin.status = "ready" if judge.passed else "needs_review"
+    # photoreal render (scripts/render_batch.py): keyed by the plan and the look, so a changed design never shows an old photo
+    import hashlib
+    key = hashlib.sha1(json.dumps([cand["id"], cand["layout"].get("rooms"), twin.metadata.get("look")], sort_keys=True, default=str).encode()).hexdigest()[:12]
+    if (twin.metadata.get("render") or {}).get("key") != key:
+        twin.metadata["render"] = {"status": "queued", "key": key}
     trace.append(f"Judge: {'pass' if judge.passed else 'fail'} ({len(judge.failures)} failures, {len(judge.warnings)} warnings).")
     HouseTwinRepository.save(twin)
     return {"success": judge.passed, "house_id": twin.house_id, "status": twin.status, "execution_trace": trace,
