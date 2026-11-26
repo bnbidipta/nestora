@@ -1,0 +1,31 @@
+# Once a day: designs whose photoreal picture was queued (fast GPU service off or busy) get rendered on Kaggle's
+# free GPU and stored in Supabase. Does nothing when the queue is empty. Needs repository secrets:
+# SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, KAGGLE_API_TOKEN (Settings > Secrets and variables > Actions).
+name: Photo queue
+
+on:
+  schedule:
+    - cron: "17 21 * * *"  # 02:47 IST
+  workflow_dispatch:
+
+concurrency:
+  group: photo-queue
+  cancel-in-progress: false
+
+jobs:
+  render:
+    if: github.repository == 'bnbidipta/nestora'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install httpx kaggle
+      - name: Render queued photos
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+        run: python scripts/render_batch.py --limit 10

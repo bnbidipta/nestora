@@ -8,11 +8,12 @@ off or busy (metadata.render: status "queued", fallback true, guide = the browse
 
 Reads SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY from backend/.env and the Kaggle token from ~/.kaggle/access_token.
 Never prints secrets. Run from the repo root:  python scripts/render_batch.py [--limit 10]
-ponytail: run by hand (or a scheduled GitHub Action later); read-modify-write of the twin JSON, last writer wins
+ponytail: runs daily from .github/workflows/photos.yml (or by hand); read-modify-write of the twin JSON, last writer wins
 for the render field only.
 """
 import argparse
 import glob
+import json
 import os
 import shutil
 import subprocess
@@ -29,11 +30,16 @@ OUT = os.path.join(ROOT, "data", "kaggle", "render-out")
 
 
 def env():
-    for line in open(os.path.join(ROOT, "backend", ".env"), encoding="utf-8"):
-        if "=" in line and not line.startswith("#"):
-            k, v = line.strip().split("=", 1)
-            os.environ.setdefault(k, v.strip().strip('"'))
-    os.environ.setdefault("KAGGLE_API_TOKEN", open(os.path.expanduser("~/.kaggle/access_token")).read().strip())
+    """Secrets from the environment (GitHub Actions) or, on a laptop, backend/.env and ~/.kaggle/access_token."""
+    dotenv = os.path.join(ROOT, "backend", ".env")
+    if os.path.exists(dotenv):
+        for line in open(dotenv, encoding="utf-8"):
+            if "=" in line and not line.startswith("#"):
+                k, v = line.strip().split("=", 1)
+                os.environ.setdefault(k, v.strip().strip('"'))
+    tok = os.path.expanduser("~/.kaggle/access_token")
+    if "KAGGLE_API_TOKEN" not in os.environ and os.path.exists(tok):
+        os.environ["KAGGLE_API_TOKEN"] = open(tok).read().strip()
     return os.environ["SUPABASE_URL"].rstrip("/"), os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 
 
@@ -62,6 +68,9 @@ def main():
     for d in glob.glob(os.path.join(DATA, "nest_*")):
         shutil.rmtree(d)
     os.makedirs(DATA, exist_ok=True)
+    meta = os.path.join(DATA, "dataset-metadata.json")
+    if not os.path.exists(meta):  # data/ is not in git (fresh CI checkout)
+        json.dump({"title": "nestora-renders", "id": "bnbidipta/nestora-renders", "licenses": [{"name": "other"}]}, open(meta, "w"))
     open(os.path.join(DATA, "negative.txt"), "w", encoding="utf-8").write(photo.NEG)
     for r in rows:
         d = os.path.join(DATA, r["id"])

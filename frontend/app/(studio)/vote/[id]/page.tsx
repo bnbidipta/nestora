@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Heart } from 'lucide-react';
 import PlanThumb from '@/components/PlanThumb';
 import { Option, castVote, readVote } from '@/lib/api';
+import { track } from '@/lib/analytics';
 
 const LOOK_NAME: Record<string, string> = { terrace: 'Terrace roof', sloped: 'Sloped tiled roof', stepped: 'Stepped, with roof pavilion', mixed: 'Part sloped, part terrace' };
 
@@ -37,7 +38,7 @@ export default function VotePage({ params }: { params: { id: string } }) {
     const next = likes.includes(id) ? likes.filter((x) => x !== id) : [...likes, id];
     setLikes(next);
     try { localStorage.setItem('nestora_voter_name', name); } catch { /* private mode */ }
-    try { setTally((await castVote(params.id, { token, voter: me, name, likes: next })).tally); } catch (e) { setErr(e instanceof Error ? e.message : 'Could not save your vote.'); }
+    try { setTally((await castVote(params.id, { token, voter: me, name, likes: next })).tally); track('vote_cast', { likes: next.length }); } catch (e) { setErr(e instanceof Error ? e.message : 'Could not save your vote.'); }
   };
 
   if (err && !opts) return <p role="alert" className="py-20 text-center text-red-700">{err}</p>;
