@@ -13,7 +13,6 @@ when templates need non-rectangular adjacency.
 Variation comes from: arrangement templates (zone per room type), mirroring, row-depth jitter, and
 parking strategy. Units are metres internally.
 """
-import copy
 import itertools
 import json
 import math
@@ -517,6 +516,3 @@ def compass(rm: Dict[str, Any], env: Dict[str, float], facing: str) -> str:
     ang = (math.degrees(math.atan2(wx, wy)) + 360) % 360  # 0 = north, clockwise
     return ["N", "NE", "E", "SE", "S", "SW", "W", "NW"][int(((ang + 22.5) % 360) // 45)]
 
-
-def copy_candidate(c: Dict[str, Any]) -> Dict[str, Any]:
-    return copy.deepcopy(c)

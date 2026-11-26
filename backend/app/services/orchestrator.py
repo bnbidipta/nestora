@@ -278,25 +278,3 @@ def _get(house_id: str) -> HouseTwin:
     if not twin:
         raise ValueError(f"House '{house_id}' not found.")
     return twin
-
-
-class OrchestrationDAG:
-    """One-shot generation (best-ranked option), kept for the existing /generate endpoint."""
-
-    @staticmethod
-    def run_pipeline(house_id: str) -> Dict[str, Any]:
-        twin = _get(house_id)
-        brief = brief_of(twin)
-        trace = [f"Brief: {brief.plot_width_ft:.0f}×{brief.plot_depth_ft:.0f} ft plot, {brief.floors_wanted} floor(s), {brief.bedrooms_needed} bedroom(s)."]
-        good = _pool(brief, twin.metadata.get("prefs", {}), seed=0)
-        trace.append(f"Generated and judged candidates: {len(good)} passed every check.")
-        if not good:
-            twin.status = "infeasible"
-            twin.metadata["infeasible_reason"] = infeasible_reason(brief)
-            HouseTwinRepository.save(twin)
-            trace.append(twin.metadata["infeasible_reason"])
-            return {"success": False, "house_id": house_id, "status": "infeasible", "execution_trace": trace,
-                    "judge_summary": {"pass": False, "failures": [{"rule_id": "A_NO_FEASIBLE_LAYOUT", "message": twin.metadata["infeasible_reason"]}], "warnings": []}}
-        best, ev = good[0]
-        trace.append(f"Best option {best['id']} (score {ev['score']['total']}).")
-        return _commit(twin, brief, best, trace)

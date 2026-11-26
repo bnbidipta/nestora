@@ -39,7 +39,10 @@ def main(n: int = 50):
         c = client.post("/api/v1/house", json={}).json()
         hid, auth = c["house_id"], {"X-Edit-Token": c["edit_token"]}
         client.post(f"/api/v1/house/{hid}/brief", json=b.model_dump(), headers=auth)
-        res = client.post(f"/api/v1/house/{hid}/generate", headers=auth).json()
+        opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json().get("options") or []
+        if not opts:
+            continue
+        res = client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth).json()
         if res.get("status") != "ready":
             continue
         open(os.path.join(OUT, f"{r['id']}.dxf"), "w", encoding="utf-8").write(client.get(f"/api/v1/house/{hid}/export/dxf").text)

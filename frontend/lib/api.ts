@@ -213,8 +213,6 @@ export const requestPhoto = (houseId: string, image: string) =>
 
 export const dxfUrl = (houseId: string) => `${API_BASE}/api/v1/house/${houseId}/export/dxf`;
 
-export const generateHouse = (houseId: string) =>
-  call(`/api/v1/house/${houseId}/generate`, { method: 'POST' }, houseId);
 
 export const requestReview = (houseId: string) =>
   call(`/api/v1/house/${houseId}/review`, { method: 'POST' }, houseId);

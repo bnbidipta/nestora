@@ -108,7 +108,7 @@ You'll see: textured walls and floors, glass windows, door leaves, proper stairs
 2. Which cities' rules first?
 3. Is any architect available to review plans before we claim "architect reviewed"? (We won't claim it otherwise.)
 
-## Added 2026-11-26: Blender step (photoreal render + baked lighting)
+## Added 2026-11-26: Blender step (photoreal render + baked lighting) — superseded 2026-11-26: photos now repaint the browser snapshot (backend/app/services/photo.py); Blender removed, revisit only for baked lighting
 From the Claude Code + Blender walkthrough guide the user shared, folded into the Kaggle Blender step:
 - Golden-hour sun in Cycles; quick low-sample test render before the full one.
 - Bake the lighting into the model and export a compressed .glb; the web 3D view loads the baked model when one exists
