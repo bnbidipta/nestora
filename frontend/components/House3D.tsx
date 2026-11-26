@@ -46,6 +46,11 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
   const floorsN = twin.floors.length;
   const [upTo, setUpTo] = useState(floorsN + 1);  // floors shown, cut away above; floorsN + 1 = whole house with roof
   const [walkFloor, setWalkFloor] = useState(0);
+  // walk-through game layer: where you are (for the minimap), rooms visited, a pop-up on entering a room, floor finish
+  const [pos, setPos] = useState<{ x: number; y: number; yaw: number } | null>(null);
+  const [visited, setVisited] = useState<Set<string>>(new Set());
+  const [popup, setPopup] = useState<string | null>(null);
+  const [finish, setFinish] = useState<number>(-1);  // -1 = the design's own floor
   const [styles, setStyles] = useState<StyleEntry[]>([]);
   const picked = useMemo(() => Array.from(new Set([twin.style?.primary_style, ...((md(twin).brief?.styles as string[] | undefined) ?? [])].filter(Boolean) as string[])), [twin]);
   const [styleId, setStyleId] = useState<string>(picked[0] ?? '');
@@ -93,8 +98,10 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(night ? 0x111a2c : low ? 0xf2c9a0 : inside ? 0xdfe8ef : 0xf3f1ec);
     const camera = new THREE.PerspectiveCamera(inside ? 70 : 40, w / h, 0.1, 3000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+    // older / low-power phones: no antialiasing, 1x pixels, smaller shadows
+    const lite = (navigator.hardwareConcurrency ?? 8) <= 4 || ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4;
+    const renderer = new THREE.WebGLRenderer({ antialias: !lite });
+    renderer.setPixelRatio(lite ? 1 : Math.min(2, window.devicePixelRatio));
     renderer.setSize(w, h);
     renderer.shadowMap.enabled = !night;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -114,7 +121,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
       const s = new THREE.DirectionalLight(low ? 0xffb27a : 0xfff4e0, low ? 1.2 : 1.6);
       s.position.copy(sun.dir.clone().multiplyScalar(R));
       s.castShadow = true;
-      s.shadow.mapSize.set(2048, 2048);
+      s.shadow.mapSize.set(lite ? 1024 : 2048, lite ? 1024 : 2048);
       Object.assign(s.shadow.camera, { left: -R, right: R, top: R, bottom: -R, near: 1, far: R * 3 });
       scene.add(s);
     }
@@ -147,7 +154,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         const g = new THREE.PlaneGeometry(r.length_ft, r.width_ft);
         disposables.push(g);
         const wet = ['toilet', 'utility', 'laundry', 'kitchen'].includes(r.type ?? '');
-        const m = new THREE.Mesh(g, mat(pal && !wet ? pal.floor : FLOOR_COLOUR[r.material_floor] ?? '#D9D2C3'));
+        const m = new THREE.Mesh(g, mat(finish >= 0 && !wet ? FINISHES[finish][1] : pal && !wet ? pal.floor : FLOOR_COLOUR[r.material_floor] ?? '#D9D2C3'));
         m.rotation.x = -Math.PI / 2;
         m.position.copy(P(r.x + r.length_ft / 2, r.y + r.width_ft / 2, lv.base + 0.02));
         m.receiveShadow = true;
@@ -176,7 +183,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
     }
 
     // controls
-    let raf = 0, last = performance.now(), visibleTab = true;
+    let raf = 0, last = performance.now(), visibleTab = true, lastPos = 0, inRoom = '';
     const wallsHere = blockers(house.boxes, lvl?.base ?? 0);
     const keys = new Set<string>();
     let yaw = Math.PI, pitch = 0;
@@ -239,6 +246,18 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         if (!collides(wallsHere, me.x, ny)) me.y = ny;
         camera.position.copy(P(me.x, me.y, (lvl?.base ?? 0) + EYE));
         camera.rotation.set(pitch, yaw, 0, 'YXZ');
+        if (now - lastPos > 150) {
+          lastPos = now;
+          setPos({ x: me.x, y: me.y, yaw });
+          const fl = twin.floors[walkFloor];
+          const rm = fl?.rooms.find((r) => me.x >= r.x && me.x <= r.x + r.length_ft && me.y >= r.y && me.y <= r.y + r.width_ft);
+          if (rm && rm.name !== inRoom) {
+            inRoom = rm.name;
+            const key = `${fl.floor_no}:${rm.name}`;
+            if (stops.some((st) => st.floor === fl.floor_no && st.room.name === rm.name)) setVisited((v) => (v.has(key) ? v : new Set(v).add(key)));
+            setPopup(roomName(rm.name, rm.type ?? undefined));
+          }
+        }
       } else if (target) {
         camera.position.lerp(target.pos, 0.06);
         lookNow.lerp(target.look, 0.06);
@@ -254,7 +273,8 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
       renderer.domElement.removeEventListener('pointerdown', onDown); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp);
       disposables.forEach((d) => d.dispose()); renderer.dispose(); el.removeChild(renderer.domElement);
     };
-  }, [house, mode, walkFloor, upTo, furniture, sun, night, W, D, sbSide, sbFront, twin, t, floorsN, style, here, levelOf]);
+  }, [house, mode, walkFloor, upTo, furniture, sun, night, W, D, sbSide, sbFront, twin, t, floorsN, style, here, levelOf, finish]);
+  useEffect(() => { if (!popup) return; const id = setTimeout(() => setPopup(null), 2500); return () => clearTimeout(id); }, [popup]);
 
   const go = (m: Mode) => { setWelcome(false); if (m === 'tour') setStop(0); setMode(m); };
   const btn = (on: boolean) => `flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${on ? 'bg-white text-slate-900' : 'border border-slate-700 text-slate-300 hover:text-white'}`;
@@ -327,6 +347,15 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         {mode === 'walk' && !welcome && (
           <>
             <p className="pointer-events-none absolute left-3 top-3 rounded bg-black/55 px-2 py-1 font-mono text-[11px] text-white">W A S D / arrows to walk · drag to look</p>
+            <p className="pointer-events-none absolute left-3 top-10 rounded bg-black/55 px-2 py-1 font-mono text-[11px] text-white" aria-live="polite">
+              Rooms visited {visited.size} / {stops.length}{visited.size === stops.length && stops.length > 0 ? ' · you have seen the whole house!' : ''}
+            </p>
+            {popup && <p className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 rounded-xl bg-black/65 px-4 py-2 text-lg font-bold text-white">{popup}</p>}
+            <MiniMap rooms={twin.floors[walkFloor]?.rooms ?? []} floorNo={twin.floors[walkFloor]?.floor_no ?? 0} visited={visited} pos={pos} W={W} D={D} />
+            <button type="button" onClick={() => setFinish((f) => (f + 2) % (FINISHES.length + 1) - 1)}
+              className="absolute bottom-4 right-4 rounded-lg bg-white/90 px-3 py-2 font-mono text-[11px] font-semibold text-slate-900">
+              Floor: {finish < 0 ? 'as designed' : FINISHES[finish][0]}
+            </button>
             <Joystick onMove={(x, y) => { joy.current = { x, y }; }} />
           </>
         )}
@@ -366,5 +395,26 @@ function Joystick({ onMove }: { onMove: (x: number, y: number) => void }) {
       className="absolute bottom-4 left-4 h-28 w-28 touch-none rounded-full border-2 border-white/60 bg-black/25 md:hidden" aria-label="Move">
       <div className="absolute h-10 w-10 rounded-full bg-white/80" style={{ left: `calc(50% - 20px + ${knob.x * 36}px)`, top: `calc(50% - 20px + ${knob.y * 36}px)` }} />
     </div>
+  );
+}
+
+const FINISHES: [string, string][] = [['Kota stone', '#8E8F86'], ['Wood', '#A47A52'], ['White marble', '#ECEAE4'], ['Terrazzo', '#CFC8BC'], ['Red oxide', '#8C3B2E']];
+
+/** Walk-through minimap: this floor's rooms (visited ones tinted), you as a dot with your heading. Road at the bottom. */
+function MiniMap({ rooms, floorNo, visited, pos, W, D }: { rooms: any[]; floorNo: number; visited: Set<string>; pos: { x: number; y: number; yaw: number } | null; W: number; D: number }) {
+  const S = 140 / Math.max(W, D);
+  return (
+    <svg width={W * S + 8} height={D * S + 8} viewBox={`-4 -4 ${W * S + 8} ${D * S + 8}`} className="pointer-events-none absolute right-3 top-3 rounded-lg bg-black/55" aria-label="Map of this floor">
+      {rooms.map((r) => (
+        <rect key={r.name} x={r.x * S} y={(D - r.y - r.width_ft) * S} width={r.length_ft * S} height={r.width_ft * S}
+          fill={visited.has(`${floorNo}:${r.name}`) ? 'rgba(252,211,77,0.55)' : 'rgba(255,255,255,0.12)'} stroke="rgba(255,255,255,0.7)" strokeWidth={0.8} />
+      ))}
+      {pos && (
+        <g transform={`translate(${pos.x * S} ${(D - pos.y) * S}) rotate(${(-pos.yaw * 180) / Math.PI + 180})`}>
+          <circle r={3.5} fill="#F59E0B" stroke="#fff" strokeWidth={1} />
+          <path d="M0 -9 L3 -3 L-3 -3 Z" fill="#F59E0B" />
+        </g>
+      )}
+    </svg>
   );
 }

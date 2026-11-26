@@ -13,6 +13,7 @@ import { FILL, fitLabel, roomName } from '@/lib/rooms';
 import { MepLayer, MepLegend, MepOverlay } from '@/components/MepLayer';
 import Elevation from '@/components/Elevation';
 import WhatIf from '@/components/WhatIf';
+import FlyInVideo from '@/components/FlyInVideo';
 import type { Look } from '@/lib/house3d';
 import ExteriorPanel from '@/components/ExteriorPanel';
 import Versions from '@/components/Versions';
@@ -324,6 +325,12 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             onClick={() => track('design_shared', { via: 'whatsapp' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Share2 className="h-3.5 w-3.5" />WhatsApp</a>
           <button type="button" onClick={share} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Copy className="h-3.5 w-3.5" />Copy link</button>
           <a href={`/house/${twin.house_id}/poster`} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Printer className="h-3.5 w-3.5" />Poster &amp; architect pack</a>
+          <div className="col-span-2 sm:col-span-4">
+            <FlyInVideo rooms={twin.floors.flatMap((f) => f.rooms.map((r) => ({ f: f.floor_no, name: r.name, t: r.type ?? '', x: r.x ?? 0, y: r.y ?? 0, w: r.length_ft, d: r.width_ft })))}
+              look={(twin.metadata as Record<string, any>)?.look as Look | undefined}
+              plot={[-sbSide, -sbFront, -sbSide + twin.plot.plot_width_ft, -sbFront + twin.plot.plot_depth_ft]}
+              caption={`${twin.plot.plot_width_ft} × ${twin.plot.plot_depth_ft} ft home`} fileName={`nestora-${twin.house_id}`} />
+          </div>
           <a href={`/house/${twin.house_id}/boq`} className="col-span-2 flex items-center justify-between rounded-xl bg-blue-600 sm:col-span-4 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500">
             <span>Cost estimate (3 finish levels)</span><ChevronRight className="h-4 w-4" />
           </a>
