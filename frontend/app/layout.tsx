@@ -6,7 +6,13 @@ import WakingNotice from '@/components/WakingNotice';
 import ConsentBanner from '@/components/ConsentBanner';
 
 
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://nestora-studio.vercel.app';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE),
+  alternates: { canonical: '/' },
+  openGraph: { siteName: 'Nestora', type: 'website', images: [{ url: '/video/hero-poster.jpg', width: 1920, height: 1080 }] },
+  twitter: { card: 'summary_large_image' },
   title: 'Nestora: concept house design and cost estimates',
   description: 'Turn your plot, family and budget into a concept house design with automated rule checks and an itemized cost estimate, ready for a licensed architect to review. Mumbai pilot.',
 };

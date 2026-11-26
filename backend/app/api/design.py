@@ -9,7 +9,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from backend.app.models.brief import Brief
-from backend.app.services import derive, generator, llm, orchestrator, pack, traditions, solver
+from backend.app.services import derive, generator, llm, orchestrator, pack, photo, traditions, solver
 from backend.app.api import swipe
 from backend.app.services.access import rate_limit, require_edit
 from backend.app.services.judge import JudgeService
@@ -235,11 +235,35 @@ class PhotoIn(BaseModel):
     image: str = Field(max_length=6_000_000)  # data:image/png;base64,... street-view snapshot from the browser's 3D model
 
 
+class PreviewIn(BaseModel):
+    image: str = Field(max_length=2_100_000)  # data:image/jpeg;base64,... street view of the chosen design
+
+
+@router.post("/house/{house_id}/preview", dependencies=[Depends(rate_limit("preview", 6))])
+def save_preview(house_id: str, body: PreviewIn, _u: Optional[str] = Depends(require_edit)):
+    """Street-view snapshot of the chosen design, shown when the house's link is shared (WhatsApp etc.)."""
+    import base64
+    twin = _twin(house_id)
+    render = twin.metadata.get("render") or {}
+    if not render.get("key"):
+        raise HTTPException(status_code=409, detail="Choose a design first.")
+    try:
+        jpg = base64.b64decode(body.image.split(",", 1)[-1], validate=True)
+    except Exception:
+        raise HTTPException(status_code=422, detail="The preview must be a JPEG image.")
+    if jpg[:3] != bytes([0xFF, 0xD8, 0xFF]) or len(jpg) > 1_500_000:
+        raise HTTPException(status_code=422, detail="The preview must be a JPEG under 1.5 MB.")
+    url = photo.upload(f"{house_id}/{render['key']}_preview.jpg", jpg, "image/jpeg")
+    if url:
+        twin.metadata["render"] = {**render, "preview": url, "preview_key": render["key"]}
+        HouseTwinRepository.save(twin)
+    return {"preview": url}
+
+
 @router.post("/house/{house_id}/photo", dependencies=[Depends(rate_limit("photo", 6))])
 def request_photo(house_id: str, body: PhotoIn, bg: BackgroundTasks, _u: Optional[str] = Depends(require_edit)):
     """Starts a photoreal picture of the chosen design from the browser's snapshot; poll the house for metadata.render."""
     import base64
-    from backend.app.services import photo
     try:
         png = base64.b64decode(body.image.split(",", 1)[-1], validate=True)
     except Exception:

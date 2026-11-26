@@ -6,11 +6,12 @@
 import * as THREE from 'three';
 import { Look, buildHouse } from './house3d';
 import { addHouse, materials } from './houseScene';
+import type { HouseTwin } from './twin';
 
 export interface SnapRoom { f: number; name: string; t: string; x: number; y: number; w: number; d: number }
 const W = 1344, H = 768, FT = 3.28084;
 
-export function streetView(rooms: SnapRoom[], look: Look | undefined, plot?: [number, number, number, number]): string {
+export function streetView(rooms: SnapRoom[], look: Look | undefined, plot?: [number, number, number, number], type = 'image/png'): string {
   const floorNos = Array.from(new Set(rooms.map((r) => r.f))).sort((a, b) => a - b);
   const house = buildHouse(floorNos.map((f) => ({
     floor_no: f, floor_height_ft: 10,
@@ -57,10 +58,18 @@ export function streetView(rooms: SnapRoom[], look: Look | undefined, plot?: [nu
   camera.position.copy(P(cx + span * 0.42, front - span * 0.62, 1.8 * FT));
   camera.lookAt(P(cx, cy, house.roofTop * 0.42));
   gl.render(scene, camera);
-  const url = gl.domElement.toDataURL('image/png');
+  const url = gl.domElement.toDataURL(type, 0.85);
   geos.forEach((g) => g.dispose());
   disp.forEach((d) => d.dispose());
   mats.dispose();
   gl.dispose();
   return url;
+}
+
+/** The street view of a stored design (rooms, look and plot from its twin). */
+export function snapTwin(twin: HouseTwin, type = 'image/png'): string {
+  const md = (twin.metadata ?? {}) as Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+  const sbSide = Number(md.setback_side_m ?? 0) * FT, sbFront = Number(md.setback_front_m ?? 0) * FT;
+  const rooms: SnapRoom[] = twin.floors.flatMap((f) => f.rooms.map((r) => ({ f: f.floor_no, name: r.name, t: r.type ?? '', x: r.x ?? 0, y: r.y ?? 0, w: r.length_ft, d: r.width_ft })));
+  return streetView(rooms, md.look as Look | undefined, [-sbSide, -sbFront, -sbSide + twin.plot.plot_width_ft, -sbFront + twin.plot.plot_depth_ft], type);
 }

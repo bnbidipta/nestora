@@ -195,3 +195,18 @@ def test_contact_form_validates_and_accepts():
     assert client.post("/api/v1/contact", json={"message": "How do I share my design?", "email": "not-an-email"}).status_code == 422
     assert client.post("/api/v1/contact", json={"topic": "question", "message": "How do I share my design?"}).json()["success"]
     assert client.post("/api/v1/contact", json={"message": "buy cheap pills now", "website": "spam.example"}).json()["success"]
+
+
+def test_preview_needs_a_chosen_design_and_a_jpeg():
+    import base64, io
+    from PIL import Image
+    hid, auth = _new()
+    buf = io.BytesIO(); Image.new("RGB", (64, 36), "white").save(buf, "JPEG")
+    jpg = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+    assert client.post(f"/api/v1/house/{hid}/preview", json={"image": jpg}, headers=auth).status_code == 409
+    client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
+    assert client.post(f"/api/v1/house/{hid}/preview", json={"image": "data:image/jpeg;base64,bm90IGEganBn"}, headers=auth).status_code == 422
+    assert client.post(f"/api/v1/house/{hid}/preview", json={"image": jpg}, headers=auth).status_code == 200
+    assert client.post(f"/api/v1/house/{hid}/preview", json={"image": jpg}).status_code in (401, 403)  # needs edit rights

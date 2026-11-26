@@ -7,9 +7,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
-import { getHouse, requestPhoto } from '@/lib/api';
-import type { Look } from '@/lib/house3d';
-import type { SnapRoom } from '@/lib/streetView';
+import { getHouse, requestPhoto, savePreview } from '@/lib/api';
 import { HouseTwin } from '@/lib/twin';
 
 export interface RenderInfo { status: 'queued' | 'working' | 'done'; key: string; photo?: string; ai?: boolean; fallback?: boolean; started?: number }
@@ -32,6 +30,14 @@ export default function PhotoRender({ twin, canEdit, onUpdate }: { twin: HouseTw
     return () => clearInterval(id);
   }, [render?.status, twin.house_id, onUpdate]);
 
+  useEffect(() => {  // link previews (WhatsApp etc.) show this street view; refresh it when the design or look changes
+    if (!canEdit || !raw?.key || (raw as { preview_key?: string }).preview_key === raw.key) return;
+    const t = setTimeout(() => {
+      import('@/lib/streetView').then(({ snapTwin }) => savePreview(twin.house_id, snapTwin(twin, 'image/jpeg'))).catch(() => {});
+    }, 4000);  // after the 3D view has settled
+    return () => clearTimeout(t);
+  }, [canEdit, raw?.key, twin]);  // eslint-disable-line react-hooks/exhaustive-deps
+
   if (!render) return null;
   if (render.status === 'done' && render.photo) {
     return (
@@ -48,10 +54,8 @@ export default function PhotoRender({ twin, canEdit, onUpdate }: { twin: HouseTw
   const make = async () => {
     setBusy(true); setErr(null);
     try {
-      const sbSide = Number(md.setback_side_m ?? 0) * 3.28084, sbFront = Number(md.setback_front_m ?? 0) * 3.28084;
-      const rooms: SnapRoom[] = twin.floors.flatMap((f) => f.rooms.map((r) => ({ f: f.floor_no, name: r.name, t: r.type ?? '', x: r.x ?? 0, y: r.y ?? 0, w: r.length_ft, d: r.width_ft })));
-      const { streetView } = await import('@/lib/streetView');
-      const image = streetView(rooms, md.look as Look | undefined, [-sbSide, -sbFront, -sbSide + twin.plot.plot_width_ft, -sbFront + twin.plot.plot_depth_ft]);
+      const { snapTwin } = await import('@/lib/streetView');
+      const image = snapTwin(twin);
       await requestPhoto(twin.house_id, image);
       onUpdate(await getHouse(twin.house_id));
     } catch (e) { setErr(e instanceof Error ? e.message : 'Could not start the picture.'); } finally { setBusy(false); }
