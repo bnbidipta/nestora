@@ -63,7 +63,11 @@ class Photo:
         from fastapi import Response
         from PIL import Image
         form = await request.form()
-        guide = Image.open(io.BytesIO(await form["guide"].read())).convert("RGB").resize((1344, 768))
+        Image.MAX_IMAGE_PIXELS = 2048 * 2048  # refuse decompression bombs
+        raw = Image.open(io.BytesIO(await form["guide"].read()))
+        if raw.width > 2048 or raw.height > 2048:
+            return Response("image too large", status_code=413)
+        guide = raw.convert("RGB").resize((1344, 768))
         prompt, negative = str(form.get("prompt", ""))[:1500], str(form.get("negative", ""))[:800]
         e = _edges(guide)
         ctrl = Image.fromarray(np.stack([e] * 3, -1))

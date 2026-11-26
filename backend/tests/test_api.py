@@ -159,11 +159,29 @@ def test_photo_request_falls_back_to_queue_without_gpu():
     hid, auth = _new()
     client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
     opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
-    assert client.post(f"/api/v1/house/{hid}/photo", json={"image": "data:image/png;base64,AAAA"}, headers=auth).status_code == 409
+    buf = io.BytesIO(); Image.new("RGB", (64, 36), "white").save(buf, "PNG")
+    img = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+    assert client.post(f"/api/v1/house/{hid}/photo", json={"image": img}, headers=auth).status_code == 409  # no design chosen yet
     client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
     assert client.post(f"/api/v1/house/{hid}/photo", json={"image": "data:image/png;base64,bm90IGEgcG5n"}, headers=auth).status_code == 422
-    buf = io.BytesIO(); Image.new("RGB", (64, 36), "white").save(buf, "PNG")
-    r = client.post(f"/api/v1/house/{hid}/photo", json={"image": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()}, headers=auth)
+    r = client.post(f"/api/v1/house/{hid}/photo", json={"image": img}, headers=auth)
     assert r.status_code == 200
     render = client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"]["render"]
     assert render["status"] == "queued" and render.get("fallback")  # no GPU configured in tests -> Kaggle queue
+
+
+def test_photo_rejects_huge_png_header_and_repeat_requests():
+    import base64, io, struct, zlib
+    from PIL import Image
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
+    ihdr = struct.pack(">IIBBBBB", 30000, 30000, 8, 2, 0, 0, 0)  # claims 30000 x 30000: refused before decoding
+    bomb = b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + ihdr + struct.pack(">I", zlib.crc32(b"IHDR" + ihdr))
+    assert client.post(f"/api/v1/house/{hid}/photo", json={"image": "data:image/png;base64," + base64.b64encode(bomb).decode()}, headers=auth).status_code == 422
+    buf = io.BytesIO(); Image.new("RGB", (64, 36), "white").save(buf, "PNG")
+    img = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+    first = client.post(f"/api/v1/house/{hid}/photo", json={"image": img}, headers=auth).json()["render"]
+    again = client.post(f"/api/v1/house/{hid}/photo", json={"image": img}, headers=auth).json()["render"]
+    assert again.get("fallback") and again["key"] == first["key"]  # already queued: no second job

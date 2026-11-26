@@ -1,6 +1,7 @@
 """Design API: brief intake, catalogues, the 4-at-a-time option loop, simple edits and DXF export."""
 import copy
 import random
+import time
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
@@ -217,22 +218,27 @@ def request_photo(house_id: str, body: PhotoIn, bg: BackgroundTasks, _u: Optiona
     """Starts a photoreal picture of the chosen design from the browser's snapshot; poll the house for metadata.render."""
     import base64
     from backend.app.services import photo
-    twin = _twin(house_id)
-    render = twin.metadata.get("render") or {}
-    if not twin.metadata.get("chosen_candidate") or not render.get("key"):
-        raise HTTPException(status_code=409, detail="Choose a design first.")
-    if render.get("status") == "done":
-        return {"render": render}
     try:
         png = base64.b64decode(body.image.split(",", 1)[-1], validate=True)
     except Exception:
         raise HTTPException(status_code=422, detail="The snapshot is not a valid image.")
     if png[:4] != bytes([0x89, 0x50, 0x4E, 0x47]) or len(png) > 4_000_000:  # PNG signature
         raise HTTPException(status_code=422, detail="The snapshot must be a PNG under 4 MB.")
-    key = render["key"]
-    guide = photo.upload(f"{house_id}/{key}_guide.png", png, "image/png")
-    twin.metadata["render"] = {**render, "status": "working", "guide": guide, "started": __import__("time").time()}
-    HouseTwinRepository.save(twin)
+    w, h = int.from_bytes(png[16:20], "big"), int.from_bytes(png[20:24], "big")  # IHDR: checked before any decoding
+    if not (0 < w <= 2048 and 0 < h <= 2048):
+        raise HTTPException(status_code=422, detail="The snapshot must be at most 2048 x 2048 pixels.")
+    with photo.START_LOCK:  # one start per design at a time; re-requests just see the current status
+        twin = _twin(house_id)
+        render = twin.metadata.get("render") or {}
+        if not twin.metadata.get("chosen_candidate") or not render.get("key"):
+            raise HTTPException(status_code=409, detail="Choose a design first.")
+        busy = render.get("status") == "working" and time.time() - render.get("started", 0) < 300
+        if render.get("status") == "done" or busy or render.get("fallback"):
+            return {"render": render}
+        key = render["key"]
+        guide = photo.upload(f"{house_id}/{key}_guide.png", png, "image/png")
+        twin.metadata["render"] = {**render, "status": "working", "guide": guide, "started": time.time()}
+        HouseTwinRepository.save(twin)
     bg.add_task(photo.make_photo, house_id, key, png)
     return {"render": twin.metadata["render"]}
 

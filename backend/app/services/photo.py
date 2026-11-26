@@ -11,6 +11,7 @@ Config (env): PHOTO_GPU_URL (the Modal endpoint), PHOTO_GPU_KEY / PHOTO_GPU_SECR
 """
 import logging
 import os
+import threading
 import time
 from typing import Any, Dict, Optional
 
@@ -18,6 +19,9 @@ import httpx
 
 log = logging.getLogger(__name__)
 GPU_URL = os.environ.get("PHOTO_GPU_URL", "")
+START_LOCK = threading.Lock()                  # serialises check-and-start per request (single API instance)
+GPU_SLOTS = threading.BoundedSemaphore(2)     # at most 2 GPU jobs at once; more go to the free batch queue
+# ponytail: in-process lock and slots; move to the database if the API ever runs on several instances
 NEG = ("3d render, cgi, plastic, clay model, video game, cartoon, illustration, painting, drawing, flat colours, distorted, "
        "warped walls, extra floors, people, cars, text, watermark, signature, logo, letters, blurry")
 
@@ -83,7 +87,13 @@ def make_photo(house_id: str, key: str, guide_png: bytes) -> None:
     twin = HouseTwinRepository.get(house_id)
     if not twin:
         return
-    photo = repaint(guide_png, prompt_for(twin.metadata.get("look") or {}))
+    if not GPU_SLOTS.acquire(blocking=False):
+        _set(house_id, key, {"status": "queued", "key": key, "fallback": True})
+        return
+    try:
+        photo = repaint(guide_png, prompt_for(twin.metadata.get("look") or {}))
+    finally:
+        GPU_SLOTS.release()
     if photo is None:
         _set(house_id, key, {"status": "queued", "key": key, "fallback": True})  # the Kaggle batch picks it up
         return

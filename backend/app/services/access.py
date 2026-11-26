@@ -72,7 +72,8 @@ def rate_limit(bucket: str, per_minute: int):
     def dep(request: Request) -> None:
         if os.environ.get("NESTORA_RATE_LIMIT") == "off":  # tests and offline batch jobs
             return
-        ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
+        # the last X-Forwarded-For entry is the one our host's proxy appended; earlier entries are client-supplied
+        ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[-1].strip()
         now = time.time()
         hits = [t for t in _HITS.get((bucket, ip), []) if now - t < 60]
         if len(hits) >= per_minute:
