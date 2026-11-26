@@ -12,11 +12,13 @@ import type { Look } from '@/lib/house3d';
 import type { SnapRoom } from '@/lib/streetView';
 import { HouseTwin } from '@/lib/twin';
 
-export interface RenderInfo { status: 'queued' | 'working' | 'done'; key: string; photo?: string; ai?: boolean; fallback?: boolean }
+export interface RenderInfo { status: 'queued' | 'working' | 'done'; key: string; photo?: string; ai?: boolean; fallback?: boolean; started?: number }
 
 export default function PhotoRender({ twin, canEdit, onUpdate }: { twin: HouseTwin; canEdit: boolean; onUpdate: (t: HouseTwin) => void }) {
   const md = (twin.metadata ?? {}) as Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
-  const render = md.render as RenderInfo | undefined;
+  const raw = md.render as RenderInfo | undefined;
+  // a job lost to a server restart stays 'working' forever; after 10 min offer the button again
+  const render = raw?.status === 'working' && Date.now() / 1000 - (raw.started ?? 0) > 600 ? { ...raw, status: 'queued' as const } : raw;
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -65,7 +67,7 @@ export default function PhotoRender({ twin, canEdit, onUpdate }: { twin: HouseTw
       ) : canEdit ? (
         <>
           <span className="flex-1">See this exact design as a photo: walls, roof and windows from your 3D model.</span>
-          <button type="button" onClick={make} disabled={busy} className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink disabled:opacity-60">
+          <button type="button" onClick={make} disabled={busy} className="rounded-full bg-terra px-4 py-2 text-sm font-semibold text-white hover:bg-terra-dark disabled:opacity-60">
             {busy ? 'Starting…' : 'Make a photoreal picture'}
           </button>
         </>

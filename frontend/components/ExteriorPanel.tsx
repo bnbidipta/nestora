@@ -33,7 +33,7 @@ export default function ExteriorPanel({ houseId, current, onChanged }: { houseId
     return (
       <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-card p-4 print:hidden" aria-label="Customise exterior">
         <p className="text-sm text-ink/80">This design was made before exterior styling. Add its style's walls, windows, entrance and compound wall?</p>
-        <button type="button" disabled={busy} onClick={() => send({ reset: true })} className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink disabled:opacity-50">{busy ? 'Applying…' : 'Turn on exterior styling'}</button>
+        <button type="button" disabled={busy} onClick={() => send({ reset: true })} className="rounded-full bg-terra px-4 py-2 text-sm font-semibold text-white hover:bg-terra-dark disabled:opacity-50">{busy ? 'Applying…' : 'Turn on exterior styling'}</button>
         {msg && <p role="status" className="w-full text-sm text-gold-dark">{msg}</p>}
       </section>
     );
@@ -50,7 +50,7 @@ export default function ExteriorPanel({ houseId, current, onChanged }: { houseId
         <label className="sr-only" htmlFor="ext-text">Describe the exterior you want</label>
         <input id="ext-text" value={text} maxLength={500} onChange={(e) => setText(e.target.value)} placeholder="e.g. exposed brick on the ground floor, white above, black window frames"
           className="h-11 flex-1 rounded-2xl border border-line bg-card px-3 text-sm text-ink" />
-        <button type="submit" disabled={busy || !text.trim()} className="inline-flex items-center gap-1.5 rounded-lg bg-gold px-4 text-sm font-semibold text-ink disabled:opacity-50">
+        <button type="submit" disabled={busy || !text.trim()} className="inline-flex items-center gap-1.5 rounded-full bg-terra px-4 text-sm font-semibold text-white hover:bg-terra-dark disabled:opacity-50">
           {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}Apply
         </button>
       </form>

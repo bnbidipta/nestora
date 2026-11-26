@@ -15,6 +15,23 @@ from backend.app.api import house, swipe, design, family
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("nestora_api")
 
+# On Render (production) never fall back to local JSON files: they vanish on every restart.
+if os.environ.get("RENDER") and not (os.environ.get("SUPABASE_URL") and os.environ.get("SUPABASE_SERVICE_ROLE_KEY")):
+    raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in production.")
+
+if os.environ.get("SENTRY_DSN"):  # crash reports (free plan); off when unset
+    import sentry_sdk
+
+    def _scrub(event, _hint):
+        h = (event.get("request") or {}).get("headers") or {}
+        for k in list(h):
+            if k.lower() in ("x-edit-token", "authorization", "cookie"):
+                h[k] = "[removed]"
+        (event.get("request") or {}).pop("data", None)  # request bodies may hold briefs or emails
+        return event
+    sentry_sdk.init(dsn=os.environ["SENTRY_DSN"], send_default_pii=False, traces_sample_rate=0, before_send=_scrub,
+                    environment=os.environ.get("RENDER", "") and "production" or "development")
+
 app = FastAPI(
     title="NESTORA API - Architectural Intelligence Platform",
     description="Backend API for Nestora Phase 1 (Mumbai Pilot) - From Plot to Keys.",

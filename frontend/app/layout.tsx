@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Fraunces, Inter } from 'next/font/google';
+import SentryInit from '@/components/SentryInit';
 import ConsentBanner from '@/components/ConsentBanner';
 
 const display = Fraunces({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-paper text-ink font-sans antialiased selection:bg-green selection:text-paper">
         {children}
         <ConsentBanner />
+        <SentryInit />
       </body>
     </html>
   );

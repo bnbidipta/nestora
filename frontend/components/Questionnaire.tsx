@@ -436,7 +436,7 @@ function Review({ understood, waitlist, brief, houseId, onEdit, onNext }: {
               <label htmlFor="wl" className="sr-only">Email</label>
               <input id="wl" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
                 className="flex-1 rounded-2xl border border-line bg-card px-3 py-2 text-ink" />
-              <button className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink">Join the waitlist</button>
+              <button className="rounded-full bg-terra px-4 py-2 text-sm font-semibold text-white hover:bg-terra-dark">Join the waitlist</button>
             </form>
           )}
           {err && <p role="alert" className="mt-2 text-sm text-red-700">{err}</p>}

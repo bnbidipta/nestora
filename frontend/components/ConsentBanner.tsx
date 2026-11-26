@@ -17,8 +17,8 @@ export default function ConsentBanner() {
     <div role="dialog" aria-label="Privacy choice" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-2xl border border-line bg-card p-4 text-sm text-ink shadow-2xl">
       <p>We&apos;d like to count anonymous usage (which steps people finish) to improve the pilot. No names, emails or plot addresses are sent.</p>
       <div className="mt-3 flex gap-2">
-        <button type="button" onClick={() => choose('granted')} className="rounded-lg bg-card px-4 py-2 font-semibold text-ink">Allow</button>
-        <button type="button" onClick={() => choose('denied')} className="rounded-lg border border-line px-4 py-2 font-semibold text-ink">Decline</button>
+        <button type="button" onClick={() => choose('granted')} className="rounded-full bg-terra px-5 py-2 font-semibold text-white hover:bg-terra-dark">Allow</button>
+        <button type="button" onClick={() => choose('denied')} className="rounded-full border border-line px-5 py-2 font-semibold text-ink">Decline</button>
       </div>
     </div>
   );
