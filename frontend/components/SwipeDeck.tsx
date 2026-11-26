@@ -56,38 +56,38 @@ export default function SwipeDeck() {
     return () => window.removeEventListener('keydown', onKey);
   }, [swipe]);
 
-  if (!houseId) return <p className="p-8 text-center text-slate-300">Start from the questionnaire so we know which house this is for.</p>;
-  if (!cards.length) return <p className="flex items-center justify-center gap-2 p-8 text-slate-300">{error ?? <><Loader2 className="h-4 w-4 animate-spin" /> Loading photos…</>}</p>;
+  if (!houseId) return <p className="p-8 text-center text-ink/80">Start from the questionnaire so we know which house this is for.</p>;
+  if (!cards.length) return <p className="flex items-center justify-center gap-2 p-8 text-ink/80">{error ?? <><Loader2 className="h-4 w-4 animate-spin" /> Loading photos…</>}</p>;
 
   const card = cards[i];
   return (
     <div className="mx-auto max-w-md">
-      <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
+      <div className="mb-3 flex items-center justify-between text-sm text-muted">
         <span>Do you like this? {i + 1} / up to {max}</span>
-        <button type="button" onClick={finish} className="underline hover:text-white">Skip to options</button>
+        <button type="button" onClick={finish} className="underline hover:text-ink">Skip to options</button>
       </div>
-      <div className="h-1.5 overflow-hidden rounded bg-slate-800"><div className="h-full bg-emerald-500 transition-all" style={{ width: `${(100 * (i + 1)) / max}%` }} /></div>
-      <figure className="mt-4 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900">
+      <div className="h-1.5 overflow-hidden rounded bg-paper2"><div className="h-full bg-green transition-all" style={{ width: `${(100 * (i + 1)) / max}%` }} /></div>
+      <figure className="mt-4 overflow-hidden rounded-2xl border border-line bg-card">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={card.file} alt={card.alt} className="aspect-[4/3] w-full object-cover" />
-        <figcaption className="px-3 py-2 text-xs text-slate-400">
-          <strong className="text-slate-200">{card.style_name}</strong> · {card.ai ? 'AI-generated illustration of the style' : <>Photo: {card.author}, {card.licence} (<a href={card.url} target="_blank" rel="noopener noreferrer" className="underline">Wikimedia Commons</a>)</>}
+        <figcaption className="px-3 py-2 text-xs text-muted">
+          <strong className="text-ink">{card.style_name}</strong> · {card.ai ? 'AI-generated illustration of the style' : <>Photo: {card.author}, {card.licence} (<a href={card.url} target="_blank" rel="noopener noreferrer" className="underline">Wikimedia Commons</a>)</>}
         </figcaption>
       </figure>
       <div className="mt-5 flex justify-center gap-6">
         <button type="button" aria-label="Not for me (left arrow)" disabled={busy} onClick={() => swipe('left')}
-          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-slate-600 bg-slate-900 text-slate-300 hover:border-red-400 hover:text-red-400 disabled:opacity-50">
+          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-line bg-card text-ink/80 hover:border-red-400 hover:text-red-700 disabled:opacity-50">
           <X className="h-7 w-7" />
         </button>
         <button type="button" aria-label="I like this (right arrow)" disabled={busy} onClick={() => swipe('right')}
-          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 disabled:opacity-50">
+          className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-green bg-green/10 text-green hover:bg-green/20 disabled:opacity-50">
           <Heart className="h-7 w-7" />
         </button>
       </div>
       {leader && leader.confidence > 0.1 && (
-        <p className="mt-4 text-center text-sm text-slate-400">Leaning towards <strong className="text-slate-200">{cards.find((c) => c.style === leader.style)?.style_name ?? leader.style}</strong></p>
+        <p className="mt-4 text-center text-sm text-muted">Leaning towards <strong className="text-ink">{cards.find((c) => c.style === leader.style)?.style_name ?? leader.style}</strong></p>
       )}
-      {error && <p role="alert" className="mt-3 text-center text-sm text-red-400">{error}</p>}
+      {error && <p role="alert" className="mt-3 text-center text-sm text-red-700">{error}</p>}
     </div>
   );
 }

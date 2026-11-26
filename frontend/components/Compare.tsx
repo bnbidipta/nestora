@@ -26,23 +26,23 @@ export default function Compare({ a, b, na, nb, onClose }: { a: Option; b: Optio
   });
   const diff = (k: (o: Option) => number, fmt: (v: number) => string) => {
     const va = k(a), vb = k(b);
-    return <span className={vb > va ? 'text-emerald-700' : vb < va ? 'text-rose-700' : ''}>{fmt(va)} → {fmt(vb)}</span>;
+    return <span className={vb > va ? 'text-green' : vb < va ? 'text-rose-700' : ''}>{fmt(va)} → {fmt(vb)}</span>;
   };
   return (
-    <section className="mb-6 rounded-2xl bg-ivory-50 p-4 text-slate-900 shadow-xl" aria-label={`Compare option ${na} and option ${nb}`}>
+    <section className="mb-6 rounded-2xl bg-card p-4 text-ink shadow-xl" aria-label={`Compare option ${na} and option ${nb}`}>
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-bold">Option {na} ↔ Option {nb}</h2>
         <div className="flex items-center gap-2">
           {floors.map((f) => (
-            <button key={f} type="button" onClick={() => setFloor(f)} className={`rounded px-2 py-0.5 text-xs font-semibold ${f === floor ? 'bg-slate-900 text-white' : 'bg-slate-200'}`}>
+            <button key={f} type="button" onClick={() => setFloor(f)} className={`rounded px-2 py-0.5 text-xs font-semibold ${f === floor ? 'bg-card text-ink' : 'bg-paper2'}`}>
               {f === 0 ? 'Ground' : `Floor ${f}`}
             </button>
           ))}
-          <button type="button" onClick={onClose} aria-label="Close compare" className="rounded p-1 hover:bg-slate-200"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={onClose} aria-label="Close compare" className="rounded p-1 hover:bg-paper2"><X className="h-4 w-4" /></button>
         </div>
       </header>
       <div className="mt-3 grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
-        <svg viewBox={`-1 -1 ${W + 2} ${D + 2}`} className="max-h-[420px] w-full rounded-lg bg-white" role="img" aria-label="Plan morphing between the two options">
+        <svg viewBox={`-1 -1 ${W + 2} ${D + 2}`} className="max-h-[420px] w-full rounded-lg bg-card" role="img" aria-label="Plan morphing between the two options">
           {rooms.map(({ r, op }) => (
             <g key={r.id} opacity={op}>
               <rect x={r.x} y={D - r.y - r.d} width={r.w} height={r.d} fill={FILL[r.t] ?? '#EEE'} stroke="#334155" strokeWidth={0.15} />
@@ -51,16 +51,16 @@ export default function Compare({ a, b, na, nb, onClose }: { a: Option; b: Optio
           ))}
         </svg>
         <div className="space-y-3 text-sm">
-          <label className="block text-xs font-semibold text-slate-600">Slide from option {na} to option {nb}
-            <input type="range" min={0} max={1} step={0.01} value={t} onChange={(e) => setT(Number(e.target.value))} className="mt-2 w-full accent-[#B4532A]" />
+          <label className="block text-xs font-semibold text-muted">Slide from option {na} to option {nb}
+            <input type="range" min={0} max={1} step={0.01} value={t} onChange={(e) => setT(Number(e.target.value))} className="mt-2 w-full accent-terra" />
           </label>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-            <dt className="text-slate-500">Built-up</dt><dd className="text-right">{diff((o) => o.summary.built_up_sqft, (v) => area(v, u))}</dd>
-            <dt className="text-slate-500">Bedrooms</dt><dd className="text-right">{diff((o) => o.summary.bedrooms, String)}</dd>
-            <dt className="text-slate-500">Cost (expected)</dt><dd className="text-right">{diff((o) => o.summary.cost_inr.expected, (v) => `₹${(v / 1e5).toFixed(1)} L`)}</dd>
-            <dt className="text-slate-500">Look</dt><dd className="text-right">{a.look?.archetype ?? '–'} → {b.look?.archetype ?? '–'}</dd>
+            <dt className="text-muted">Built-up</dt><dd className="text-right">{diff((o) => o.summary.built_up_sqft, (v) => area(v, u))}</dd>
+            <dt className="text-muted">Bedrooms</dt><dd className="text-right">{diff((o) => o.summary.bedrooms, String)}</dd>
+            <dt className="text-muted">Cost (expected)</dt><dd className="text-right">{diff((o) => o.summary.cost_inr.expected, (v) => `₹${(v / 1e5).toFixed(1)} L`)}</dd>
+            <dt className="text-muted">Look</dt><dd className="text-right">{a.look?.archetype ?? '–'} → {b.look?.archetype ?? '–'}</dd>
           </dl>
-          <p className="text-xs text-slate-500">Rooms in both slide to their new place; rooms in only one fade in or out.</p>
+          <p className="text-xs text-muted">Rooms in both slide to their new place; rooms in only one fade in or out.</p>
         </div>
       </div>
     </section>

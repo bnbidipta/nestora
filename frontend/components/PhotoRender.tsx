@@ -33,10 +33,10 @@ export default function PhotoRender({ twin, canEdit, onUpdate }: { twin: HouseTw
   if (!render) return null;
   if (render.status === 'done' && render.photo) {
     return (
-      <figure className="overflow-hidden rounded-2xl border border-slate-800 bg-[#131926]">
+      <figure className="overflow-hidden rounded-2xl border border-line bg-card">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={render.photo} alt="Photoreal picture of this design" className="w-full" loading="lazy" />
-        <figcaption className="px-4 py-2 text-xs text-slate-400">
+        <figcaption className="px-4 py-2 text-xs text-muted">
           {render.ai ? 'AI-assisted photoreal picture of this exact design' : 'Rendered picture of this exact design'}; plants, sky and surroundings are illustrative.
         </figcaption>
       </figure>
@@ -56,8 +56,8 @@ export default function PhotoRender({ twin, canEdit, onUpdate }: { twin: HouseTw
   };
 
   return (
-    <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-800 bg-[#131926] p-4 text-sm text-slate-300 print:hidden">
-      <Camera className="h-5 w-5 shrink-0 text-amber-300" aria-hidden />
+    <section className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-card p-4 text-sm text-ink/80 print:hidden">
+      <Camera className="h-5 w-5 shrink-0 text-gold-dark" aria-hidden />
       {render.status === 'working' ? (
         <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" aria-hidden />Painting your photo from the 3D model… usually under a minute.</span>
       ) : render.fallback ? (
@@ -65,12 +65,12 @@ export default function PhotoRender({ twin, canEdit, onUpdate }: { twin: HouseTw
       ) : canEdit ? (
         <>
           <span className="flex-1">See this exact design as a photo: walls, roof and windows from your 3D model.</span>
-          <button type="button" onClick={make} disabled={busy} className="rounded-lg bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-60">
+          <button type="button" onClick={make} disabled={busy} className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink disabled:opacity-60">
             {busy ? 'Starting…' : 'Make a photoreal picture'}
           </button>
         </>
       ) : <span>A photoreal picture of this design is on the way.</span>}
-      {err && <p role="alert" className="w-full text-xs text-red-400">{err}</p>}
+      {err && <p role="alert" className="w-full text-xs text-red-700">{err}</p>}
     </section>
   );
 }

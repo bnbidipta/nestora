@@ -44,21 +44,21 @@ export default function Designing() {
 
   return (
     <div className="mx-auto grid max-w-4xl gap-8 py-10 md:grid-cols-2" role="status" aria-live="polite">
-      <div className="grid aspect-[4/3] grid-cols-4 grid-rows-3 gap-1.5 rounded-2xl bg-[#FAF7F2] p-3 shadow-xl">
+      <div className="grid aspect-[4/3] grid-cols-4 grid-rows-3 gap-1.5 rounded-2xl bg-paper p-3 shadow-xl">
         {ROOMS.map((r, i) => (
           <motion.div key={i} layout transition={{ type: 'spring', stiffness: 120, damping: 18 }} style={{ gridArea: layout[i], background: r.c }}
-            className="flex items-center justify-center rounded-md border border-black/10 text-xs font-semibold text-slate-700">{r.n}</motion.div>
+            className="flex items-center justify-center rounded-md border border-black/10 text-xs font-semibold text-ink/80">{r.n}</motion.div>
         ))}
       </div>
       <div>
-        <h1 className="text-2xl font-bold text-white">Designing your home</h1>
-        <p className="mt-1 text-sm text-slate-400">This takes about a minute. Every option is solved and checked, not picked from a catalogue.</p>
+        <h1 className="text-2xl font-bold text-ink">Designing your home</h1>
+        <p className="mt-1 text-sm text-muted">This takes about a minute. Every option is solved and checked, not picked from a catalogue.</p>
         <ol className="mt-5 space-y-2.5">
           {STEPS.map(([label], i) => (
-            <li key={label} className={`flex items-start gap-2.5 text-sm ${i < cur ? 'text-slate-400' : i === cur ? 'text-white' : 'text-slate-600'}`}>
-              {i < cur ? <Check className="mt-0.5 h-4 w-4 flex-none text-emerald-400" aria-hidden />
+            <li key={label} className={`flex items-start gap-2.5 text-sm ${i < cur ? 'text-muted' : i === cur ? 'text-ink' : 'text-muted'}`}>
+              {i < cur ? <Check className="mt-0.5 h-4 w-4 flex-none text-green" aria-hidden />
                 : i === cur ? <Loader2 className="mt-0.5 h-4 w-4 flex-none animate-spin" aria-hidden />
-                  : <span className="mt-1.5 h-2 w-2 flex-none rounded-full bg-slate-700" aria-hidden />}
+                  : <span className="mt-1.5 h-2 w-2 flex-none rounded-full bg-line" aria-hidden />}
               {label}
             </li>
           ))}

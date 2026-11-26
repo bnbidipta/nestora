@@ -64,7 +64,7 @@ export default function PlotSize({ widthFt, lengthFt, onChange }: {
           )}
         </>
       )}
-      <p className="text-sm text-slate-600 sm:col-span-2">
+      <p className="text-sm text-muted sm:col-span-2">
         {Number.isFinite(widthFt * lengthFt) && widthFt > 0 && lengthFt > 0
           ? <>Plot: <strong>{plotArea(widthFt * lengthFt, lu, unit)}</strong>{mode === 'area' && <> · about {r1(lu === 'ft' ? widthFt : widthFt / 3.28084)} × {r1(lu === 'ft' ? lengthFt : lengthFt / 3.28084)} {lu}</>}</>
           : 'Enter the plot size.'}

@@ -46,7 +46,7 @@ export default function PlanThumb({ rooms, floor, envelope, labels = true, onRoo
         <text x={W / 2} y={D + 1.8} textAnchor="middle" fontSize={1.2} fill="#64748B">road ↓</text>
       </svg>
       {tagged.length > 0 && (
-        <p className="mt-1 text-[11px] leading-snug text-slate-600">{tagged.map((t) => `${t.n} ${t.name}`).join(' · ')}</p>
+        <p className="mt-1 text-[11px] leading-snug text-muted">{tagged.map((t) => `${t.n} ${t.name}`).join(' · ')}</p>
       )}
     </div>
   );

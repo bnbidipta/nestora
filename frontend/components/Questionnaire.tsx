@@ -139,7 +139,7 @@ export default function Questionnaire() {
         {STEPS.map((s, i) => (
           <li key={s}>
             <button type="button" onClick={() => setStep(i)} aria-current={i === step ? 'step' : undefined}
-              className={`rounded-full px-3 py-1 font-mono text-xs ${i === step ? 'bg-white text-slate-900' : i < step ? 'bg-slate-700 text-slate-200' : 'bg-slate-800 text-slate-400'}`}>
+              className={`rounded-full px-3 py-1 tabular-nums text-xs ${i === step ? 'bg-card text-ink' : i < step ? 'bg-line text-ink' : 'bg-paper2 text-muted'}`}>
               {i + 1}. {s}
             </button>
           </li>
@@ -147,12 +147,12 @@ export default function Questionnaire() {
       </ol>
 
       {country && country !== 'IN' && (
-        <p className="mb-4 rounded-xl border border-amber-700/50 bg-amber-950/40 p-3 text-sm text-amber-200">
+        <p className="mb-4 rounded-xl border border-amber-200/50 bg-amber-50/40 p-3 text-sm text-gold-dark">
           Nestora is piloting in Mumbai, India. You can still try it with Mumbai rules, or join the waitlist for your city at the end.
         </p>
       )}
 
-      <section className="rounded-2xl bg-ivory-50 p-6 text-slate-900 shadow-xl sm:p-8">
+      <section className="rounded-2xl bg-card p-6 text-ink shadow-xl sm:p-8">
         {step === 0 && (
           <div className="space-y-6">
             <Header title="Your plot" />
@@ -234,7 +234,7 @@ export default function Questionnaire() {
         {step === 3 && (
           <div className="space-y-6">
             <Header title="Cultural preferences" info="Choose how strictly each one should guide where rooms go. Building codes and safety always come first." />
-            {traditions.length === 0 && <p className="text-sm text-slate-500">Loading…</p>}
+            {traditions.length === 0 && <p className="text-sm text-muted">Loading…</p>}
             <div className="grid gap-5 sm:grid-cols-2">
               {traditions.map((t) => (
                 <Select key={t.id} label={SHORT[t.id] ?? t.name} info={t.description} value={(b.traditions[t.id] ?? 'off') as Strictness}
@@ -251,7 +251,7 @@ export default function Questionnaire() {
             <div className="flex flex-wrap gap-2" role="tablist" aria-label="Style groups">
               {groups.map((g) => (
                 <button key={g} role="tab" aria-selected={g === group} type="button" onClick={() => setGroup(g)}
-                  className={`rounded-full border px-3 py-1 text-sm ${g === group ? 'border-sage-700 bg-sage-700 text-white' : 'border-slate-300 bg-white text-slate-700'}`}>{g}</button>
+                  className={`rounded-full border px-3 py-1 text-sm ${g === group ? 'border-green bg-terra text-white' : 'border-line bg-card text-ink/80'}`}>{g}</button>
               ))}
             </div>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
@@ -259,19 +259,19 @@ export default function Questionnaire() {
                 const on = b.styles.includes(s.id);
                 return (
                   <button key={s.id} type="button" aria-pressed={on} onClick={() => toggleStyle(s.id)}
-                    className={`overflow-hidden rounded-xl border bg-white text-left transition ${on ? 'border-sage-700 ring-2 ring-sage-700' : 'border-slate-300 hover:border-slate-400'}`}>
-                    <span className="relative block aspect-[3/2] bg-slate-100">
+                    className={`overflow-hidden rounded-2xl border bg-card text-left transition ${on ? 'border-green ring-2 ring-terra' : 'border-line hover:border-muted/50'}`}>
+                    <span className="relative block aspect-[3/2] bg-paper2">
                       {s.photo ? <img src={s.photo} alt={`${s.name} example`} loading="lazy" className="h-full w-full object-cover" />
                         : <span className="flex h-full">{(['wall', 'accent', 'wood', 'floor'] as const).map((k) => <span key={k} className="flex-1" style={{ background: s.palette[k] }} />)}</span>}
-                      {on && <span className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-sage-700 text-white"><Check className="h-4 w-4" aria-hidden /></span>}
+                      {on && <span className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-terra text-white"><Check className="h-4 w-4" aria-hidden /></span>}
                     </span>
-                    <span className="flex h-12 items-center px-3 font-semibold text-slate-900">{s.name}</span>
+                    <span className="flex h-12 items-center px-3 font-semibold text-ink">{s.name}</span>
                   </button>
                 );
               })}
             </div>
             <Toggle label="Prefer low-maintenance finishes" info="Swaps real wood, lime plaster and raw terracotta for durable lookalikes." checked={b.low_maintenance} onChange={(v) => set('low_maintenance', v)} />
-            {b.styles.length > 0 && <p className="text-sm text-slate-600">Chosen: {b.styles.map((id) => styles.find((s) => s.id === id)?.name ?? id).join(', ')}</p>}
+            {b.styles.length > 0 && <p className="text-sm text-muted">Chosen: {b.styles.map((id) => styles.find((s) => s.id === id)?.name ?? id).join(', ')}</p>}
           </div>
         )}
 
@@ -288,7 +288,7 @@ export default function Questionnaire() {
               placeholder="e.g. My mother has knee pain and can't climb stairs. We cook a lot of non-veg, so a closed kitchen. Strict Vaastu for the puja and kitchen."
               info="English, Hindi or Hinglish. Don't include names or phone numbers." />
             <button type="button" onClick={readWords} disabled={busy || !b.free_text.trim()}
-              className="inline-flex items-center gap-2 rounded-lg border border-sage-700 bg-white px-4 py-2 text-sm font-semibold text-sage-800 hover:bg-sage-50 disabled:opacity-50">
+              className="inline-flex items-center gap-2 rounded-2xl border border-green bg-card px-4 py-2 text-sm font-semibold text-green hover:bg-paper2 disabled:opacity-50">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Read my words
             </button>
             {extracted && (
@@ -299,19 +299,19 @@ export default function Questionnaire() {
 
         {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
-        <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-5">
+        <div className="mt-8 flex items-center justify-between border-t border-line pt-5">
           <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}
-            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:invisible">
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-ink/80 hover:bg-paper2 disabled:invisible">
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
           {step < STEPS.length - 1 ? (
             <button type="button" onClick={() => setStep((s) => s + 1)} disabled={step === 0 && !plotOk}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-sage-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sage-900 disabled:opacity-50">
+              className="inline-flex items-center gap-1.5 rounded-full bg-terra px-5 py-2.5 text-sm font-semibold text-white hover:bg-terra-dark disabled:opacity-50">
               Next <ArrowRight className="h-4 w-4" />
             </button>
           ) : (
             <button type="button" onClick={submit} disabled={busy}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-sage-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sage-900 disabled:opacity-50">
+              className="inline-flex items-center gap-1.5 rounded-full bg-terra px-5 py-2.5 text-sm font-semibold text-white hover:bg-terra-dark disabled:opacity-50">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} {outsidePilot ? 'Continue' : 'Review my brief'}
             </button>
           )}
@@ -343,14 +343,14 @@ function LiveHouse({ b, elders }: { b: Brief; elders: boolean }) {
   ].filter(Boolean) as string[];
   return (
     <aside className="mt-6 lg:sticky lg:top-6 lg:mt-0 lg:self-start" aria-label="Your house so far">
-      <div className="overflow-hidden rounded-2xl bg-[#F2EDE4] text-slate-900 shadow-xl">
+      <div className="overflow-hidden rounded-2xl bg-paper2 text-ink shadow-xl">
         <PlotHouse3D plotW={b.plot_width_ft} plotD={b.plot_depth_ft} floors={b.floors_wanted} car={b.cars > 0} progress={grow} className="h-56 w-full lg:h-80" />
         <div className="space-y-1.5 p-4">
-          <p className="font-mono text-[11px] uppercase tracking-widest text-slate-500">Your house so far</p>
+          <p className="tabular-nums text-[11px] uppercase tracking-widest text-muted">Your house so far</p>
           <ul className="space-y-1 text-sm">
-            {notes.map((n) => <li key={n} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-emerald-700" aria-hidden />{n}</li>)}
+            {notes.map((n) => <li key={n} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-green" aria-hidden />{n}</li>)}
           </ul>
-          <p className="pt-1 text-[11px] text-slate-500">A sketch to picture it; your real designs come next.</p>
+          <p className="pt-1 text-[11px] text-muted">A sketch to picture it; your real designs come next.</p>
         </div>
       </div>
     </aside>
@@ -358,7 +358,7 @@ function LiveHouse({ b, elders }: { b: Brief; elders: boolean }) {
 }
 
 function Header({ title, info }: { title: string; info?: string }) {
-  return <h1 className="flex items-center gap-2 text-2xl font-bold text-slate-900">{title}{info && <InfoTip text={info} />}</h1>;
+  return <h1 className="flex items-center gap-2 text-2xl font-bold text-ink">{title}{info && <InfoTip text={info} />}</h1>;
 }
 
 const FIELD_LABEL: Record<string, string> = {
@@ -382,25 +382,25 @@ function ExtractPanel({ extracted, onApply, onDismiss }: {
 }) {
   const entries = Object.entries(extracted.fields);
   return (
-    <div className="rounded-xl border border-sage-200 bg-sage-50 p-4">
-      <p className="text-sm font-semibold text-sage-900">{entries.length ? 'From your words we picked up:' : "We couldn't pick out anything specific; the form above still counts."}</p>
-      <ul className="mt-2 space-y-1.5 text-sm text-slate-800">
+    <div className="rounded-xl border border-line bg-paper2 p-4">
+      <p className="text-sm font-semibold text-ink">{entries.length ? 'From your words we picked up:' : "We couldn't pick out anything specific; the form above still counts."}</p>
+      <ul className="mt-2 space-y-1.5 text-sm text-ink">
         {entries.map(([k, v]) => (
           <li key={k}>
             <strong>{FIELD_LABEL[k] ?? k}:</strong> {humanize(v)}
-            {extracted.evidence[k] && <span className="text-slate-500"> — “{extracted.evidence[k]}”</span>}
+            {extracted.evidence[k] && <span className="text-muted"> — “{extracted.evidence[k]}”</span>}
           </li>
         ))}
       </ul>
       {extracted.questions.length > 0 && (
-        <div className="mt-3 text-sm text-slate-700">
+        <div className="mt-3 text-sm text-ink/80">
           <p className="font-semibold">Worth clarifying:</p>
           <ul className="list-disc pl-5">{extracted.questions.map((q) => <li key={q}>{q}</li>)}</ul>
         </div>
       )}
       <div className="mt-3 flex gap-2">
-        {entries.length > 0 && <button type="button" onClick={onApply} className="rounded-lg bg-sage-800 px-3 py-1.5 text-sm font-semibold text-white">Apply to my answers</button>}
-        <button type="button" onClick={onDismiss} className="rounded-lg px-3 py-1.5 text-sm text-slate-700 hover:bg-white">Dismiss</button>
+        {entries.length > 0 && <button type="button" onClick={onApply} className="rounded-full bg-terra px-3 py-1.5 text-sm font-semibold text-white">Apply to my answers</button>}
+        <button type="button" onClick={onDismiss} className="rounded-lg px-3 py-1.5 text-sm text-ink/80 hover:bg-card">Dismiss</button>
       </div>
     </div>
   );
@@ -422,21 +422,21 @@ function Review({ understood, waitlist, brief, houseId, onEdit, onNext }: {
     }
   };
   return (
-    <section className="mx-auto max-w-2xl rounded-2xl bg-ivory-50 p-6 text-slate-900 shadow-xl sm:p-8">
+    <section className="mx-auto max-w-2xl rounded-2xl bg-card p-6 text-ink shadow-xl sm:p-8">
       <h1 className="text-2xl font-bold">Here&apos;s what we understood</h1>
       <ul className="mt-4 space-y-2">
-        {understood.map((s) => <li key={s} className="flex gap-2 text-slate-800"><Check className="mt-0.5 h-4 w-4 shrink-0 text-sage-700" />{s}</li>)}
+        {understood.map((s) => <li key={s} className="flex gap-2 text-ink"><Check className="mt-0.5 h-4 w-4 shrink-0 text-green" />{s}</li>)}
       </ul>
       {waitlist ? (
-        <div className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-4">
+        <div className="mt-6 rounded-xl border border-gold bg-amber-50 p-4">
           <p className="flex items-center gap-2 font-semibold text-amber-900"><MapPin className="h-4 w-4" />
             {waitlist === 'city' ? 'Nestora is in pilot for Mumbai only.' : 'Renovations and flat interiors are coming soon.'}</p>
           {joined ? <p className="mt-2 text-sm text-amber-900">You&apos;re on the list. We&apos;ll email you once.</p> : (
             <form onSubmit={join} className="mt-3 flex flex-col gap-2 sm:flex-row">
               <label htmlFor="wl" className="sr-only">Email</label>
               <input id="wl" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
-                className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" />
-              <button className="rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white">Join the waitlist</button>
+                className="flex-1 rounded-2xl border border-line bg-card px-3 py-2 text-ink" />
+              <button className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink">Join the waitlist</button>
             </form>
           )}
           {err && <p role="alert" className="mt-2 text-sm text-red-700">{err}</p>}
@@ -444,19 +444,19 @@ function Review({ understood, waitlist, brief, houseId, onEdit, onNext }: {
         </div>
       ) : null}
       <div className="mt-8 flex flex-wrap gap-3">
-        <button type="button" onClick={onEdit} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Change answers</button>
+        <button type="button" onClick={onEdit} className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-ink/80">Change answers</button>
         {(!waitlist || waitlist === 'city') && (
           <>
-            <button type="button" onClick={() => onNext(true)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${brief.styles_locked ? 'border border-sage-800 text-sage-800' : 'bg-sage-800 text-white'}`}>
+            <button type="button" onClick={() => onNext(true)} className={`rounded-full px-4 py-2 text-sm font-semibold ${brief.styles_locked ? 'border border-green text-green' : 'bg-terra text-white'}`}>
               {brief.styles_locked ? 'Rank my styles with photos (1 min)' : 'Find my style (1 min swipe)'}
             </button>
-            <button type="button" onClick={() => onNext(false)} className={`rounded-lg px-4 py-2 text-sm font-semibold ${brief.styles_locked ? 'bg-sage-800 text-white' : 'border border-sage-800 text-sage-800'}`}>
+            <button type="button" onClick={() => onNext(false)} className={`rounded-full px-4 py-2 text-sm font-semibold ${brief.styles_locked ? 'bg-terra text-white' : 'border border-green text-green'}`}>
               {brief.styles_locked ? 'See options' : 'Skip to options'}
             </button>
           </>
         )}
       </div>
-      <p className="mt-4 font-mono text-xs text-slate-400">House {houseId}</p>
+      <p className="mt-4 tabular-nums text-xs text-muted">House {houseId}</p>
     </section>
   );
 }

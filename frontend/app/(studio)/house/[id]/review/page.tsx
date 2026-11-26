@@ -18,12 +18,12 @@ export default function Page() {
       <div className="mb-6 flex items-center justify-between">
         <Link
           href={`/house/${houseId}`}
-          className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3.5 py-1.5 font-mono text-xs text-slate-400 transition hover:text-white"
+          className="flex items-center gap-2 rounded-2xl border border-line bg-card px-3.5 py-1.5 tabular-nums text-xs text-muted transition hover:text-ink"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
           Back to viewer
         </Link>
-        <h1 className="font-mono text-xs text-slate-400">Checks & review • House {houseId}</h1>
+        <h1 className="tabular-nums text-xs text-muted">Checks & review • House {houseId}</h1>
       </div>
       <Disclaimer className="mb-6" />
       <TrustSheet twin={twin} />

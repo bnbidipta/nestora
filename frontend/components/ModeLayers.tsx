@@ -108,7 +108,7 @@ export function SunPath({ climate }: { climate: any }) {
 }
 
 function KV({ k, v }: { k: string; v: string }) {
-  return <div className="flex justify-between gap-2 border-b border-slate-800/60 py-1 font-mono text-xs"><span className="text-slate-400">{k}</span><span className="text-right text-white">{v}</span></div>;
+  return <div className="flex justify-between gap-2 border-b border-line/60 py-1 tabular-nums text-xs"><span className="text-muted">{k}</span><span className="text-right text-ink">{v}</span></div>;
 }
 
 export function RoomDetail({ mode, twin, room }: { mode: LayerMode; twin: HouseTwin; room: Room }) {
@@ -120,18 +120,18 @@ export function RoomDetail({ mode, twin, room }: { mode: LayerMode; twin: HouseT
     return (
       <div className="space-y-1">
         {(p?.walls ?? []).map((w: any) => (
-          <div key={w.side} className="flex items-center justify-between font-mono text-xs text-slate-300">
-            <span><span className="mr-1.5 inline-block h-3 w-3 rounded-sm border border-slate-500 align-middle" style={{ background: w.hex }} />{w.side} wall ({w.faces}) {w.role === 'accent' ? '· accent' : ''}</span>
+          <div key={w.side} className="flex items-center justify-between tabular-nums text-xs text-ink/80">
+            <span><span className="mr-1.5 inline-block h-3 w-3 rounded-sm border border-muted/50 align-middle" style={{ background: w.hex }} />{w.side} wall ({w.faces}) {w.role === 'accent' ? '· accent' : ''}</span>
             <span>{w.hex} · LRV {w.lrv} · L*a*b* {w.lab.join('/')}</span>
           </div>
         ))}
-        {p && <p className="pt-1 text-xs text-slate-400">{p.why} Palette harmony: {p.harmony}.</p>}
+        {p && <p className="pt-1 text-xs text-muted">{p.why} Palette harmony: {p.harmony}.</p>}
         {mat && (
-          <div className="pt-2 text-xs text-slate-300">
-            <p className="font-semibold text-white">Floor: {mat.chosen.name} (₹{Math.round(perAreaRate(mat.chosen.cost_sqft[0], u))}–{Math.round(perAreaRate(mat.chosen.cost_sqft[1], u))}/{perArea(u)})</p>
-            <p className="text-emerald-400">+ {mat.chosen.benefits}</p>
-            <p className="text-amber-400">− {mat.chosen.risks}</p>
-            <p className="text-slate-400">Care: {mat.chosen.maintenance}. Also good: {mat.alternatives.map((a: any) => a.name).join(', ')}.</p>
+          <div className="pt-2 text-xs text-ink/80">
+            <p className="font-semibold text-ink">Floor: {mat.chosen.name} (₹{Math.round(perAreaRate(mat.chosen.cost_sqft[0], u))}–{Math.round(perAreaRate(mat.chosen.cost_sqft[1], u))}/{perArea(u)})</p>
+            <p className="text-green">+ {mat.chosen.benefits}</p>
+            <p className="text-gold-dark">− {mat.chosen.risks}</p>
+            <p className="text-muted">Care: {mat.chosen.maintenance}. Also good: {mat.alternatives.map((a: any) => a.name).join(', ')}.</p>
           </div>
         )}
       </div>
@@ -140,13 +140,13 @@ export function RoomDetail({ mode, twin, room }: { mode: LayerMode; twin: HouseT
   if (mode === 'decor') {
     const f = t.furniture?.rooms?.[room.name];
     return f ? (
-      <div className="text-xs text-slate-300">
+      <div className="text-xs text-ink/80">
         <KV k="Furniture" v={f.items.map((i: any) => i.item).join(', ') || '—'} />
         {f.did_not_fit?.length > 0 && <KV k="Didn't fit" v={f.did_not_fit.join(', ')} />}
         {f.triangle_ft && <KV k="Work triangle" v={`${len(f.triangle_ft, u)} (limit ${len(22, u, 0)})`} />}
         <KV k="Door on" v={`${f.door_wall} wall`} />
       </div>
-    ) : <p className="text-xs text-slate-400">No furniture for this space.</p>;
+    ) : <p className="text-xs text-muted">No furniture for this space.</p>;
   }
   if (mode === 'mep') {
     return (
@@ -191,7 +191,7 @@ export function Legend({ mode }: { mode: LayerMode }) {
     sound: [['Too loud', '#F8B4A0'], ['Echoey', '#FCE3A6'], ['Quiet', '#BBE5C8']],
   };
   return (
-    <div className="flex flex-wrap gap-3 px-3 pb-2 text-xs text-slate-600">
+    <div className="flex flex-wrap gap-3 px-3 pb-2 text-xs text-muted">
       {items[mode].map(([k, c]) => <span key={k} className="flex items-center gap-1"><span className="inline-block h-3 w-3 rounded-sm" style={{ background: c }} />{k}</span>)}
     </div>
   );

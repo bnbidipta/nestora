@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #F7F6F2;
-  --foreground: #1A241E;
+  --background: #FAF7F2;
+  --foreground: #1F1B16;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -93,4 +93,9 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .animate-\[kenburns_18s_ease-in-out_infinite_alternate\] { animation: none; }
+}
+
+/* one type system: Fraunces headings, Inter body (as on the landing page) */
+@layer base {
+  h1, h2 { font-family: var(--font-display), Georgia, serif; }
 }

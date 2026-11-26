@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body className="min-h-screen bg-[#F7F6F2] text-[#1A241E] font-sans antialiased selection:bg-[#26352C] selection:text-[#F7F6F2]">
+      <body className="min-h-screen bg-paper text-ink font-sans antialiased selection:bg-green selection:text-paper">
         {children}
         <ConsentBanner />
       </body>

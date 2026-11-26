@@ -39,7 +39,7 @@ export default function Elevation({ twin }: { twin: HouseTwin }) {
   const height = Math.max(...zs) + 0.5;
 
   return (
-    <figure className="rounded-xl bg-white p-3">
+    <figure className="rounded-xl bg-card p-3">
       <svg viewBox={`${x0} ${-z1} ${x1 - x0} ${z1 - z0}`} className="mx-auto max-h-[560px] w-full" role="img" aria-label="Front elevation of the house">
         <rect x={x0} y={-z1} width={x1 - x0} height={z1 - z0} fill="#F7F3EC" />
         {shapes.map((s, i) => (
@@ -48,7 +48,7 @@ export default function Elevation({ twin }: { twin: HouseTwin }) {
         ))}
         <line x1={x0} x2={x1} y1={0.5} y2={0.5} stroke="#2b2622" strokeWidth={0.2} />
       </svg>
-      <figcaption className="mt-2 flex justify-between text-xs text-slate-500">
+      <figcaption className="mt-2 flex justify-between text-xs text-muted">
         <span>Front elevation (from the road)</span>
         <span>Height about {lenShort(height + 0.5, u)}</span>
       </figcaption>

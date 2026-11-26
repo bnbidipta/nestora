@@ -40,8 +40,8 @@ function toHtml(md: string): string {
 export default function LegalDoc({ file }: { file: 'privacy' | 'terms' }) {
   const md = fs.readFileSync(path.join(process.cwd(), 'content', 'legal', `${file}.md`), 'utf8');
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 text-slate-800 [&_code]:rounded [&_code]:bg-slate-100 [&_code]:px-1 [&_h2]:mt-2 [&_h2]:text-3xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_h4]:mt-6 [&_h4]:font-semibold [&_hr]:my-6 [&_li]:ml-5 [&_li]:list-disc [&_p]:my-3 [&_p]:leading-relaxed [&_table]:my-4 [&_table]:w-full [&_table]:text-sm [&_td]:border [&_td]:border-slate-200 [&_td]:p-2 [&_th]:border [&_th]:border-slate-300 [&_th]:bg-slate-50 [&_th]:p-2 [&_th]:text-left">
-      <a href="/" className="font-mono text-sm font-bold tracking-widest text-slate-900">NESTORA</a>
+    <main className="mx-auto max-w-3xl px-4 py-10 text-ink [&_code]:rounded [&_code]:bg-paper2 [&_code]:px-1 [&_h2]:mt-2 [&_h2]:text-3xl [&_h2]:font-bold [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_h4]:mt-6 [&_h4]:font-semibold [&_hr]:my-6 [&_li]:ml-5 [&_li]:list-disc [&_p]:my-3 [&_p]:leading-relaxed [&_table]:my-4 [&_table]:w-full [&_table]:text-sm [&_td]:border [&_td]:border-line [&_td]:p-2 [&_th]:border [&_th]:border-line [&_th]:bg-paper [&_th]:p-2 [&_th]:text-left">
+      <a href="/" className="tabular-nums text-sm font-bold tracking-widest text-ink">NESTORA</a>
       <div dangerouslySetInnerHTML={{ __html: toHtml(md) }} />
     </main>
   );

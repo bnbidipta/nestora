@@ -18,7 +18,7 @@ import FlyInVideo from '@/components/FlyInVideo';
 import type { Look } from '@/lib/house3d';
 import ExteriorPanel from '@/components/ExteriorPanel';
 import Versions from '@/components/Versions';
-const House3D = dynamic(() => import('@/components/House3D'), { ssr: false, loading: () => <p className="py-20 text-center text-sm text-slate-400">Loading 3D…</p> });
+const House3D = dynamic(() => import('@/components/House3D'), { ssr: false, loading: () => <p className="py-20 text-center text-sm text-muted">Loading 3D…</p> });
 
 type ViewMode = 'plan' | 'structure' | LayerMode;
 const LAYERS: string[] = ['paint', 'decor', 'mep', 'climate', 'sound'];
@@ -129,12 +129,12 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
       {canEdit && <ExteriorPanel houseId={twin.house_id} current={((twin.metadata as Record<string, any>)?.look as Look | undefined)?.exterior} onChanged={async () => setTwin(await getHouse(twin.house_id))} />}
       {canEdit && <WhatIf houseId={twin.house_id} onKept={async () => setTwin(await getHouse(twin.house_id))} />}
       {canEdit && <Versions houseId={twin.house_id} stamp={String((twin.metadata as Record<string, unknown>)?.candidate_id ?? '')} onRestored={async () => setTwin(await getHouse(twin.house_id))} />}
-      <div className="flex-1 rounded-2xl border border-slate-800 bg-[#131926] p-4 sm:p-6 print:border-0 print:bg-white print:p-0">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4 print:hidden">
-          <div role="radiogroup" aria-label="Plan, elevation or 3D" className="flex rounded-lg border border-slate-700 p-0.5">
+      <div className="flex-1 rounded-2xl border border-line bg-card p-4 sm:p-6 print:border-0 print:bg-card print:p-0">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/80 pb-4 print:hidden">
+          <div role="radiogroup" aria-label="Plan, elevation or 3D" className="flex rounded-lg border border-line p-0.5">
             {([['plan', '2D plan', Ruler], ['elev', 'Elevation', Home], ['3d', '3D', Box]] as const).map(([v, text, Icon]) => (
               <button key={v} type="button" role="radio" aria-checked={view === v} onClick={() => setView(v)}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-mono text-xs ${view === v ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white'}`}>
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 tabular-nums text-xs ${view === v ? 'bg-terra text-white' : 'text-ink/80 hover:text-white'}`}>
                 <Icon className="h-3.5 w-3.5" aria-hidden />{text}
               </button>
             ))}
@@ -142,7 +142,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
           {view === 'plan' && <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="View">
             {([['plan', 'Plan', Ruler], ['structure', 'Structure', Layers], ['mep', 'Services', Zap], ['decor', 'Decor', Sofa], ['climate', 'Climate', Sun], ['sound', 'Sound', Volume2]] as const).map(([id, text, Icon]) => (
               <button key={id} type="button" role="tab" aria-selected={mode === id} onClick={() => setMode(id)}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${mode === id ? 'bg-blue-600 text-white' : 'border border-slate-700 text-slate-300 hover:text-white'}`}>
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 tabular-nums text-xs ${mode === id ? 'bg-terra text-white' : 'border border-line text-ink/80 hover:text-white'}`}>
                 <Icon className="h-3.5 w-3.5" aria-hidden />{text}
               </button>
             ))}
@@ -151,25 +151,25 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             <div className="flex gap-1.5" role="tablist" aria-label="Floor">
               {twin.floors.map((f) => (
                 <button key={f.floor_no} type="button" role="tab" aria-selected={f.floor_no === floorNo} onClick={() => { setFloorNo(f.floor_no); setSelected(null); }}
-                  className={`rounded-lg px-3 py-1.5 font-mono text-xs ${f.floor_no === floorNo ? 'bg-white text-slate-900' : 'border border-slate-700 text-slate-300'}`}>
+                  className={`rounded-2xl px-3 py-1.5 tabular-nums text-xs ${f.floor_no === floorNo ? 'bg-card text-ink' : 'border border-line text-ink/80'}`}>
                   {f.floor_no === 0 ? 'Ground' : `Floor ${f.floor_no}`}
                 </button>
               ))}
               {roofNo > 0 && (
                 <button type="button" role="tab" aria-selected={floorNo === roofNo} onClick={() => { setFloorNo(roofNo); setSelected(null); }}
-                  className={`rounded-lg px-3 py-1.5 font-mono text-xs ${floorNo === roofNo ? 'bg-white text-slate-900' : 'border border-slate-700 text-slate-300'}`}>Roof</button>
+                  className={`rounded-2xl px-3 py-1.5 tabular-nums text-xs ${floorNo === roofNo ? 'bg-card text-ink' : 'border border-line text-ink/80'}`}>Roof</button>
               )}
             </div>
           )}
-          <span className={`flex items-center gap-1 font-mono text-xs ${judge?.pass ? 'text-emerald-400' : 'text-red-400'}`}>
+          <span className={`flex items-center gap-1 tabular-nums text-xs ${judge?.pass ? 'text-green' : 'text-red-700'}`}>
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
             {judge ? (judge.pass ? 'Automated checks passed' : `${judge.failures.length} check(s) failed`) : 'Not checked yet'}
           </span>
         </div>
 
-        <div className="relative mt-4 overflow-hidden rounded-xl bg-[#FAFAF7] print:mt-0">
+        <div className="relative mt-4 overflow-hidden rounded-xl bg-paper print:mt-0">
           {view3d ? (
-            <div className="bg-[#131926] pt-1"><House3D twin={twin} intro={intro} /></div>
+            <div className="bg-card pt-1"><House3D twin={twin} intro={intro} /></div>
           ) : view === 'elev' ? (
             <Elevation twin={twin} />
           ) : (
@@ -248,15 +248,15 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
           )}
         </div>
         {!view3d && tags.length > 0 && (
-          <p className="mt-2 font-mono text-[11px] text-slate-400">{tags.map((id, i) => `${i + 1} ${roomName(id, floor?.rooms.find((r) => r.name === id)?.type ?? undefined)}`).join(' · ')}</p>
+          <p className="mt-2 tabular-nums text-[11px] text-muted">{tags.map((id, i) => `${i + 1} ${roomName(id, floor?.rooms.find((r) => r.name === id)?.type ?? undefined)}`).join(' · ')}</p>
         )}
       </div>
 
-      <aside className="w-full rounded-2xl border border-slate-800 bg-[#131926] p-5 print:mt-6 print:border-0 print:bg-white print:text-black">
+      <aside className="w-full rounded-2xl border border-line bg-card p-5 print:mt-6 print:border-0 print:bg-card print:text-ink">
         {room ? (
           <div className="space-y-3">
-            <p className="font-mono text-[10px] uppercase text-blue-400">Selected room</p>
-            <h3 className="text-lg font-bold text-white">{roomName(room.name, room.type ?? undefined)}</h3>
+            <p className="tabular-nums text-[10px] uppercase text-terra">Selected room</p>
+            <h3 className="text-lg font-bold text-ink">{roomName(room.name, room.type ?? undefined)}</h3>
             <Row k="Size" v={`${lenShort(room.length_ft, u)} × ${lenShort(room.width_ft, u)} (${area(room.area_sqft, u)})`} />
             <Row k="Door" v={`${room.door_width_mm} mm`} />
             <Row k="Window" v={room.window_area_sqft ? area(room.window_area_sqft, u) : room.exterior ? 'Vent' : 'Internal (duct/exhaust)'} />
@@ -266,15 +266,15 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             {LAYERS.includes(mode) && <div className="pt-2"><RoomDetail mode={mode as LayerMode} twin={twin} room={room} /></div>}
             {canEdit && room.type !== 'stair' && room.type !== 'utility' && (
               <div className="flex gap-2 pt-2 print:hidden">
-                <button type="button" disabled={busy} onClick={() => edit('grow')} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-slate-600 px-2 py-1.5 text-xs text-white hover:bg-slate-800 disabled:opacity-50"><Plus className="h-3.5 w-3.5" />Bigger</button>
-                <button type="button" disabled={busy} onClick={() => edit('shrink')} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-slate-600 px-2 py-1.5 text-xs text-white hover:bg-slate-800 disabled:opacity-50"><Minus className="h-3.5 w-3.5" />Smaller</button>
+                <button type="button" disabled={busy} onClick={() => edit('grow')} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-line px-2 py-1.5 text-xs text-ink hover:bg-paper2 disabled:opacity-50"><Plus className="h-3.5 w-3.5" />Bigger</button>
+                <button type="button" disabled={busy} onClick={() => edit('shrink')} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-line px-2 py-1.5 text-xs text-ink hover:bg-paper2 disabled:opacity-50"><Minus className="h-3.5 w-3.5" />Smaller</button>
               </div>
             )}
-            <button type="button" onClick={() => setSelected(null)} className="text-xs text-slate-400 underline print:hidden">Back to overview</button>
+            <button type="button" onClick={() => setSelected(null)} className="text-xs text-muted underline print:hidden">Back to overview</button>
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="flex items-center gap-2"><Info className="h-4 w-4 text-blue-400" /><h3 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">Why this design</h3></div>
+            <div className="flex items-center gap-2"><Info className="h-4 w-4 text-terra" /><h3 className="tabular-nums text-xs font-bold uppercase tracking-wider text-ink">Why this design</h3></div>
             <Row k="Plot" v={`${lenShort(PW, u)} × ${lenShort(PD, u)} (${plotArea(twin.plot.plot_area_sqft, u, loadRegional())})`} />
             <Row k="Built-up (FSI)" v={`${area(builtUp, u)} (FSI ${(builtUp / twin.plot.plot_area_sqft).toFixed(2)})`} />
             <Row k="Foundation" v={`${twin.structure.foundation.type}, ${len(twin.structure.foundation.depth_ft, u)}`} />
@@ -282,58 +282,58 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
             {mode === 'climate' && (
               <div className="flex flex-col items-center pt-2">
                 <SunPath climate={(twin as any).climate} />
-                <p className="text-center text-[11px] text-slate-400"><span className="text-red-400">June</span> · <span className="text-amber-400">March/Sept</span> · <span className="text-blue-400">December</span> sun path</p>
+                <p className="text-center text-[11px] text-muted"><span className="text-red-700">June</span> · <span className="text-gold-dark">March/Sept</span> · <span className="text-terra">December</span> sun path</p>
               </div>
             )}
             {mode === 'sound' && <Row k="Road noise" v={`${(twin as any).sound?.outside_db ?? '—'} dB`} />}
             {((twin as any).suggestions ?? []).length > 0 && (
               <div className="mt-3 space-y-2">
-                <p className="flex items-center gap-1.5 font-mono text-[11px] uppercase text-amber-300"><Lightbulb className="h-3.5 w-3.5" />Suggestions</p>
+                <p className="flex items-center gap-1.5 tabular-nums text-[11px] uppercase text-gold-dark"><Lightbulb className="h-3.5 w-3.5" />Suggestions</p>
                 {((twin as any).suggestions as { kind: string; title: string; detail: string }[]).map((s) => (
-                  <div key={s.title} className="rounded-lg border border-amber-900/60 bg-amber-950/30 p-2.5 text-xs text-amber-100">
-                    <span className="font-semibold">{s.title}.</span> <span className="text-amber-200/80">{s.detail}</span>
+                  <div key={s.title} className="rounded-lg border border-amber-200/60 bg-amber-50/30 p-2.5 text-xs text-gold-dark">
+                    <span className="font-semibold">{s.title}.</span> <span className="text-gold-dark/80">{s.detail}</span>
                   </div>
                 ))}
               </div>
             )}
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {decisions.map((d) => (
-                <li key={d.field} className="rounded-lg bg-slate-900/70 p-2.5 text-xs text-slate-300">
-                  <span className="font-semibold text-white">{FIELD[d.field] ?? label(d.field)}:</span> {decisionValue(d, u, builtUp, twin.plot.plot_area_sqft)}
-                  <span className="block text-slate-400">{d.reason}</span>
+                <li key={d.field} className="rounded-lg bg-card/70 p-2.5 text-xs text-ink/80">
+                  <span className="font-semibold text-ink">{FIELD[d.field] ?? label(d.field)}:</span> {decisionValue(d, u, builtUp, twin.plot.plot_area_sqft)}
+                  <span className="block text-muted">{d.reason}</span>
                 </li>
               ))}
             </ul>
             {Object.entries(trads).map(([k, p]) => (
-              <details key={k} className="rounded-lg bg-slate-900/70 p-2.5 text-xs text-slate-300">
-                <summary className="cursor-pointer font-semibold text-white">{label(k)} ({p.mode}) · {Math.round((p.score + 1) * 50)}% aligned</summary>
+              <details key={k} className="rounded-lg bg-card/70 p-2.5 text-xs text-ink/80">
+                <summary className="cursor-pointer font-semibold text-ink">{label(k)} ({p.mode}) · {Math.round((p.score + 1) * 50)}% aligned</summary>
                 <ul className="mt-2 space-y-1">
-                  {p.findings.map((f) => <li key={f.rule}><span className={f.status === 'violated' ? 'text-red-400' : f.status === 'satisfied' ? 'text-emerald-400' : 'text-slate-400'}>{f.status.replace('_', ' ')}</span> · {f.rule}</li>)}
+                  {p.findings.map((f) => <li key={f.rule}><span className={f.status === 'violated' ? 'text-red-700' : f.status === 'satisfied' ? 'text-green' : 'text-muted'}>{f.status.replace('_', ' ')}</span> · {f.rule}</li>)}
                 </ul>
-                {!p.verified && <p className="mt-2 text-slate-500">Rules are a research draft, not yet reviewed by an expert.</p>}
+                {!p.verified && <p className="mt-2 text-muted">Rules are a research draft, not yet reviewed by an expert.</p>}
               </details>
             ))}
-            <p className="pt-1 text-xs text-slate-500 print:hidden">Click a room to see its numbers{canEdit ? ' or resize it' : ''}.</p>
+            <p className="pt-1 text-xs text-muted print:hidden">Click a room to see its numbers{canEdit ? ' or resize it' : ''}.</p>
           </div>
         )}
 
-        {msg && <p role="status" className="mt-3 rounded-lg bg-slate-900 p-2 text-xs text-slate-200">{msg}</p>}
+        {msg && <p role="status" className="mt-3 rounded-lg bg-card p-2 text-xs text-ink">{msg}</p>}
 
-        <div className="mt-5 grid grid-cols-2 gap-2 border-t border-slate-800/80 pt-4 sm:grid-cols-4 print:hidden">
-          {canEdit && <button type="button" disabled={busy} onClick={() => edit('mirror')} className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><FlipHorizontal className="h-3.5 w-3.5" />Mirror the plan</button>}
-          <a href={dxfUrl(twin.house_id)} onClick={() => track('export', { format: 'dxf' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Download className="h-3.5 w-3.5" />DXF (CAD)</a>
-          <button type="button" onClick={() => { track('export', { format: 'pdf' }); window.print(); }} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Printer className="h-3.5 w-3.5" />PDF / print</button>
+        <div className="mt-5 grid grid-cols-2 gap-2 border-t border-line/80 pt-4 sm:grid-cols-4 print:hidden">
+          {canEdit && <button type="button" disabled={busy} onClick={() => edit('mirror')} className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs text-ink hover:bg-paper2"><FlipHorizontal className="h-3.5 w-3.5" />Mirror the plan</button>}
+          <a href={dxfUrl(twin.house_id)} onClick={() => track('export', { format: 'dxf' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs text-ink hover:bg-paper2"><Download className="h-3.5 w-3.5" />DXF (CAD)</a>
+          <button type="button" onClick={() => { track('export', { format: 'pdf' }); window.print(); }} className="flex items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs text-ink hover:bg-paper2"><Printer className="h-3.5 w-3.5" />PDF / print</button>
           <a href={`https://wa.me/?text=${encodeURIComponent('My Nestora house concept: ' + (typeof window !== 'undefined' ? window.location.href.split('?')[0] : ''))}`} target="_blank" rel="noopener noreferrer"
-            onClick={() => track('design_shared', { via: 'whatsapp' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Share2 className="h-3.5 w-3.5" />WhatsApp</a>
-          <button type="button" onClick={share} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Copy className="h-3.5 w-3.5" />Copy link</button>
-          <a href={`/house/${twin.house_id}/poster`} className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800"><Printer className="h-3.5 w-3.5" />Poster &amp; architect pack</a>
+            onClick={() => track('design_shared', { via: 'whatsapp' })} className="flex items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs text-ink hover:bg-paper2"><Share2 className="h-3.5 w-3.5" />WhatsApp</a>
+          <button type="button" onClick={share} className="flex items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs text-ink hover:bg-paper2"><Copy className="h-3.5 w-3.5" />Copy link</button>
+          <a href={`/house/${twin.house_id}/poster`} className="flex items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-xs text-ink hover:bg-paper2"><Printer className="h-3.5 w-3.5" />Poster &amp; architect pack</a>
           <div className="col-span-2 sm:col-span-4">
             <FlyInVideo rooms={twin.floors.flatMap((f) => f.rooms.map((r) => ({ f: f.floor_no, name: r.name, t: r.type ?? '', x: r.x ?? 0, y: r.y ?? 0, w: r.length_ft, d: r.width_ft })))}
               look={(twin.metadata as Record<string, any>)?.look as Look | undefined}
               plot={[-sbSide, -sbFront, -sbSide + twin.plot.plot_width_ft, -sbFront + twin.plot.plot_depth_ft]}
               caption={`${twin.plot.plot_width_ft} × ${twin.plot.plot_depth_ft} ft home`} fileName={`nestora-${twin.house_id}`} />
           </div>
-          <a href={`/house/${twin.house_id}/boq`} className="col-span-2 flex items-center justify-between rounded-xl bg-blue-600 sm:col-span-4 px-4 py-2.5 text-xs font-semibold text-white hover:bg-blue-500">
+          <a href={`/house/${twin.house_id}/boq`} className="col-span-2 flex items-center justify-between rounded-full bg-terra sm:col-span-4 px-4 py-2.5 text-xs font-semibold text-white hover:bg-terra">
             <span>Cost estimate (3 finish levels)</span><ChevronRight className="h-4 w-4" />
           </a>
         </div>
@@ -344,9 +344,9 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
 
 function Row({ k, v, swatch }: { k: string; v: string; swatch?: string }) {
   return (
-    <div className="flex justify-between gap-3 border-b border-slate-800/60 py-1 font-mono text-xs">
-      <span className="text-slate-400">{k}</span>
-      <span className="flex items-center gap-1.5 text-right text-white">{swatch && <span className="inline-block h-3 w-3 rounded-sm border border-slate-500" style={{ background: swatch }} />}{v}</span>
+    <div className="flex justify-between gap-3 border-b border-line/60 py-1 tabular-nums text-xs">
+      <span className="text-muted">{k}</span>
+      <span className="flex items-center gap-1.5 text-right text-ink">{swatch && <span className="inline-block h-3 w-3 rounded-sm border border-muted/50" style={{ background: swatch }} />}{v}</span>
     </div>
   );
 }

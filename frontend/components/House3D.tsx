@@ -309,7 +309,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
   useEffect(() => { if (!popup) return; const id = setTimeout(() => setPopup(null), 2500); return () => clearTimeout(id); }, [popup]);
 
   const go = (m: Mode) => { setWelcome(false); if (m === 'tour') setStop(0); setMode(m); };
-  const btn = (on: boolean) => `flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs ${on ? 'bg-white text-slate-900' : 'border border-slate-700 text-slate-300 hover:text-white'}`;
+  const btn = (on: boolean) => `flex items-center gap-1.5 rounded-2xl px-3 py-1.5 tabular-nums text-xs ${on ? 'bg-card text-ink' : 'border border-line text-ink/80 hover:text-ink'}`;
   const p = sunPts[Math.min(timeIdx, sunPts.length - 1)];
   const timeLabel = night ? 'Night' : p ? `${String(Math.floor(p.hour)).padStart(2, '0')}:${p.hour % 1 ? '30' : '00'}${p.alt < 15 ? (p.hour < 12 ? ' · morning' : ' · sunset') : ''}` : '';
   const features = (r: any): string[] => {
@@ -329,18 +329,18 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         <button type="button" onClick={() => go('orbit')} aria-pressed={mode === 'orbit'} className={btn(mode === 'orbit')}><Move3d className="h-3.5 w-3.5" />Look around</button>
         <button type="button" onClick={() => go('walk')} aria-pressed={mode === 'walk'} className={btn(mode === 'walk')}><Footprints className="h-3.5 w-3.5" />Walk inside</button>
         <button type="button" onClick={() => go('tour')} aria-pressed={mode === 'tour'} className={btn(mode === 'tour')}><MapIcon className="h-3.5 w-3.5" />Guided tour</button>
-        <span className="mx-1 h-5 w-px bg-slate-700" />
+        <span className="mx-1 h-5 w-px bg-line" />
         <button type="button" onClick={() => setFurniture((v) => !v)} aria-pressed={furniture} className={btn(furniture)}><Sofa className="h-3.5 w-3.5" />Furniture</button>
         <button type="button" onClick={() => setPaint((v) => !v)} aria-pressed={paint} className={btn(paint)}><Palette className="h-3.5 w-3.5" />Paint plan</button>
         {styles.length > 0 && picked.length > 0 && (
-          <label className="flex items-center gap-1.5 font-mono text-xs text-slate-300">Interior style
-            <select value={styleId} onChange={(e) => setStyleId(e.target.value)} className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-1.5 text-slate-100">
+          <label className="flex items-center gap-1.5 tabular-nums text-xs text-ink/80">Interior style
+            <select value={styleId} onChange={(e) => setStyleId(e.target.value)} className="rounded-2xl border border-line bg-card px-2 py-1.5 text-ink">
               {picked.map((id) => <option key={id} value={id}>{styles.find((s) => s.id === id)?.name ?? id}</option>)}
             </select>
           </label>
         )}
       </div>
-      <div className="flex flex-wrap items-center gap-2 pb-3 font-mono text-xs text-slate-300">
+      <div className="flex flex-wrap items-center gap-2 pb-3 tabular-nums text-xs text-ink/80">
         {mode === 'walk' && twin.floors.map((f, i) => (
           <button key={f.floor_no} type="button" onClick={() => setWalkFloor(i)} aria-pressed={walkFloor === i} className={btn(walkFloor === i)}>{f.floor_no === 0 ? 'Ground' : `Floor ${f.floor_no}`}</button>
         ))}
@@ -355,12 +355,12 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         ))}
         {sunPts.length > 0 && (
           <>
-            <span className="mx-1 h-5 w-px bg-slate-700" />
+            <span className="mx-1 h-5 w-px bg-line" />
             {(['summer', 'equinox', 'winter'] as const).map((s) => (
               <button key={s} type="button" onClick={() => setSeason(s)} aria-pressed={season === s} className={btn(season === s)}>{{ summer: 'June', equinox: 'Mar / Sep', winter: 'December' }[s]}</button>
             ))}
             <label className="flex items-center gap-2">Light
-              <input type="range" min={0} max={sunPts.length} value={Math.min(timeIdx, sunPts.length)} onChange={(e) => setTimeIdx(Number(e.target.value))} className="w-44 accent-amber-400" aria-label="Time of day" />
+              <input type="range" min={0} max={sunPts.length} value={Math.min(timeIdx, sunPts.length)} onChange={(e) => setTimeIdx(Number(e.target.value))} className="w-44 accent-terra" aria-label="Time of day" />
               <span className="w-28">{timeLabel}</span>
             </label>
           </>
@@ -370,14 +370,14 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         <div ref={mount} className={`h-[520px] w-full overflow-hidden rounded-xl ${mode === 'walk' ? 'cursor-grab' : mode === 'orbit' ? 'cursor-move' : ''}`}
           aria-label={mode === 'walk' ? 'Walk-through: W A S D or arrow keys to move, drag to look' : mode === 'tour' ? 'Guided tour' : '3D model: drag to rotate, scroll to zoom'} />
         {welcome && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate-950/55 p-4">
-            <div className="max-w-sm rounded-2xl bg-ivory-50 p-6 text-center text-slate-900 shadow-2xl">
+          <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-paper/55 p-4">
+            <div className="max-w-sm rounded-2xl bg-card p-6 text-center text-ink shadow-2xl">
               <h3 className="text-xl font-bold">Welcome to your home</h3>
-              <p className="mt-1 text-sm text-slate-600">{floorsN === 1 ? 'Single storey' : `${floorsN} floors`} · {stops.length} rooms · {area(twin.floors.reduce((s, f) => s + f.rooms.reduce((a, r) => a + r.area_sqft, 0), 0), u)}</p>
+              <p className="mt-1 text-sm text-muted">{floorsN === 1 ? 'Single storey' : `${floorsN} floors`} · {stops.length} rooms · {area(twin.floors.reduce((s, f) => s + f.rooms.reduce((a, r) => a + r.area_sqft, 0), 0), u)}</p>
               <div className="mt-5 grid gap-2">
-                <button type="button" onClick={() => go('tour')} className="rounded-lg bg-sage-800 px-4 py-2.5 text-sm font-semibold text-white hover:bg-sage-900">Take the guided tour</button>
-                <button type="button" onClick={() => go('walk')} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold">Walk around on my own</button>
-                <button type="button" onClick={() => go('orbit')} className="rounded-lg px-4 py-2 text-sm text-slate-600 underline">Just look at the outside</button>
+                <button type="button" onClick={() => go('tour')} className="rounded-full bg-terra px-4 py-2.5 text-sm font-semibold text-white hover:bg-terra-dark">Take the guided tour</button>
+                <button type="button" onClick={() => go('walk')} className="rounded-lg border border-line px-4 py-2.5 text-sm font-semibold">Walk around on my own</button>
+                <button type="button" onClick={() => go('orbit')} className="rounded-lg px-4 py-2 text-sm text-muted underline">Just look at the outside</button>
               </div>
             </div>
           </div>
@@ -385,14 +385,14 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         {compare && mode !== 'orbit' && !welcome && <SplitSlider value={split} />}
         {mode === 'walk' && !welcome && (
           <>
-            <p className="pointer-events-none absolute left-3 top-3 rounded bg-black/55 px-2 py-1 font-mono text-[11px] text-white">W A S D / arrows to walk · drag to look</p>
-            <p className="pointer-events-none absolute left-3 top-10 rounded bg-black/55 px-2 py-1 font-mono text-[11px] text-white" aria-live="polite">
+            <p className="pointer-events-none absolute left-3 top-3 rounded bg-black/55 px-2 py-1 tabular-nums text-[11px] text-white">W A S D / arrows to walk · drag to look</p>
+            <p className="pointer-events-none absolute left-3 top-10 rounded bg-black/55 px-2 py-1 tabular-nums text-[11px] text-white" aria-live="polite">
               Rooms visited {visited.size} / {stops.length}{visited.size === stops.length && stops.length > 0 ? ' · you have seen the whole house!' : ''}
             </p>
             {popup && <p className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 rounded-xl bg-black/65 px-4 py-2 text-lg font-bold text-white">{popup}</p>}
             <MiniMap rooms={twin.floors[walkFloor]?.rooms ?? []} floorNo={twin.floors[walkFloor]?.floor_no ?? 0} visited={visited} pos={pos} W={W} D={D} />
             <button type="button" onClick={() => setFinish((f) => (f + 2) % (FINISHES.length + 1) - 1)}
-              className="absolute bottom-4 right-4 rounded-lg bg-white/90 px-3 py-2 font-mono text-[11px] font-semibold text-slate-900">
+              className="absolute bottom-4 right-4 rounded-lg bg-card/90 px-3 py-2 tabular-nums text-[11px] font-semibold text-ink">
               Floor: {finish < 0 ? 'as designed' : FINISHES[finish][0]}
             </button>
             <Joystick onMove={(x, y) => { joy.current = { x, y }; }} />
@@ -401,15 +401,15 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         {mode === 'tour' && here && !welcome && (
           <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3">
             <div className="max-w-md rounded-xl bg-black/65 p-3 text-white backdrop-blur">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-white/60">{here.floor === 0 ? 'Ground floor' : `Floor ${here.floor}`} · {stop + 1} of {stops.length}</p>
+              <p className="tabular-nums text-[10px] uppercase tracking-wider text-ink/60">{here.floor === 0 ? 'Ground floor' : `Floor ${here.floor}`} · {stop + 1} of {stops.length}</p>
               <p className="text-lg font-bold">{roomName(here.room.name, here.room.type ?? undefined)}</p>
-              <p className="text-sm text-white/80">{lenShort(here.room.length_ft, u)} × {lenShort(here.room.width_ft, u)} · {area(here.room.area_sqft, u)}</p>
-              <ul className="mt-1 list-disc pl-4 text-xs text-white/75">{features(here.room).map((f) => <li key={f}>{f}</li>)}</ul>
+              <p className="text-sm text-ink/80">{lenShort(here.room.length_ft, u)} × {lenShort(here.room.width_ft, u)} · {area(here.room.area_sqft, u)}</p>
+              <ul className="mt-1 list-disc pl-4 text-xs text-ink/75">{features(here.room).map((f) => <li key={f}>{f}</li>)}</ul>
             </div>
             <div className="flex gap-2">
-              <button type="button" aria-label="Previous room" disabled={stop === 0} onClick={() => setStop((s) => Math.max(0, s - 1))} className="rounded-full bg-white/90 p-2.5 text-slate-900 disabled:opacity-40"><ChevronLeft className="h-5 w-5" /></button>
-              <button type="button" aria-label="Next room" disabled={stop >= stops.length - 1} onClick={() => setStop((s) => Math.min(stops.length - 1, s + 1))} className="rounded-full bg-white/90 p-2.5 text-slate-900 disabled:opacity-40"><ChevronRight className="h-5 w-5" /></button>
-              <button type="button" aria-label="End tour" onClick={() => go('orbit')} className="rounded-full bg-white/90 p-2.5 text-slate-900"><X className="h-5 w-5" /></button>
+              <button type="button" aria-label="Previous room" disabled={stop === 0} onClick={() => setStop((s) => Math.max(0, s - 1))} className="rounded-full bg-card/90 p-2.5 text-ink disabled:opacity-40"><ChevronLeft className="h-5 w-5" /></button>
+              <button type="button" aria-label="Next room" disabled={stop >= stops.length - 1} onClick={() => setStop((s) => Math.min(stops.length - 1, s + 1))} className="rounded-full bg-card/90 p-2.5 text-ink disabled:opacity-40"><ChevronRight className="h-5 w-5" /></button>
+              <button type="button" aria-label="End tour" onClick={() => go('orbit')} className="rounded-full bg-card/90 p-2.5 text-ink"><X className="h-5 w-5" /></button>
             </div>
           </div>
         )}
@@ -431,8 +431,8 @@ function Joystick({ onMove }: { onMove: (x: number, y: number) => void }) {
   const end = () => { setKnob({ x: 0, y: 0 }); onMove(0, 0); };
   return (
     <div ref={ref} onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); update(e); }} onPointerMove={(e) => e.buttons && update(e)} onPointerUp={end} onPointerCancel={end}
-      className="absolute bottom-4 left-4 h-28 w-28 touch-none rounded-full border-2 border-white/60 bg-black/25 md:hidden" aria-label="Move">
-      <div className="absolute h-10 w-10 rounded-full bg-white/80" style={{ left: `calc(50% - 20px + ${knob.x * 36}px)`, top: `calc(50% - 20px + ${knob.y * 36}px)` }} />
+      className="absolute bottom-4 left-4 h-28 w-28 touch-none rounded-full border-2 border-line bg-black/25 md:hidden" aria-label="Move">
+      <div className="absolute h-10 w-10 rounded-full bg-card/80" style={{ left: `calc(50% - 20px + ${knob.x * 36}px)`, top: `calc(50% - 20px + ${knob.y * 36}px)` }} />
     </div>
   );
 }
@@ -464,11 +464,11 @@ function SplitSlider({ value }: { value: React.MutableRefObject<number> }) {
   const set = (v: number) => { value.current = v; setX(v); };
   return (
     <>
-      <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow" style={{ left: `${x * 100}%` }} />
-      <span className="pointer-events-none absolute top-3 rounded bg-black/60 px-2 py-0.5 font-mono text-[11px] text-white" style={{ left: `calc(${x * 100}% - 64px)` }}>Empty</span>
-      <span className="pointer-events-none absolute top-3 rounded bg-black/60 px-2 py-0.5 font-mono text-[11px] text-white" style={{ left: `calc(${x * 100}% + 8px)` }}>Furnished</span>
+      <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-card shadow" style={{ left: `${x * 100}%` }} />
+      <span className="pointer-events-none absolute top-3 rounded bg-black/60 px-2 py-0.5 tabular-nums text-[11px] text-white" style={{ left: `calc(${x * 100}% - 64px)` }}>Empty</span>
+      <span className="pointer-events-none absolute top-3 rounded bg-black/60 px-2 py-0.5 tabular-nums text-[11px] text-white" style={{ left: `calc(${x * 100}% + 8px)` }}>Furnished</span>
       <input type="range" min={0.05} max={0.95} step={0.01} value={x} onChange={(e) => set(Number(e.target.value))}
-        aria-label="Move the line between the empty and the furnished room" className="absolute inset-x-8 bottom-24 accent-white" />
+        aria-label="Move the line between the empty and the furnished room" className="absolute inset-x-8 bottom-24 accent-terra" />
     </>
   );
 }

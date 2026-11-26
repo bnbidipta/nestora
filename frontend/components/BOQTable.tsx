@@ -53,43 +53,43 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
     ['Aggregate', boq.aggregate_tons != null ? `${boq.aggregate_tons} t` : '—'],
     ['Bricks', boq.bricks_count != null ? boq.bricks_count.toLocaleString('en-IN') : '—'],
   ];
-  const input = 'rounded border border-slate-600 bg-slate-950 px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-blue-500';
+  const input = 'rounded border border-line bg-paper px-2 py-1 text-ink focus:outline-none focus:ring-2 focus:ring-terra';
 
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-[#131926] p-5">
-          <span className="font-mono text-xs text-slate-400">ESTIMATED CONSTRUCTION COST</span>
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <span className="tabular-nums text-xs text-muted">ESTIMATED CONSTRUCTION COST</span>
           <div className="mt-2 flex gap-1" role="radiogroup" aria-label="Finish level">
             {(['economy', 'standard', 'premium'] as Tier[]).map((t) => (
               <button key={t} type="button" role="radio" aria-checked={t === tier} onClick={() => setTier(t)} disabled={!info}
-                className={`rounded px-2 py-0.5 font-mono text-[11px] capitalize ${t === tier ? 'bg-white text-slate-900' : 'border border-slate-700 text-slate-300'}`}>{t}</button>
+                className={`rounded px-2 py-0.5 tabular-nums text-[11px] capitalize ${t === tier ? 'bg-card text-ink' : 'border border-line text-ink/80'}`}>{t}</button>
             ))}
           </div>
-          <p className="mt-2 font-mono text-2xl font-bold text-white">{formatINR(total)}</p>
-          {range && <p className="text-xs text-slate-400">Range {formatINR(range.low.total)} – {formatINR(range.high.total)}</p>}
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-2 tabular-nums text-2xl font-bold text-ink">{formatINR(total)}</p>
+          {range && <p className="text-xs text-muted">Range {formatINR(range.low.total)} – {formatINR(range.high.total)}</p>}
+          <p className="mt-1 text-xs text-muted">
             {area > 0 ? `${formatINR(perAreaRate(total / area, u))} per ${perArea(u)} over ${fmtArea(area, u)}` : 'No floors generated'}
           </p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-[#131926] p-5">
-          <span className="font-mono text-xs text-slate-400">YOUR BUDGET</span>
-          <p className="mt-2 font-mono text-2xl font-bold text-white">{formatINR(budget.total_budget_inr)}</p>
-          <p className={`mt-1 text-xs ${overBudget > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <span className="tabular-nums text-xs text-muted">YOUR BUDGET</span>
+          <p className="mt-2 tabular-nums text-2xl font-bold text-ink">{formatINR(budget.total_budget_inr)}</p>
+          <p className={`mt-1 text-xs ${overBudget > 0 ? 'text-red-700' : 'text-green'}`}>
             {overBudget > 0 ? `${formatINR(overBudget)} over budget` : `${formatINR(-overBudget)} under budget`}
           </p>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-[#131926] p-5">
-          <span className="font-mono text-xs text-slate-400">ESTIMATED MONTHLY EMI</span>
-          <p className="mt-2 font-mono text-2xl font-bold text-amber-400">{formatINR(monthly)} / mo</p>
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <span className="tabular-nums text-xs text-muted">ESTIMATED MONTHLY EMI</span>
+          <p className="mt-2 tabular-nums text-2xl font-bold text-gold-dark">{formatINR(monthly)} / mo</p>
           <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-            <label className="flex flex-col gap-1 text-slate-300">Loan %
+            <label className="flex flex-col gap-1 text-ink/80">Loan %
               <input type="number" min={0} max={90} value={loanPct} onChange={(e) => setLoanPct(clamp(Number(e.target.value), 0, 90))} className={input} />
             </label>
-            <label className="flex flex-col gap-1 text-slate-300">Rate %
+            <label className="flex flex-col gap-1 text-ink/80">Rate %
               <input type="number" min={0} max={20} step={0.1} value={rate} onChange={(e) => setRate(clamp(Number(e.target.value), 0, 20))} className={input} />
             </label>
-            <label className="flex flex-col gap-1 text-slate-300">Years
+            <label className="flex flex-col gap-1 text-ink/80">Years
               <input type="number" min={1} max={30} value={years} onChange={(e) => setYears(clamp(Number(e.target.value), 1, 30))} className={input} />
             </label>
           </div>
@@ -97,60 +97,60 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-slate-800 bg-[#131926] p-6">
-          <h2 className="mb-4 flex items-center gap-2 font-mono text-sm font-bold uppercase tracking-wider text-white">
-            <Coins className="h-4 w-4 text-blue-400" aria-hidden /> Cost breakdown ({tier})
+        <section className="rounded-2xl border border-line bg-card p-6">
+          <h2 className="mb-4 flex items-center gap-2 tabular-nums text-sm font-bold uppercase tracking-wider text-ink">
+            <Coins className="h-4 w-4 text-terra" aria-hidden /> Cost breakdown ({tier})
           </h2>
           <table className="w-full text-left text-sm">
             {range && (
-              <thead><tr className="text-xs text-slate-500"><th /><th className="py-1 text-right font-normal">Low</th><th className="py-1 text-right font-normal">Expected</th><th className="py-1 text-right font-normal">High</th></tr></thead>
+              <thead><tr className="text-xs text-muted"><th /><th className="py-1 text-right font-normal">Low</th><th className="py-1 text-right font-normal">Expected</th><th className="py-1 text-right font-normal">High</th></tr></thead>
             )}
-            <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
+            <tbody className="divide-y divide-line/60 tabular-nums text-ink/80">
               {Object.entries(lines).filter(([k]) => k !== 'total').map(([k, v]) => (
                 <tr key={k}>
                   <td className="py-2 capitalize">{k.replace(/_/g, ' ')}</td>
-                  {range && <td className="py-2 text-right text-slate-500">{formatINR(range.low[k])}</td>}
+                  {range && <td className="py-2 text-right text-muted">{formatINR(range.low[k])}</td>}
                   <td className="py-2 text-right">{formatINR(v)}</td>
-                  {range && <td className="py-2 text-right text-slate-500">{formatINR(range.high[k])}</td>}
+                  {range && <td className="py-2 text-right text-muted">{formatINR(range.high[k])}</td>}
                 </tr>
               ))}
-              <tr className="font-bold text-white">
+              <tr className="font-bold text-ink">
                 <td className="py-2">Total</td>
                 {range && <td className="py-2 text-right">{formatINR(range.low.total)}</td>}
-                <td className="py-2 text-right text-emerald-400">{formatINR(total)}</td>
+                <td className="py-2 text-right text-green">{formatINR(total)}</td>
                 {range && <td className="py-2 text-right">{formatINR(range.high.total)}</td>}
               </tr>
             </tbody>
           </table>
-          {info && <p className="mt-3 text-xs text-slate-500">Rates as of {info.rates_as_of} (Mumbai, unverified draft), excluding GST. {info.gst_note}</p>}
+          {info && <p className="mt-3 text-xs text-muted">Rates as of {info.rates_as_of} (Mumbai, unverified draft), excluding GST. {info.gst_note}</p>}
         </section>
 
-        <section className="rounded-2xl border border-slate-800 bg-[#131926] p-6">
-          <h2 className="mb-4 flex items-center gap-2 font-mono text-sm font-bold uppercase tracking-wider text-white">
-            <FileSpreadsheet className="h-4 w-4 text-blue-400" aria-hidden /> Material quantities
+        <section className="rounded-2xl border border-line bg-card p-6">
+          <h2 className="mb-4 flex items-center gap-2 tabular-nums text-sm font-bold uppercase tracking-wider text-ink">
+            <FileSpreadsheet className="h-4 w-4 text-terra" aria-hidden /> Material quantities
           </h2>
           <table className="w-full text-left text-sm">
-            <tbody className="divide-y divide-slate-800/60 font-mono text-slate-300">
+            <tbody className="divide-y divide-line/60 tabular-nums text-ink/80">
               {quantities.map(([k, v]) => (
                 <tr key={k}><td className="py-2">{k}</td><td className="py-2 text-right">{v}</td></tr>
               ))}
             </tbody>
           </table>
-          <p className="mt-3 text-xs text-slate-500">Thumb-rule quantities per unit of built-up area; a quantity surveyor refines these from drawings.</p>
+          <p className="mt-3 text-xs text-muted">Thumb-rule quantities per unit of built-up area; a quantity surveyor refines these from drawings.</p>
         </section>
       </div>
 
-      <section className="rounded-2xl border border-slate-800 bg-[#131926] p-6">
-        <h2 className="mb-1 font-mono text-sm font-bold uppercase tracking-wider text-white">Payment stages</h2>
-        <p className="mb-4 text-xs text-slate-400">From this estimate&apos;s own cost lines. Your contractor&apos;s schedule will differ.</p>
+      <section className="rounded-2xl border border-line bg-card p-6">
+        <h2 className="mb-1 tabular-nums text-sm font-bold uppercase tracking-wider text-ink">Payment stages</h2>
+        <p className="mb-4 text-xs text-muted">From this estimate&apos;s own cost lines. Your contractor&apos;s schedule will differ.</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           {STAGES.map((s) => {
             const amt = s.keys.reduce((a, k) => a + (lines[k] ?? 0), 0);
             return (
-              <div key={s.name} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
-                <span className="font-mono text-xs text-slate-500">{total > 0 ? Math.round((amt / total) * 100) : 0}%</span>
-                <p className="mt-1 text-sm font-bold text-white">{s.name}</p>
-                <p className="mt-2 font-mono text-xs text-blue-400">{formatINR(amt)}</p>
+              <div key={s.name} className="rounded-2xl border border-line bg-card/60 p-4">
+                <span className="tabular-nums text-xs text-muted">{total > 0 ? Math.round((amt / total) * 100) : 0}%</span>
+                <p className="mt-1 text-sm font-bold text-ink">{s.name}</p>
+                <p className="mt-2 tabular-nums text-xs text-terra">{formatINR(amt)}</p>
               </div>
             );
           })}

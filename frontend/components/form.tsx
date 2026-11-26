@@ -8,17 +8,17 @@
 import { ChevronDown, Info, Minus, Plus } from 'lucide-react';
 import { ReactNode, useId } from 'react';
 
-const ring = 'focus:outline-none focus:ring-2 focus:ring-sage-600/40 focus:border-sage-600';
-const box = `h-11 w-full rounded-lg border border-slate-300 bg-white text-base text-slate-900 shadow-sm ${ring}`;
+const ring = 'focus:outline-none focus:ring-2 focus:ring-terra/40 focus:border-terra';
+const box = `h-11 w-full rounded-2xl border border-line bg-card text-base text-ink shadow-sm ${ring}`;
 
 export function InfoTip({ text }: { text: string }) {
   return (
     <span className="group relative inline-flex align-middle">
-      <button type="button" aria-label={text} className="rounded-full text-slate-400 hover:text-slate-600 focus:text-slate-600 focus:outline-none">
+      <button type="button" aria-label={text} className="rounded-full text-muted hover:text-muted focus:text-muted focus:outline-none">
         <Info className="h-4 w-4" aria-hidden />
       </button>
       <span role="tooltip"
-        className="pointer-events-none absolute left-1/2 top-6 z-20 hidden w-64 -translate-x-1/2 rounded-lg bg-slate-900 p-2.5 text-xs font-normal leading-relaxed text-white shadow-lg group-focus-within:block group-hover:block">
+        className="pointer-events-none absolute left-1/2 top-6 z-20 hidden w-64 -translate-x-1/2 rounded-lg bg-card p-2.5 text-xs font-normal leading-relaxed text-ink shadow-lg group-focus-within:block group-hover:block">
         {text}
       </span>
     </span>
@@ -29,7 +29,7 @@ export function Field({ label, info, children, htmlFor }: { label: string; info?
   return (
     <div className="space-y-1.5">
       <div className="flex h-5 items-center gap-1.5">
-        <label htmlFor={htmlFor} title={label} className="truncate text-sm font-semibold text-slate-800">{label}</label>
+        <label htmlFor={htmlFor} title={label} className="truncate text-sm font-semibold text-ink">{label}</label>
         {info && <InfoTip text={info} />}
       </div>
       {children}
@@ -44,7 +44,7 @@ export function NumberField({ label, info, value, onChange, unit, min = 0, max, 
   const id = useId();
   const clamp = (v: number) => Math.min(max ?? Infinity, Math.max(min, v));
   const nudge = (d: number) => onChange(clamp((Number.isFinite(value) ? value : min) + d));
-  const btn = `flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 ${ring}`;
+  const btn = `flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-line bg-card text-ink/80 hover:bg-paper disabled:opacity-40 ${ring}`;
   return (
     <Field label={label} info={info} htmlFor={id}>
       <div className="flex items-center gap-2">
@@ -53,7 +53,7 @@ export function NumberField({ label, info, value, onChange, unit, min = 0, max, 
           <input id={id} type="number" inputMode="decimal" value={Number.isFinite(value) ? value : ''} min={min} max={max} step={step} placeholder={placeholder}
             onChange={(e) => onChange(e.target.value === '' ? NaN : Number(e.target.value))}
             className={`${box} px-3 text-center ${unit ? 'pr-10' : ''} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`} />
-          {unit && <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-500">{unit}</span>}
+          {unit && <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-muted">{unit}</span>}
         </div>
         <button type="button" aria-label={`More: ${label}`} className={btn} disabled={max !== undefined && value >= max} onClick={() => nudge(step)}><Plus className="h-4 w-4" /></button>
       </div>
@@ -68,7 +68,7 @@ export function TextArea({ label, info, value, onChange, placeholder, rows = 4 }
   return (
     <Field label={label} info={info} htmlFor={id}>
       <textarea id={id} rows={rows} value={value} placeholder={placeholder} maxLength={2000} onChange={(e) => onChange(e.target.value)}
-        className={`w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 shadow-sm placeholder:text-slate-400 ${ring}`} />
+        className={`w-full resize-y rounded-2xl border border-line bg-card px-3 py-2.5 text-base text-ink shadow-sm placeholder:text-muted ${ring}`} />
     </Field>
   );
 }
@@ -85,7 +85,7 @@ export function Select<T extends string | number>({ label, info, value, onChange
           className={`${box} appearance-none px-3 pr-10`}>
           {options.map((o) => <option key={String(o.value)} value={String(o.value)}>{o.label}</option>)}
         </select>
-        <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+        <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
       </div>
     </Field>
   );
@@ -94,10 +94,10 @@ export function Select<T extends string | number>({ label, info, value, onChange
 /** Yes/no. Same height as the other fields so grids line up. */
 export function Toggle({ label, info, checked, onChange }: { label: string; info?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div className="flex h-11 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 hover:border-slate-400">
+    <div className="flex h-11 items-center gap-2 rounded-2xl border border-line bg-card px-3 hover:border-muted/50">
       <label className="flex flex-1 cursor-pointer items-center gap-3">
-        <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-5 w-5 shrink-0 rounded border-slate-400 accent-sage-700" />
-        <span className="text-sm font-semibold text-slate-800">{label}</span>
+        <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="h-5 w-5 shrink-0 rounded border-muted/50 accent-terra" />
+        <span className="text-sm font-semibold text-ink">{label}</span>
       </label>
       {info && <InfoTip text={info} />}
     </div>

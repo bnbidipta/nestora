@@ -101,15 +101,15 @@ const LEGEND: Record<MepLayer, [string, string][]> = {
 export function MepLegend({ layers, toggle, loadKw }: { layers: Set<MepLayer>; toggle: (l: MepLayer) => void; loadKw?: number }) {
   const names: Record<MepLayer, string> = { water: 'Water supply', drain: 'Drainage', power: 'Electrical' };
   return (
-    <div className="space-y-2 px-3 pb-3 text-xs text-slate-700">
+    <div className="space-y-2 px-3 pb-3 text-xs text-ink/80">
       <div className="flex flex-wrap gap-2" role="group" aria-label="Services layers">
         {(Object.keys(names) as MepLayer[]).map((l) => (
           <button key={l} type="button" aria-pressed={layers.has(l)} onClick={() => toggle(l)}
-            className={`rounded-full border px-3 py-1 font-semibold ${layers.has(l) ? 'border-slate-800 bg-slate-800 text-white' : 'border-slate-300 bg-white text-slate-600'}`}>
+            className={`rounded-full border px-3 py-1 font-semibold ${layers.has(l) ? 'border-line bg-paper2 text-ink' : 'border-line bg-card text-muted'}`}>
             {names[l]}
           </button>
         ))}
-        {loadKw != null && <span className="self-center text-slate-500">Connected load about {loadKw} kW</span>}
+        {loadKw != null && <span className="self-center text-muted">Connected load about {loadKw} kW</span>}
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1.5">
         {(Object.keys(LEGEND) as MepLayer[]).filter((l) => layers.has(l)).flatMap((l) => LEGEND[l]).map(([k, text]) => (
