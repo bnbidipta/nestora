@@ -227,7 +227,10 @@ def request_photo(house_id: str, body: PhotoIn, bg: BackgroundTasks, _u: Optiona
     w, h = int.from_bytes(png[16:20], "big"), int.from_bytes(png[20:24], "big")  # IHDR: checked before any decoding
     if not (0 < w <= 2048 and 0 < h <= 2048):
         raise HTTPException(status_code=422, detail="The snapshot must be at most 2048 x 2048 pixels.")
-    with photo.START_LOCK:  # one start per design at a time; re-requests just see the current status
+    lock = photo.house_lock(house_id)
+    if not lock.acquire(blocking=False):  # this design is being started right now
+        raise HTTPException(status_code=429, detail="Your photo is already starting.")
+    try:  # check-and-set only; the upload and the GPU call run in the background task
         twin = _twin(house_id)
         render = twin.metadata.get("render") or {}
         if not twin.metadata.get("chosen_candidate") or not render.get("key"):
@@ -236,9 +239,10 @@ def request_photo(house_id: str, body: PhotoIn, bg: BackgroundTasks, _u: Optiona
         if render.get("status") == "done" or busy or render.get("fallback"):
             return {"render": render}
         key = render["key"]
-        guide = photo.upload(f"{house_id}/{key}_guide.png", png, "image/png")
-        twin.metadata["render"] = {**render, "status": "working", "guide": guide, "started": time.time()}
+        twin.metadata["render"] = {**render, "status": "working", "started": time.time()}
         HouseTwinRepository.save(twin)
+    finally:
+        lock.release()
     bg.add_task(photo.make_photo, house_id, key, png)
     return {"render": twin.metadata["render"]}
 

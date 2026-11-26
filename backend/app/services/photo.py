@@ -19,7 +19,16 @@ import httpx
 
 log = logging.getLogger(__name__)
 GPU_URL = os.environ.get("PHOTO_GPU_URL", "")
-START_LOCK = threading.Lock()                  # serialises check-and-start per request (single API instance)
+_LOCKS: Dict[str, threading.Lock] = {}
+_LOCKS_GUARD = threading.Lock()
+
+
+def house_lock(house_id: str) -> threading.Lock:
+    """A lock per design for the brief check-and-start (single API instance)."""
+    with _LOCKS_GUARD:
+        if len(_LOCKS) > 5000:
+            _LOCKS.clear()
+        return _LOCKS.setdefault(house_id, threading.Lock())
 GPU_SLOTS = threading.BoundedSemaphore(2)     # at most 2 GPU jobs at once; more go to the free batch queue
 # ponytail: in-process lock and slots; move to the database if the API ever runs on several instances
 NEG = ("3d render, cgi, plastic, clay model, video game, cartoon, illustration, painting, drawing, flat colours, distorted, "
@@ -87,6 +96,9 @@ def make_photo(house_id: str, key: str, guide_png: bytes) -> None:
     twin = HouseTwinRepository.get(house_id)
     if not twin:
         return
+    guide = upload(f"{house_id}/{key}_guide.png", guide_png, "image/png")  # kept for the batch fallback
+    if guide:
+        _set(house_id, key, {"guide": guide})
     if not GPU_SLOTS.acquire(blocking=False):
         _set(house_id, key, {"status": "queued", "key": key, "fallback": True})
         return
