@@ -167,12 +167,12 @@ function worldUV(g: THREE.BufferGeometry, offset: THREE.Vector3, tile: number) {
  * topShown cuts away everything above that height (floor cutaway). Returns the geometries to dispose.
  */
 export function addHouse(scene: THREE.Scene, house: { boxes: Box[]; tris: Tri[] }, P: (x: number, y: number, z: number) => THREE.Vector3,
-  byKind: (k: MatKind, colour?: string, up?: boolean) => THREE.Material, opts: { topShown?: number; shadows?: boolean } = {}) {
+  byKind: (k: MatKind, colour?: string, up?: boolean) => THREE.Material, opts: { topShown?: number; shadows?: boolean; skip?: (b: Box) => boolean } = {}) {
   const top = opts.topShown ?? Infinity, shadows = opts.shadows ?? true;
   const geos: THREE.BufferGeometry[] = [];
   const tileOf = (m: THREE.Material) => ((m as THREE.MeshStandardMaterial).map?.userData.tile as number | undefined);
   for (const b of house.boxes) {
-    if (b.z0 >= top) continue;
+    if (b.z0 >= top || opts.skip?.(b)) continue;
     const g = new THREE.BoxGeometry(b.x1 - b.x0, b.z1 - b.z0, b.y1 - b.y0);
     geos.push(g);
     const m = byKind(b.kind, b.colour, b.up);

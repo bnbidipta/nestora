@@ -51,6 +51,9 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
   const [visited, setVisited] = useState<Set<string>>(new Set());
   const [popup, setPopup] = useState<string | null>(null);
   const [finish, setFinish] = useState<number>(-1);  // -1 = the design's own floor
+  const [explode, setExplode] = useState(false);  // floors pulled apart (Look around)
+  const [compare, setCompare] = useState(false);  // before/after furniture split
+  const split = useRef(0.5);
   const [styles, setStyles] = useState<StyleEntry[]>([]);
   const picked = useMemo(() => Array.from(new Set([twin.style?.primary_style, ...((md(twin).brief?.styles as string[] | undefined) ?? [])].filter(Boolean) as string[])), [twin]);
   const [styleId, setStyleId] = useState<string>(picked[0] ?? '');
@@ -92,7 +95,10 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
     if (!el) return;
     const w = el.clientWidth, h = el.clientHeight || 520;
     const cx = W / 2, cy = D / 2;
-    const P = (x: number, y: number, z: number) => new THREE.Vector3(x - cx, z, cy - y);  // plan -> scene
+    const GAP = explode && mode === 'orbit' ? 12 : 0;
+    const bases = house.levels.map((l) => l.base);
+    const lift = (z: number) => { let i = 0; bases.forEach((b, k) => { if (b <= z - 2.5) i = k; }); return i * GAP; };  // 2.5 ft: low parapets stay with the floor below
+    const P = (x: number, y: number, z: number) => new THREE.Vector3(x - cx, z + (GAP ? lift(z) : 0), cy - y);  // plan -> scene
     const inside = mode !== 'orbit';
     const low = sun.alt < 15;
     const scene = new THREE.Scene();
@@ -126,6 +132,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
       scene.add(s);
     }
 
+    const furn: THREE.Mesh[] = [];
     // site
     const PW = twin.plot.plot_width_ft, PD = twin.plot.plot_depth_ft;
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(PW, PD), mat(night ? '#2E3A2A' : '#C9D6B0'));
@@ -146,7 +153,9 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
       : upTo > floorsN ? Infinity : (levels[upTo - 1]?.base ?? 0) + (levels[upTo - 1]?.height ?? 0) - 0.5;
     const lookMats = materials(md(twin).look as Look | undefined, pal, night);
     disposables.push({ dispose: lookMats.dispose });
-    disposables.push(...addHouse(scene, house, P, lookMats.byKind, { topShown, shadows: !night }));
+    // pulled apart: drop the ceilings between floors so each floor's rooms show
+    const ceiling = (b: { kind: string; z1: number }) => GAP > 0 && b.kind === 'slab' && bases.slice(1).some((x) => Math.abs(b.z1 - x) < 0.05);
+    disposables.push(...addHouse(scene, house, P, lookMats.byKind, { topShown, shadows: !night, skip: ceiling }));
     for (const lv of levels) {
       if (lv.base >= topShown) continue;
       const f = twin.floors.find((x) => x.floor_no === lv.floor);
@@ -156,7 +165,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         const wet = ['toilet', 'utility', 'laundry', 'kitchen'].includes(r.type ?? '');
         const m = new THREE.Mesh(g, mat(finish >= 0 && !wet ? FINISHES[finish][1] : pal && !wet ? pal.floor : FLOOR_COLOUR[r.material_floor] ?? '#D9D2C3'));
         m.rotation.x = -Math.PI / 2;
-        m.position.copy(P(r.x + r.length_ft / 2, r.y + r.width_ft / 2, lv.base + 0.02));
+        m.position.copy(P(r.x + r.length_ft / 2, r.y + r.width_ft / 2, lv.base + 0.02)).add(new THREE.Vector3(0, GAP ? bases.indexOf(lv.base) * GAP - lift(lv.base + 0.02) : 0, 0));
         m.receiveShadow = true;
         scene.add(m);
         if (night && !['porch', 'balcony'].includes(r.type ?? '')) {  // a warm ceiling light in every room
@@ -165,7 +174,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
           scene.add(l);
         }
       }
-      if (furniture) {
+      if (furniture || compare) {
         for (const fr of Object.values(t.furniture?.rooms ?? {}) as any[]) {
           if ((fr.floor ?? 0) !== lv.floor) continue;
           for (const it of fr.items ?? []) {
@@ -174,14 +183,29 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
             disposables.push(g);
             const soft = /bed|sofa|armchair/.test(it.item);
             const m = new THREE.Mesh(g, mat(soft ? (pal?.accent ?? '#E9E1D3') : (pal?.wood ?? '#8A6A4A'), soft ? 0.95 : 0.6));
-            m.position.copy(P(it.x + it.w / 2, it.y + it.d / 2, lv.base + hgt / 2));
+            m.position.copy(P(it.x + it.w / 2, it.y + it.d / 2, lv.base + hgt / 2)).add(new THREE.Vector3(0, GAP ? bases.indexOf(lv.base) * GAP - lift(lv.base + hgt / 2) : 0, 0));
             m.castShadow = !night;
             scene.add(m);
+            furn.push(m);
           }
         }
       }
     }
 
+    if (GAP) {  // a label beside each pulled-apart floor
+      for (const lv of house.levels) {
+        const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128;
+        const g = cv.getContext('2d')!;
+        g.fillStyle = 'rgba(15,23,42,0.85)'; g.fillRect(0, 0, 512, 128);
+        g.fillStyle = '#fff'; g.font = '600 56px system-ui, sans-serif';
+        g.fillText(lv.floor === 0 ? 'Ground floor' : `Floor ${lv.floor}`, 28, 84);
+        const tex = new THREE.CanvasTexture(cv), sm = new THREE.SpriteMaterial({ map: tex, depthTest: false });
+        const sp = new THREE.Sprite(sm);
+        sp.scale.set(16, 4, 1);
+        sp.position.copy(P(lv.bbox[0] - 10, lv.bbox[1], lv.base + lv.height / 2));
+        scene.add(sp); disposables.push(tex, sm);
+      }
+    }
     // controls
     let raf = 0, last = performance.now(), visibleTab = true, lastPos = 0, inRoom = '';
     const wallsHere = blockers(house.boxes, lvl?.base ?? 0);
@@ -263,7 +287,15 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         lookNow.lerp(target.look, 0.06);
         camera.lookAt(lookNow);
       } else orbit?.update();
-      renderer.render(scene, camera);
+      if (compare && mode !== 'orbit' && furn.length) {  // left of the line: empty room; right: furnished
+        const ww = el.clientWidth, hh = el.clientHeight || 520, sx = Math.round(ww * split.current);
+        renderer.setScissorTest(true);
+        furn.forEach((m) => { m.visible = false; });
+        renderer.setScissor(0, 0, sx, hh); renderer.render(scene, camera);
+        furn.forEach((m) => { m.visible = true; });
+        renderer.setScissor(sx, 0, ww - sx, hh); renderer.render(scene, camera);
+        renderer.setScissorTest(false);
+      } else renderer.render(scene, camera);
     };
     raf = requestAnimationFrame(tick);
     return () => {
@@ -273,7 +305,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
       renderer.domElement.removeEventListener('pointerdown', onDown); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp);
       disposables.forEach((d) => d.dispose()); renderer.dispose(); el.removeChild(renderer.domElement);
     };
-  }, [house, mode, walkFloor, upTo, furniture, sun, night, W, D, sbSide, sbFront, twin, t, floorsN, style, here, levelOf, finish]);
+  }, [house, mode, walkFloor, upTo, furniture, sun, night, W, D, sbSide, sbFront, twin, t, floorsN, style, here, levelOf, finish, explode, compare]);
   useEffect(() => { if (!popup) return; const id = setTimeout(() => setPopup(null), 2500); return () => clearTimeout(id); }, [popup]);
 
   const go = (m: Mode) => { setWelcome(false); if (m === 'tour') setStop(0); setMode(m); };
@@ -312,6 +344,12 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         {mode === 'walk' && twin.floors.map((f, i) => (
           <button key={f.floor_no} type="button" onClick={() => setWalkFloor(i)} aria-pressed={walkFloor === i} className={btn(walkFloor === i)}>{f.floor_no === 0 ? 'Ground' : `Floor ${f.floor_no}`}</button>
         ))}
+        {mode === 'orbit' && floorsN > 1 && (
+          <button type="button" onClick={() => setExplode((v) => !v)} aria-pressed={explode} className={btn(explode)}>Pull floors apart</button>
+        )}
+        {mode !== 'orbit' && (
+          <button type="button" onClick={() => setCompare((v) => !v)} aria-pressed={compare} className={btn(compare)}>Empty vs furnished</button>
+        )}
         {mode === 'orbit' && [...twin.floors.map((f, i) => ({ n: i + 1, text: i === 0 ? 'Ground floor' : `Up to floor ${f.floor_no}` })), { n: floorsN + 1, text: 'Whole house' }].map(({ n, text }) => (
           <button key={n} type="button" onClick={() => setUpTo(n)} aria-pressed={upTo === n} className={btn(upTo === n)}>{text}</button>
         ))}
@@ -344,6 +382,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
             </div>
           </div>
         )}
+        {compare && mode !== 'orbit' && !welcome && <SplitSlider value={split} />}
         {mode === 'walk' && !welcome && (
           <>
             <p className="pointer-events-none absolute left-3 top-3 rounded bg-black/55 px-2 py-1 font-mono text-[11px] text-white">W A S D / arrows to walk · drag to look</p>
@@ -416,5 +455,20 @@ function MiniMap({ rooms, floorNo, visited, pos, W, D }: { rooms: any[]; floorNo
         </g>
       )}
     </svg>
+  );
+}
+
+/** Before/after divider: drag it across the view; left side shows the empty room, right side furnished. */
+function SplitSlider({ value }: { value: React.MutableRefObject<number> }) {
+  const [x, setX] = useState(value.current);
+  const set = (v: number) => { value.current = v; setX(v); };
+  return (
+    <>
+      <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow" style={{ left: `${x * 100}%` }} />
+      <span className="pointer-events-none absolute top-3 rounded bg-black/60 px-2 py-0.5 font-mono text-[11px] text-white" style={{ left: `calc(${x * 100}% - 64px)` }}>Empty</span>
+      <span className="pointer-events-none absolute top-3 rounded bg-black/60 px-2 py-0.5 font-mono text-[11px] text-white" style={{ left: `calc(${x * 100}% + 8px)` }}>Furnished</span>
+      <input type="range" min={0.05} max={0.95} step={0.01} value={x} onChange={(e) => set(Number(e.target.value))}
+        aria-label="Move the line between the empty and the furnished room" className="absolute inset-x-8 bottom-24 accent-white" />
+    </>
   );
 }

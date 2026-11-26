@@ -1,5 +1,6 @@
 /**
- * A 7-second vertical (720x1280) fly-in of a design, recorded in the browser: it opens on the flat coloured plan, the
+ * A ~10-second vertical (720x1280) fly-in of a design, recorded in the browser: the plan is sketched by hand and turns into a
+ * blueprint with its width marked, then the flat coloured plan, the
  * walls rise floor by floor while the camera lifts into a three-quarter view, then a slow orbit. No server; the video is
  * recorded from the canvas with MediaRecorder (WebM, or MP4 where the browser supports it).
  */
@@ -10,7 +11,7 @@ import { FILL } from './rooms';
 
 export interface FlyRoom { f: number; name: string; t: string; x: number; y: number; w: number; d: number }
 
-const W = 720, H = 1280, SECONDS = 7, FPS = 30;
+const W = 720, H = 1280, INTRO = 3.4, SECONDS = 7 + INTRO, FPS = 30;  // INTRO: the plan drawn as a sketch, then a blueprint
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 export function flyInSupported(): boolean {
@@ -80,8 +81,53 @@ export async function recordFlyIn(rooms: FlyRoom[], look: Look | undefined, plot
   const done = new Promise<void>((res) => { rec.onstop = () => res(); });
   rec.start();
 
+  // the intro: ground-floor rooms sketched stroke by stroke (seeded wobble), then inked as a blueprint with a dimension line
+  const g0 = rooms.filter((q) => q.f === floorNos[0]);
+  const gx0 = Math.min(...g0.map((r) => r.x)), gx1 = Math.max(...g0.map((r) => r.x + r.w));
+  const gy0 = Math.min(...g0.map((r) => r.y)), gy1 = Math.max(...g0.map((r) => r.y + r.d));
+  const k = Math.min((W - 140) / (gx1 - gx0), (H - 520) / (gy1 - gy0));
+  const ox = (W - (gx1 - gx0) * k) / 2, oy = (H - (gy1 - gy0) * k) / 2 - 40;
+  const sx = (x: number) => ox + (x - gx0) * k, sy = (y: number) => oy + (gy1 - y) * k;  // road at the bottom
+  let seed = 11;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5);
+  const wob = g0.map(() => Array.from({ length: 8 }, () => rnd() * 3));
+  const intro = (t: number) => {
+    const draw = Math.min(1, t / 1.4), ink = Math.min(1, Math.max(0, (t - 1.4) / 0.6));
+    const mix = (a: number[], b: number[]) => `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * ink)).join(',')})`;
+    ctx.fillStyle = mix([246, 241, 231], [30, 58, 138]);
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = mix([60, 55, 50], [255, 255, 255]);
+    ctx.lineWidth = 3 - ink;
+    ctx.lineCap = 'round';
+    const shown = Math.ceil(draw * g0.length);
+    g0.slice(0, shown).forEach((r, i) => {
+      const j = wob[i].map((v) => v * (1 - ink));  // the wobble straightens as it becomes a blueprint
+      ctx.beginPath();
+      ctx.moveTo(sx(r.x) + j[0], sy(r.y) + j[1]); ctx.lineTo(sx(r.x + r.w) + j[2], sy(r.y) + j[3]);
+      ctx.lineTo(sx(r.x + r.w) + j[4], sy(r.y + r.d) + j[5]); ctx.lineTo(sx(r.x) + j[6], sy(r.y + r.d) + j[7]); ctx.closePath();
+      ctx.stroke();
+      if (r.w * k > 70 && r.d * k > 34) {
+        ctx.fillStyle = ctx.strokeStyle as string;
+        ctx.font = `${ink > 0.5 ? '500 18px ui-monospace, monospace' : 'italic 20px Georgia, serif'}`;
+        const name = r.t.replace(/_.*/, '').replace(/^./, (c) => c.toUpperCase());
+        ctx.fillText(name, sx(r.x) + 10, sy(r.y + r.d) + 28);
+      }
+    });
+    if (ink > 0) {  // dimension line under the plan
+      ctx.globalAlpha = ink;
+      const y = sy(gy0) + 50, a = sx(gx0), b = sx(gx1);
+      ctx.beginPath(); ctx.moveTo(a, y); ctx.lineTo(b, y); ctx.moveTo(a, y - 12); ctx.lineTo(a, y + 12); ctx.moveTo(b, y - 12); ctx.lineTo(b, y + 12); ctx.stroke();
+      ctx.font = '600 26px ui-monospace, monospace';
+      const label = `${((gx1 - gx0) * 0.3048).toFixed(2)} m`;
+      ctx.fillText(label, (a + b) / 2 - ctx.measureText(label).width / 2, y + 40);
+      ctx.globalAlpha = 1;
+    }
+  };
+
   const top = house.roofTop + 2;
-  const frame = (t: number) => {  // t in seconds
+  const frame = (tAll: number) => {  // seconds since the start
+    if (tAll < INTRO - 0.4) { intro(tAll); return; }
+    const t = Math.max(0, tAll - INTRO);
     const rise = ease(Math.min(1, Math.max(0, (t - 1.2) / 3.6)));
     clip.constant = 0.2 + rise * top;
     const orbit = ease(Math.min(1, t / 5)) * 0.9 + Math.max(0, t - 5) * 0.12;
@@ -92,6 +138,14 @@ export async function recordFlyIn(rooms: FlyRoom[], look: Look | undefined, plot
     camera.lookAt(0, top * 0.35 * tilt, 0);
     gl.render(scene, camera);
     ctx.drawImage(gl.domElement, 0, 0);
+    if (tAll < INTRO) {  // cross-fade from the blueprint into the 3D plan
+      const fade = (INTRO - tAll) / 0.4;
+      const snap = document.createElement('canvas'); snap.width = W; snap.height = H;
+      const sc = snap.getContext('2d')!;
+      sc.drawImage(out, 0, 0);
+      intro(INTRO - 0.4);
+      ctx.globalAlpha = 1 - fade; ctx.drawImage(snap, 0, 0); ctx.globalAlpha = 1;
+    }
     const a = Math.min(1, Math.max(0, (t - 5.2) / 0.8));
     if (a > 0) {
       ctx.globalAlpha = a;

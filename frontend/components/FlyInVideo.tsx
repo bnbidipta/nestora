@@ -1,6 +1,6 @@
 'use client';
 
-/** "Make a share video": records the 7-second plan-to-house fly-in in the browser, then preview, share or download it. */
+/** "Make a share video": records the 10-second sketch-to-house fly-in in the browser, then preview, share or download it. */
 import { useEffect, useState } from 'react';
 import { Clapperboard, Download, Share2 } from 'lucide-react';
 import type { Look } from '@/lib/house3d';
@@ -38,7 +38,7 @@ export default function FlyInVideo({ rooms, look, plot, caption, fileName }: {
     <div className="space-y-3 print:hidden">
       <button type="button" onClick={make} disabled={p !== null} className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 py-2 text-xs text-white hover:bg-slate-800 disabled:opacity-60">
         <Clapperboard className="h-3.5 w-3.5" aria-hidden />
-        {p !== null ? `Making the video… ${Math.round(p * 100)}%` : vid ? 'Make the video again' : 'Make a share video (7 s)'}
+        {p !== null ? `Making the video… ${Math.round(p * 100)}%` : vid ? 'Make the video again' : 'Make a share video (10 s)'}
       </button>
       {p !== null && <p className="text-xs text-slate-400">Keep this tab open while it records.</p>}
       {err && <p role="alert" className="text-xs text-red-400">{err}</p>}
