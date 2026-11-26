@@ -24,10 +24,31 @@ async function authHeaders(houseId?: string): Promise<Record<string, string>> {
   return h;
 }
 
+/** Tells the page the backend is waking from sleep (free host), so it can show a notice. */
+function waking(on: boolean) {
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('nestora:waking', { detail: on }));
+}
+
+/** fetch with a 2-minute timeout; while the free backend wakes up (network error or 502/503/504) it retries for ~90 s. */
+async function fetchAwake(url: string, init: RequestInit): Promise<Response> {
+  const until = Date.now() + 90_000;
+  for (let wait = 3000; ; wait = Math.min(wait * 1.5, 10_000)) {
+    try {
+      const res = await fetch(url, { ...init, signal: init.signal ?? AbortSignal.timeout(120_000) });
+      if (![502, 503, 504].includes(res.status) || Date.now() > until) { waking(false); return res; }
+    } catch (e) {
+      if ((e as Error).name === 'TimeoutError') { waking(false); throw new Error('The server took too long. Please try again.'); }
+      if (Date.now() > until) { waking(false); throw new Error('Could not reach Nestora. Check your connection and try again.'); }
+    }
+    waking(true);
+    await new Promise((r) => setTimeout(r, wait));
+  }
+}
+
 /** fetch + JSON with a readable error for non-2xx responses. */
 async function call<T = any>(path: string, init: RequestInit = {}, houseId?: string): Promise<T> {
   const headers = { ...(init.body ? { 'Content-Type': 'application/json' } : {}), ...(await authHeaders(houseId)), ...init.headers };
-  const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+  const res = await fetchAwake(`${API_BASE}${path}`, { ...init, headers });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
     const msg = json?.detail || json?.error?.message || `Request failed (${res.status})`;

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Fraunces, Inter } from 'next/font/google';
 import SentryInit from '@/components/SentryInit';
+import WakingNotice from '@/components/WakingNotice';
 import ConsentBanner from '@/components/ConsentBanner';
 
 const display = Fraunces({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
@@ -23,6 +24,7 @@ export default function RootLayout({
         {children}
         <ConsentBanner />
         <SentryInit />
+        <WakingNotice />
       </body>
     </html>
   );

@@ -27,9 +27,13 @@ if os.environ.get("SENTRY_DSN"):  # crash reports (free plan); off when unset
         for k in list(h):
             if k.lower() in ("x-edit-token", "authorization", "cookie"):
                 h[k] = "[removed]"
-        (event.get("request") or {}).pop("data", None)  # request bodies may hold briefs or emails
+        req = event.get("request") or {}
+        for k in ("data", "query_string", "cookies"):  # bodies hold briefs/emails; queries may hold tokens
+            req.pop(k, None)
+        if req.get("url"):
+            req["url"] = req["url"].split("?")[0]
         return event
-    sentry_sdk.init(dsn=os.environ["SENTRY_DSN"], send_default_pii=False, traces_sample_rate=0, before_send=_scrub,
+    sentry_sdk.init(dsn=os.environ["SENTRY_DSN"], send_default_pii=False, include_local_variables=False, traces_sample_rate=0, before_send=_scrub,
                     environment=os.environ.get("RENDER", "") and "production" or "development")
 
 app = FastAPI(

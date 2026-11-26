@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 
@@ -14,6 +16,7 @@ export default function TwinStatus({ error }: { error: string | null }) {
   return (
     <div role="alert" className="mx-auto max-w-md py-16 text-center">
       <p className="text-red-700">{error}</p>
+      <button type="button" onClick={() => location.reload()} className="mt-4 block w-full rounded-full bg-terra px-5 py-2 text-sm font-semibold text-white hover:bg-terra-dark">Try again</button>
       <Link href="/questionnaire" className="mt-4 inline-block text-sm text-terra underline">
         Start a new design
       </Link>

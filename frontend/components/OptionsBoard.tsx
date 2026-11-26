@@ -91,7 +91,14 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   };
 
   if (busy === 'start') return <Designing />;
-  if (error && !res) return <p role="alert" className="py-20 text-center text-red-700">{error}</p>;
+  if (error && !res) {
+    return (
+      <div role="alert" className="py-20 text-center">
+        <p className="text-red-700">{error}</p>
+        <button type="button" onClick={() => location.reload()} className="mt-4 rounded-full bg-terra px-5 py-2 text-sm font-semibold text-white hover:bg-terra-dark">Try again</button>
+      </div>
+    );
+  }
   if (res && res.status === 'infeasible') {
     return (
       <section className="mx-auto max-w-2xl rounded-2xl bg-card p-6 text-ink">
