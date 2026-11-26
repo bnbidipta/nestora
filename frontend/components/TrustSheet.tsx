@@ -47,7 +47,7 @@ export default function TrustSheet({ twin }: { twin: HouseTwin }) {
               Not checked yet: generate the house first
             </span>
           )}
-          <h2 className="mt-3 tabular-nums text-2xl font-bold text-ink sm:text-3xl">Automated checks</h2>
+          <h2 className="mt-3 tabular-nums text-2xl text-ink sm:text-3xl">Automated checks</h2>
           <p className="mt-2 max-w-xl text-sm text-ink/80">
             A rules engine checks the design against a draft of Mumbai building rules and engineering thumb-rules.
             Passing these checks is not an approval. Only a licensed architect can approve a design.
@@ -55,7 +55,7 @@ export default function TrustSheet({ twin }: { twin: HouseTwin }) {
         </div>
 
         <div className="w-full rounded-2xl border border-line bg-card/90 p-5 text-center sm:w-72">
-          <p className="tabular-nums text-xs font-bold uppercase tracking-wider text-gold-dark">Architect review</p>
+          <p className="tabular-nums text-xs font-semibold uppercase tracking-wider text-gold-dark">Architect review</p>
           <p className="mt-2 text-sm text-ink/80">
             We&apos;re onboarding licensed architects for the Mumbai pilot. Request a review and we&apos;ll contact you when one
             is available. No payment is taken.
@@ -69,7 +69,7 @@ export default function TrustSheet({ twin }: { twin: HouseTwin }) {
               type="button"
               disabled={sending}
               onClick={handleRequest}
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-terra px-4 py-2.5 text-sm font-bold text-white transition hover:bg-terra disabled:opacity-50"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-terra px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-terra disabled:opacity-50"
             >
               {sending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
               Request a review
@@ -81,7 +81,7 @@ export default function TrustSheet({ twin }: { twin: HouseTwin }) {
 
       {judge && (
         <section className="rounded-2xl border border-line bg-card p-6">
-          <h3 className="mb-6 tabular-nums text-sm font-bold uppercase tracking-wider text-ink/80">Results by category</h3>
+          <h3 className="mb-6 tabular-nums text-sm font-semibold uppercase tracking-wider text-ink/80">Results by category</h3>
           <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {JUDGE_CATEGORIES.map(({ prefix, title }) => {
               const fails = judge.failures.filter((f) => f.rule_id.startsWith(prefix));
@@ -89,7 +89,7 @@ export default function TrustSheet({ twin }: { twin: HouseTwin }) {
               return (
                 <li key={prefix} className="rounded-2xl border border-line/80 bg-card/40 p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-bold text-ink">{title}</h4>
+                    <h4 className="text-sm font-semibold text-ink">{title}</h4>
                     <span className={`rounded border px-1.5 py-0.5 tabular-nums text-xs ${fails.length ? 'border-red-200/50 bg-red-50/60 text-red-700' : 'border-emerald-200/50 bg-emerald-50/60 text-green'}`}>
                       {fails.length ? 'FAIL' : 'PASS'}
                     </span>
@@ -119,7 +119,7 @@ export default function TrustSheet({ twin }: { twin: HouseTwin }) {
 
       {(twin as any).land?.checklist && (
         <section className="rounded-2xl border border-line bg-card p-6">
-          <h2 className="tabular-nums text-sm font-bold uppercase tracking-wider text-ink">Plot risks and approvals</h2>
+          <h2 className="tabular-nums text-sm uppercase tracking-wider text-ink">Plot risks and approvals</h2>
           {((twin as any).land.risks ?? []).length > 0 && (
             <ul className="mt-3 space-y-2">
               {(twin as any).land.risks.map((r: { level: string; title: string; detail: string }) => (

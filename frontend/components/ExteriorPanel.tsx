@@ -43,7 +43,7 @@ export default function ExteriorPanel({ houseId, current, onChanged }: { houseId
   return (
     <section className="rounded-2xl border border-line bg-card p-4 print:hidden" aria-label="Customise exterior">
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 tabular-nums text-xs font-bold uppercase tracking-wider text-ink"><Paintbrush className="h-4 w-4 text-gold-dark" aria-hidden />Customise exterior</h3>
+        <h3 className="flex items-center gap-2 tabular-nums text-xs font-semibold uppercase tracking-wider text-ink"><Paintbrush className="h-4 w-4 text-gold-dark" aria-hidden />Customise exterior</h3>
         <button type="button" disabled={busy} onClick={() => send({ reset: true })} className="inline-flex items-center gap-1 text-xs text-muted underline disabled:opacity-50"><RotateCcw className="h-3 w-3" aria-hidden />Back to the style's defaults</button>
       </div>
       <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); if (text.trim()) send({ text }); }}>

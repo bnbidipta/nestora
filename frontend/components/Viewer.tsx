@@ -256,7 +256,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
         {room ? (
           <div className="space-y-3">
             <p className="tabular-nums text-[10px] uppercase text-terra">Selected room</p>
-            <h3 className="text-lg font-bold text-ink">{roomName(room.name, room.type ?? undefined)}</h3>
+            <h3 className="text-lg font-semibold text-ink">{roomName(room.name, room.type ?? undefined)}</h3>
             <Row k="Size" v={`${lenShort(room.length_ft, u)} × ${lenShort(room.width_ft, u)} (${area(room.area_sqft, u)})`} />
             <Row k="Door" v={`${room.door_width_mm} mm`} />
             <Row k="Window" v={room.window_area_sqft ? area(room.window_area_sqft, u) : room.exterior ? 'Vent' : 'Internal (duct/exhaust)'} />
@@ -274,7 +274,7 @@ export default function Viewer({ twin: initial }: { twin: HouseTwin }) {
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="flex items-center gap-2"><Info className="h-4 w-4 text-terra" /><h3 className="tabular-nums text-xs font-bold uppercase tracking-wider text-ink">Why this design</h3></div>
+            <div className="flex items-center gap-2"><Info className="h-4 w-4 text-terra" /><h3 className="tabular-nums text-xs font-semibold uppercase tracking-wider text-ink">Why this design</h3></div>
             <Row k="Plot" v={`${lenShort(PW, u)} × ${lenShort(PD, u)} (${plotArea(twin.plot.plot_area_sqft, u, loadRegional())})`} />
             <Row k="Built-up (FSI)" v={`${area(builtUp, u)} (FSI ${(builtUp / twin.plot.plot_area_sqft).toFixed(2)})`} />
             <Row k="Foundation" v={`${twin.structure.foundation.type}, ${len(twin.structure.foundation.depth_ft, u)}`} />

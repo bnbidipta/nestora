@@ -95,7 +95,8 @@ body {
   .animate-\[kenburns_18s_ease-in-out_infinite_alternate\] { animation: none; }
 }
 
-/* one type system: Fraunces headings, Inter body (as on the landing page) */
+/* two fonts only: Libre Caslon Display titles, Schibsted Grotesk everything else (lib/fonts.ts) */
 @layer base {
-  h1, h2 { font-family: var(--font-display), Georgia, serif; }
+  h1, h2 { font-family: var(--font-display), serif; font-weight: 400; }
+  body { font-family: var(--font-body), sans-serif; }
 }

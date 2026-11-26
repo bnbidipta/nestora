@@ -40,12 +40,12 @@ function LoginForm() {
 
   return (
     <div className="mx-auto max-w-sm py-16">
-      <h1 className="text-2xl font-bold text-ink">Sign in to save your designs</h1>
+      <h1 className="text-2xl text-ink">Sign in to save your designs</h1>
       <p className="mt-2 text-sm text-muted">We&apos;ll email you a sign-in link. No password needed.</p>
       {process.env.NEXT_PUBLIC_GOOGLE_AUTH === '1' && (
         <button type="button"
           onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/login?next=${encodeURIComponent(next)}` } })}
-          className="mt-6 w-full rounded-2xl border border-line bg-card px-4 py-2.5 text-sm font-bold text-ink hover:bg-paper2">
+          className="mt-6 w-full rounded-2xl border border-line bg-card px-4 py-2.5 text-sm font-semibold text-ink hover:bg-paper2">
           Continue with Google
         </button>
       )}
@@ -65,7 +65,7 @@ function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-2xl border border-line bg-card px-3 py-2.5 text-ink"
           />
-          <button type="submit" disabled={state === 'sending'} className="w-full rounded-full bg-terra px-4 py-2.5 text-sm font-bold text-white hover:bg-terra disabled:opacity-50">
+          <button type="submit" disabled={state === 'sending'} className="w-full rounded-full bg-terra px-4 py-2.5 text-sm font-semibold text-white hover:bg-terra disabled:opacity-50">
             {state === 'sending' ? 'Sending…' : 'Email me a sign-in link'}
           </button>
           {error && <p role="alert" className="text-sm text-red-700">{error}</p>}

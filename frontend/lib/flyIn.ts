@@ -4,6 +4,7 @@
  * walls rise floor by floor while the camera lifts into a three-quarter view, then a slow orbit. No server; the video is
  * recorded from the canvas with MediaRecorder (WebM, or MP4 where the browser supports it).
  */
+import { CANVAS_BODY, CANVAS_DISPLAY } from './fonts';
 import * as THREE from 'three';
 import { Look, buildHouse } from './house3d';
 import { addHouse, materials } from './houseScene';
@@ -108,7 +109,7 @@ export async function recordFlyIn(rooms: FlyRoom[], look: Look | undefined, plot
       ctx.stroke();
       if (r.w * k > 70 && r.d * k > 34) {
         ctx.fillStyle = ctx.strokeStyle as string;
-        ctx.font = `${ink > 0.5 ? '500 18px ui-monospace, monospace' : 'italic 20px Georgia, serif'}`;
+        ctx.font = `${ink > 0.5 ? `500 18px ${CANVAS_BODY}` : `20px ${CANVAS_DISPLAY}`}`;
         const name = r.t.replace(/_.*/, '').replace(/^./, (c) => c.toUpperCase());
         ctx.fillText(name, sx(r.x) + 10, sy(r.y + r.d) + 28);
       }
@@ -117,7 +118,7 @@ export async function recordFlyIn(rooms: FlyRoom[], look: Look | undefined, plot
       ctx.globalAlpha = ink;
       const y = sy(gy0) + 50, a = sx(gx0), b = sx(gx1);
       ctx.beginPath(); ctx.moveTo(a, y); ctx.lineTo(b, y); ctx.moveTo(a, y - 12); ctx.lineTo(a, y + 12); ctx.moveTo(b, y - 12); ctx.lineTo(b, y + 12); ctx.stroke();
-      ctx.font = '600 26px ui-monospace, monospace';
+      ctx.font = `600 26px ${CANVAS_BODY}`;
       const label = `${((gx1 - gx0) * 0.3048).toFixed(2)} m`;
       ctx.fillText(label, (a + b) / 2 - ctx.measureText(label).width / 2, y + 40);
       ctx.globalAlpha = 1;
@@ -152,9 +153,9 @@ export async function recordFlyIn(rooms: FlyRoom[], look: Look | undefined, plot
       ctx.fillStyle = 'rgba(20,20,20,0.55)';
       ctx.fillRect(0, H - 170, W, 170);
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '600 40px Georgia, serif';
+      ctx.font = `40px ${CANVAS_DISPLAY}`;
       ctx.fillText(caption, 48, H - 100);
-      ctx.font = '500 26px system-ui, sans-serif';
+      ctx.font = `500 26px ${CANVAS_BODY}`;
       ctx.fillText('Designed with Nestora', 48, H - 55);
       ctx.globalAlpha = 1;
     }

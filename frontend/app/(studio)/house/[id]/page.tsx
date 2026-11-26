@@ -41,7 +41,7 @@ export default function HouseViewerPage() {
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="tabular-nums text-base font-bold text-ink">House {twin.house_id}</h1>
+              <h1 className="tabular-nums text-base text-ink">House {twin.house_id}</h1>
               <StatusBadge status={twin.status} />
             </div>
             <p className="tabular-nums text-xs text-muted">

@@ -8,6 +8,7 @@
  * - Interior style: switch between the styles the user picked (walls, floors, wood, accents); optional wall paint plan.
  * Built from the same room data as the 2D plan, so it always matches it.
  */
+import { CANVAS_BODY } from '@/lib/fonts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -197,7 +198,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128;
         const g = cv.getContext('2d')!;
         g.fillStyle = 'rgba(15,23,42,0.85)'; g.fillRect(0, 0, 512, 128);
-        g.fillStyle = '#fff'; g.font = '600 56px system-ui, sans-serif';
+        g.fillStyle = '#fff'; g.font = `600 56px ${CANVAS_BODY}`;
         g.fillText(lv.floor === 0 ? 'Ground floor' : `Floor ${lv.floor}`, 28, 84);
         const tex = new THREE.CanvasTexture(cv), sm = new THREE.SpriteMaterial({ map: tex, depthTest: false });
         const sp = new THREE.Sprite(sm);
@@ -372,7 +373,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
         {welcome && (
           <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-paper/55 p-4">
             <div className="max-w-sm rounded-2xl bg-card p-6 text-center text-ink shadow-2xl">
-              <h3 className="text-xl font-bold">Welcome to your home</h3>
+              <h3 className="text-xl font-semibold">Welcome to your home</h3>
               <p className="mt-1 text-sm text-muted">{floorsN === 1 ? 'Single storey' : `${floorsN} floors`} · {stops.length} rooms · {area(twin.floors.reduce((s, f) => s + f.rooms.reduce((a, r) => a + r.area_sqft, 0), 0), u)}</p>
               <div className="mt-5 grid gap-2">
                 <button type="button" onClick={() => go('tour')} className="rounded-full bg-terra px-4 py-2.5 text-sm font-semibold text-white hover:bg-terra-dark">Take the guided tour</button>
@@ -389,7 +390,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
             <p className="pointer-events-none absolute left-3 top-10 rounded bg-black/55 px-2 py-1 tabular-nums text-[11px] text-white" aria-live="polite">
               Rooms visited {visited.size} / {stops.length}{visited.size === stops.length && stops.length > 0 ? ' · you have seen the whole house!' : ''}
             </p>
-            {popup && <p className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 rounded-xl bg-black/65 px-4 py-2 text-lg font-bold text-white">{popup}</p>}
+            {popup && <p className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 rounded-xl bg-black/65 px-4 py-2 text-lg font-semibold text-white">{popup}</p>}
             <MiniMap rooms={twin.floors[walkFloor]?.rooms ?? []} floorNo={twin.floors[walkFloor]?.floor_no ?? 0} visited={visited} pos={pos} W={W} D={D} />
             <button type="button" onClick={() => setFinish((f) => (f + 2) % (FINISHES.length + 1) - 1)}
               className="absolute bottom-4 right-4 rounded-lg bg-card/90 px-3 py-2 tabular-nums text-[11px] font-semibold text-ink">
@@ -402,7 +403,7 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
           <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3">
             <div className="max-w-md rounded-xl bg-black/65 p-3 text-white backdrop-blur">
               <p className="tabular-nums text-[10px] uppercase tracking-wider text-ink/60">{here.floor === 0 ? 'Ground floor' : `Floor ${here.floor}`} · {stop + 1} of {stops.length}</p>
-              <p className="text-lg font-bold">{roomName(here.room.name, here.room.type ?? undefined)}</p>
+              <p className="text-lg font-semibold">{roomName(here.room.name, here.room.type ?? undefined)}</p>
               <p className="text-sm text-ink/80">{lenShort(here.room.length_ft, u)} × {lenShort(here.room.width_ft, u)} · {area(here.room.area_sqft, u)}</p>
               <ul className="mt-1 list-disc pl-4 text-xs text-ink/75">{features(here.room).map((f) => <li key={f}>{f}</li>)}</ul>
             </div>

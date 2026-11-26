@@ -33,7 +33,7 @@ export default function Poster({ params }: { params: { id: string } }) {
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-4 flex flex-wrap items-center gap-2 print:hidden">
-        <h1 className="mr-auto text-xl font-bold text-ink">Poster and architect pack</h1>
+        <h1 className="mr-auto text-xl text-ink">Poster and architect pack</h1>
         <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-1.5 rounded-lg bg-card px-3 py-2 text-sm font-semibold text-ink"><Printer className="h-4 w-4" />Print / save as PDF</button>
         <a href={dxfUrl(twin.house_id)} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-2 text-sm text-ink"><Download className="h-4 w-4" />CAD drawing (DXF)</a>
         <a href={`data:application/json;charset=utf-8,${encodeURIComponent(brief)}`} download={`nestora-brief-${twin.house_id}.json`} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-3 py-2 text-sm text-ink"><Download className="h-4 w-4" />Brief (JSON)</a>

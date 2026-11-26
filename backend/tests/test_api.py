@@ -30,7 +30,9 @@ def test_full_flow():
         assert client.post(f"/api/v1/house/{hid}/swipe", json={"card_id": c["id"], "direction": "right", "dwell_ms": 3500}, headers=auth).status_code == 200
 
     r = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()
-    assert r["success"] and len(r["options"]) == 4
+    assert r["success"] and len(r["options"]) == 2 and r["pending"] > 0  # first designs at once
+    r = client.get(f"/api/v1/house/{hid}/options", headers=auth).json()  # solver designs joined in the background
+    assert r["pending"] == 0 and len(r["options"]) == 4 and len({o["id"] for o in r["options"]}) == 4
     assert all(o["judge"]["pass"] for o in r["options"])
     ids = [o["id"] for o in r["options"]]
 
@@ -109,7 +111,8 @@ def test_family_vote_and_versions():
     opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
     tok = client.post(f"/api/v1/house/{hid}/vote-link", headers=auth).json()["token"]
     assert client.get(f"/api/v1/house/{hid}/vote", params={"t": "wrong"}).status_code == 403
-    assert len(client.get(f"/api/v1/house/{hid}/vote", params={"t": tok}).json()["options"]) == len(opts)
+    board = client.get(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    assert len(client.get(f"/api/v1/house/{hid}/vote", params={"t": tok}).json()["options"]) == len(board)
     r = client.post(f"/api/v1/house/{hid}/vote", json={"token": tok, "voter": "browser-aaaa1", "name": "Amma", "likes": [opts[1]["id"], "bogus"]})
     assert r.json()["tally"] == {opts[1]["id"]: ["Amma"]}
     assert client.get(f"/api/v1/house/{hid}/votes", headers=auth).json()["people"] == 1

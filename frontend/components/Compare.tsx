@@ -31,7 +31,7 @@ export default function Compare({ a, b, na, nb, onClose }: { a: Option; b: Optio
   return (
     <section className="mb-6 rounded-2xl bg-card p-4 text-ink shadow-xl" aria-label={`Compare option ${na} and option ${nb}`}>
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-bold">Option {na} ↔ Option {nb}</h2>
+        <h2 className="">Option {na} ↔ Option {nb}</h2>
         <div className="flex items-center gap-2">
           {floors.map((f) => (
             <button key={f} type="button" onClick={() => setFloor(f)} className={`rounded px-2 py-0.5 text-xs font-semibold ${f === floor ? 'bg-card text-ink' : 'bg-paper2'}`}>

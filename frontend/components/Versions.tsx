@@ -12,7 +12,7 @@ export default function Versions({ houseId, stamp, onRestored }: { houseId: stri
   if (!vs.length) return null;
   return (
     <details className="rounded-2xl border border-line bg-card p-4 text-sm text-ink print:hidden">
-      <summary className="flex cursor-pointer items-center gap-2 tabular-nums text-xs font-bold uppercase tracking-wider"><History className="h-4 w-4" aria-hidden />Earlier versions ({vs.length})</summary>
+      <summary className="flex cursor-pointer items-center gap-2 tabular-nums text-xs font-semibold uppercase tracking-wider"><History className="h-4 w-4" aria-hidden />Earlier versions ({vs.length})</summary>
       <ul className="mt-3 space-y-2">
         {vs.map((v) => (
           <li key={v.n} className="flex items-center justify-between gap-3">

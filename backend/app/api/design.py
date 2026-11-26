@@ -129,9 +129,16 @@ def join_waitlist(body: WaitlistIn):
 
 
 @router.post("/house/{house_id}/options", dependencies=[Depends(rate_limit("options", 20))])
-def start_options(house_id: str, _u: Optional[str] = Depends(require_edit)):
+def start_options(house_id: str, bg: BackgroundTasks, _u: Optional[str] = Depends(require_edit)):
     _twin(house_id)
-    return orchestrator.start_options(house_id)
+    return orchestrator.start_options(house_id, background=bg.add_task)
+
+
+@router.get("/house/{house_id}/options")
+def options_progress(house_id: str, _u: Optional[str] = Depends(require_edit)):
+    """The board polls this while metadata.pending > 0: options shown so far and solver jobs left."""
+    md = _twin(house_id).metadata
+    return {"round": md.get("round", 1), "options": md.get("options", []), "pending": md.get("pending", 0)}
 
 
 class SelectIn(BaseModel):

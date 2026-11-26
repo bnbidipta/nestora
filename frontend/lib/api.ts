@@ -162,6 +162,7 @@ export interface Option {
 
 export interface OptionsResponse {
   success: boolean; status: string; round?: number; options: Option[]; reason?: string; exhausted?: boolean;
+  pending?: number;  // solver designs still on their way (they join the board as new cards)
 }
 
 export const saveBrief = (houseId: string, brief: Brief) =>
@@ -193,6 +194,9 @@ export const submitSwipe = (houseId: string, swipe: { card_id: string; direction
 
 export const startOptions = (houseId: string) =>
   call<OptionsResponse>(`/api/v1/house/${houseId}/options`, { method: 'POST' }, houseId);
+
+export const optionsProgress = (houseId: string) =>
+  call<{ round: number; options: Option[]; pending: number }>(`/api/v1/house/${houseId}/options`, {}, houseId);
 
 export const selectOptions = (houseId: string, keep: string[], discard: string[]) =>
   call<OptionsResponse>(`/api/v1/house/${houseId}/options/select`, { method: 'POST', body: JSON.stringify({ keep, discard }) }, houseId);

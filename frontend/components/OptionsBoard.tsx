@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, Heart, Loader2, RefreshCw } from 'lucide-react';
-import { Option, OptionsResponse, chooseOption, selectOptions, startOptions, makeVoteLink, ownerVotes } from '@/lib/api';
+import { Option, OptionsResponse, chooseOption, optionsProgress, selectOptions, startOptions, makeVoteLink, ownerVotes } from '@/lib/api';
 import { formatINR } from '@/lib/twin';
 import { track } from '@/lib/analytics';
 import { area, useLengthUnit } from '@/lib/units';
@@ -52,6 +52,19 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   }, []);
   const [error, setError] = useState<string | null>(null);
   const started = Date.now();
+  const pending = res?.pending ?? 0;
+
+  useEffect(() => {  // more designs on their way: new cards are appended, shown ones never change
+    if (!pending) return;
+    const id = setInterval(() => {
+      optionsProgress(houseId).then((p) => setRes((r) => {
+        if (!r || p.round !== (r.round ?? 1)) return r;
+        const have = new Set(r.options.map((o) => o.id));
+        return { ...r, options: [...r.options, ...p.options.filter((o) => !have.has(o.id))], pending: p.pending };
+      })).catch(() => {});
+    }, 3000);
+    return () => clearInterval(id);
+  }, [pending, houseId]);
 
   useEffect(() => {
     startOptions(houseId)
@@ -102,7 +115,7 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
   if (res && res.status === 'infeasible') {
     return (
       <section className="mx-auto max-w-2xl rounded-2xl bg-card p-6 text-ink">
-        <h1 className="flex items-center gap-2 text-xl font-bold"><AlertTriangle className="h-5 w-5 text-gold-dark" /> This plot can&apos;t fit a compliant house as briefed</h1>
+        <h1 className="flex items-center gap-2 text-xl"><AlertTriangle className="h-5 w-5 text-gold-dark" /> This plot can&apos;t fit a compliant house as briefed</h1>
         <p className="mt-3 text-ink/80">{res.reason}</p>
         <button type="button" onClick={() => router.push('/questionnaire')} className="mt-5 rounded-full bg-terra px-4 py-2 text-sm font-semibold text-white">Change my answers</button>
       </section>
@@ -114,13 +127,13 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
     <div>
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink">Your options</h1>
+          <h1 className="text-2xl text-ink">Your options</h1>
           <p className="text-sm text-muted">Like the ones you&apos;re drawn to and we&apos;ll show more like them, or pick one to open it.</p>
         </div>
         <button type="button" onClick={askFamily} className="inline-flex items-center gap-2 rounded-lg border border-green px-4 py-2 text-sm font-semibold text-green hover:bg-emerald-50">
           Ask family on WhatsApp
         </button>
-        <button type="button" onClick={replace} disabled={busy !== null || keep.size === res.options.length}
+        <button type="button" onClick={replace} disabled={busy !== null || pending > 0 || keep.size === res.options.length}
           className="inline-flex items-center gap-2 rounded-lg bg-card px-4 py-2 text-sm font-semibold text-ink disabled:opacity-50">
           {busy === 'replace' ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           {keep.size ? 'Show more like my liked ones' : 'Show different options'}
@@ -128,7 +141,7 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
       </div>
       {voteMsg && <p role="status" className="mb-4 text-sm text-green">{voteMsg}</p>}
       {res.exhausted && <p className="mb-4 text-sm text-gold-dark">That&apos;s every distinct layout this plot allows with your brief.</p>}
-      {!res.exhausted && res.options.length < 4 && (
+      {!res.exhausted && !pending && res.options.length < 4 && (
         <p className="mb-4 text-sm text-gold-dark">
           Only {res.options.length} layout{res.options.length === 1 ? '' : 's'} pass every check
           {res.options.some((o) => Object.values(o.traditions).some((t) => t.mode === 'strict')) ? ' and your strict cultural preferences' : ''} on this plot.
@@ -152,6 +165,12 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
               onChoose={() => choose(o.id)} comparing={cmp.includes(o.id)} family={votes[o.id]}
               onCompare={() => setCmp((c) => (c.includes(o.id) ? c.filter((x) => x !== o.id) : [...c, o.id].slice(-2)))} />
           ))}
+          {Array.from({ length: pending ? Math.max(0, 4 - res.options.length) : 0 }, (_, i) => (
+            <div key={`p${i}`} role="status" className="flex min-h-[22rem] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-line bg-card text-sm text-muted">
+              <Loader2 className="h-6 w-6 animate-spin text-terra" aria-hidden />
+              Designing option {res.options.length + i + 1}…
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -168,7 +187,7 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose, comparing, onCompare, 
     <article className={`rounded-2xl border bg-card p-4 text-ink ${kept ? 'border-rose-400 ring-2 ring-rose-400' : 'border-transparent'}`}>
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="font-bold">Option {n}</h2>
+          <h2 className="">Option {n}</h2>
           {onCompare && (
             <label className="hidden cursor-pointer items-center gap-1 text-xs text-muted md:flex">
               <input type="checkbox" checked={!!comparing} onChange={onCompare} className="accent-terra" /> Compare

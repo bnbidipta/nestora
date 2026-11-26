@@ -51,7 +51,7 @@ export default function Designing() {
         ))}
       </div>
       <div>
-        <h1 className="text-2xl font-bold text-ink">Designing your home</h1>
+        <h1 className="text-2xl text-ink">Designing your home</h1>
         <p className="mt-1 text-sm text-muted">This takes about a minute. Every option is solved and checked, not picked from a catalogue.</p>
         <ol className="mt-5 space-y-2.5">
           {STEPS.map(([label], i) => (

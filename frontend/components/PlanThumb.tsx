@@ -32,12 +32,12 @@ export default function PlanThumb({ rooms, floor, envelope, labels = true, onRoo
                 <line key={k} x1={r.x} x2={r.x + r.w} y1={flip(r.y, r.d) + k * 1.2} y2={flip(r.y, r.d) + k * 1.2} stroke="#6B7280" strokeWidth={0.12} />
               ))}
               {size !== null && (
-                <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize={size} fill="#111827" fontFamily="ui-sans-serif, system-ui">{name}</text>
+                <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle" fontSize={size} fill="#111827">{name}</text>
               )}
               {n > 0 && (
                 <>
                   <circle cx={cx} cy={cy} r={Math.min(0.9, r.w / 2.2, r.d / 2.2)} fill="#111827" />
-                  <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={Math.min(1, r.w / 2.4, r.d / 2.4)} fill="#fff" fontFamily="ui-sans-serif, system-ui">{n}</text>
+                  <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={Math.min(1, r.w / 2.4, r.d / 2.4)} fill="#fff">{n}</text>
                 </>
               )}
             </g>

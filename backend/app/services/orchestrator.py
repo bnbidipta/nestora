@@ -78,7 +78,7 @@ def _learned_arrangements(brief: Brief) -> List[Dict[str, Any]]:
         return []
 
 
-def _solved(brief: Brief, prefs: Dict[str, float], scored, seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
+def _solved(brief: Brief, prefs: Dict[str, float], scored, seed: int, on_each=None) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
     """Merge: the generator's best layouts (one per strategy) become hints for the solver, which returns guaranteed
     versions of them; with no usable generator layout, the solver works from the brief alone."""
     from backend.app.services import solver
@@ -98,12 +98,19 @@ def _solved(brief: Brief, prefs: Dict[str, float], scored, seed: int) -> List[Tu
         except Exception:  # the solver is an addition; never block options
             log.warning("solver failed", exc_info=True)
             return None
-    sols = [s for s in map(one, enumerate(jobs)) if s]  # sequential: building CP-SAT models from threads is not safe
-    rng.shuffle(sols)
-    return [(s, evaluate(brief, s, prefs)) for s in sols]
+    out = []
+    for i_h in enumerate(jobs):  # sequential: building CP-SAT models from threads is not safe
+        s = one(i_h)
+        if s:
+            out.append((s, evaluate(brief, s, prefs)))
+        if on_each:
+            on_each(out[-1] if s else None, len(jobs) - i_h[0] - 1)
+    rng.shuffle(out)
+    return out
 
 
-def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
+def _fast(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
+    """Generator candidates, scored (a few seconds); the solver adds guaranteed layouts afterwards."""
     extra = []
     if any(v != "off" for v in brief.traditions.values()):
         extra.append(traditions.arrangement_for(brief.facing, brief.traditions))
@@ -113,8 +120,10 @@ def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[s
     if LEARNED:
         extra.extend(_learned_arrangements(brief))
     cands = generator.candidates(brief, n=24, seed=seed, extra_arrangements=extra, score=rank.realism, variants=VARIANTS)
-    scored = [(c, evaluate(brief, c, prefs)) for c in cands]
-    scored += _solved(brief, prefs, scored, seed)
+    return [(c, evaluate(brief, c, prefs)) for c in cands]
+
+
+def _rank(scored: List[Tuple[Dict[str, Any], Dict[str, Any]]]) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
     good = [x for x in scored if x[1]["pass"]]
     if len(good) < SHOW:  # strict traditions vetoed most code-compliant layouts: top up with the closest, flagged
         relaxed = sorted((x for x in scored if x[1]["judge"]["pass"] and not x[1]["pass"]), key=lambda x: -x[1]["score"]["total"])
@@ -125,13 +134,22 @@ def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[s
     return good
 
 
+def _pool(brief: Brief, prefs: Dict[str, float], seed: int) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
+    scored = _fast(brief, prefs, seed)
+    return _rank(scored + _solved(brief, prefs, scored, seed))
+
+
+def _sig(c: Dict[str, Any]) -> tuple:
+    return (str(c["strategy"]), c["arrangement"], c["layout"]["stair_left"])
+
+
 def _diverse(items: List[Tuple[Dict[str, Any], Dict[str, Any]]], k: int, exclude: set) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
     """Best-first, but each pick must differ from earlier picks in strategy, arrangement or mirroring."""
     out, sigs = [], set()
     for c, e in items:
         if c["id"] in exclude:
             continue
-        sig = (str(c["strategy"]), c["arrangement"], c["layout"]["stair_left"])
+        sig = _sig(c)
         if sig in sigs:
             continue
         sigs.add(sig)
@@ -158,12 +176,33 @@ def infeasible_reason(brief: Brief) -> str:
             "An architect can check whether your plot qualifies for relaxations.")
 
 
-def start_options(house_id: str, seed: Optional[int] = None) -> Dict[str, Any]:
+FAST_SHOW = 2  # shown at once from the generator; the solver's designs join as they finish
+
+
+def start_options(house_id: str, seed: Optional[int] = None, background=None) -> Dict[str, Any]:
+    """With `background` (a task runner), returns the first options in seconds and adds solved ones later
+    (metadata.pending counts the solver jobs left); without it, waits for everything."""
     twin = _get(house_id)
     brief = brief_of(twin)
     seed = seed if seed is not None else random.randrange(1 << 30)
     prefs = twin.metadata.get("prefs", {})
-    good = _pool(brief, prefs, seed)
+    scored = _fast(brief, prefs, seed)
+    fast = _rank(scored)
+    if background and len(fast) >= FAST_SHOW:
+        shown = _diverse(fast, FAST_SHOW, set())
+        look.assign(brief, [c for c, _ in shown])
+        shown = [(c, evaluate(brief, c, prefs)) for c, _ in shown]
+        twin.metadata.update({
+            "pool": [c for c, _ in fast[:POOL_KEEP]] + [c for c, _ in shown if c not in [g[0] for g in fast[:POOL_KEEP]]],
+            "options": [e for _, e in shown], "round": 1, "seed": seed, "prefs": prefs, "pending": SOLVE,
+            "labels": twin.metadata.get("labels", []), "seen": [c["id"] for c, _ in shown],
+        })
+        twin.status = "choosing"
+        HouseTwinRepository.save(twin)
+        background(_add_solved, house_id, brief, prefs, scored, fast, seed)
+        return {"success": True, "status": "choosing", "round": 1, "options": twin.metadata["options"], "pool_size": len(fast),
+                "pending": SOLVE}
+    good = _rank(scored + _solved(brief, prefs, scored, seed))
     if not good:
         twin.status = "infeasible"
         twin.metadata["infeasible_reason"] = infeasible_reason(brief)
@@ -180,6 +219,50 @@ def start_options(house_id: str, seed: Optional[int] = None) -> Dict[str, Any]:
     twin.status = "choosing"
     HouseTwinRepository.save(twin)
     return {"success": True, "status": "choosing", "round": 1, "options": twin.metadata["options"], "pool_size": len(good)}
+
+
+def _add_solved(house_id: str, brief: Brief, prefs: Dict[str, float], scored, fast, seed: int) -> None:
+    """Background: each solver design joins the board as a new card (cards already shown never change);
+    then the board is topped up from the fast pool. Stops if the user has moved on (new round or chosen)."""
+    def current():
+        t = HouseTwinRepository.get(house_id)
+        return t if t and t.status == "choosing" and t.metadata.get("seed") == seed and t.metadata.get("round") == 1 else None
+
+    def add(found, left):
+        twin = current()
+        if not twin:
+            return
+        md = twin.metadata
+        pool = {c["id"]: c for c in md.get("pool", [])}
+        shown = [pool[o["id"]] for o in md["options"] if o["id"] in pool]
+        if found and found[1]["pass"] and len(md["options"]) < SHOW and _sig(found[0]) not in {_sig(c) for c in shown}:
+            c = found[0]
+            look.assign(brief, [c], [o.get("look", {}).get("archetype") for o in md["options"]])
+            md["options"].append(evaluate(brief, c, prefs))
+            md["pool"].append(c)
+            md["seen"].append(c["id"])
+        md["pending"] = left
+        HouseTwinRepository.save(twin)
+
+    try:
+        _solved(brief, prefs, scored, seed, on_each=add)
+    finally:  # top up to SHOW from the fast pool, distinct from what is shown
+        twin = current()
+        if twin:
+            md = twin.metadata
+            pool = {c["id"]: c for c in md.get("pool", [])}
+            have = {o["id"] for o in md["options"]}
+            sigs = {_sig(pool[i]) for i in have if i in pool}
+            for c, _ in fast:
+                if len(md["options"]) >= SHOW:
+                    break
+                if c["id"] not in have and _sig(c) not in sigs:
+                    look.assign(brief, [c], [o.get("look", {}).get("archetype") for o in md["options"]])
+                    md["options"].append(evaluate(brief, c, prefs))
+                    md["seen"].append(c["id"])
+                    sigs.add(_sig(c))
+            md["pending"] = 0
+            HouseTwinRepository.save(twin)
 
 
 def select(house_id: str, keep: List[str], discard: List[str]) -> Dict[str, Any]:

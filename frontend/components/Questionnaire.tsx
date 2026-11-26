@@ -358,7 +358,7 @@ function LiveHouse({ b, elders }: { b: Brief; elders: boolean }) {
 }
 
 function Header({ title, info }: { title: string; info?: string }) {
-  return <h1 className="flex items-center gap-2 text-2xl font-bold text-ink">{title}{info && <InfoTip text={info} />}</h1>;
+  return <h1 className="flex items-center gap-2 text-2xl text-ink">{title}{info && <InfoTip text={info} />}</h1>;
 }
 
 const FIELD_LABEL: Record<string, string> = {
@@ -423,7 +423,7 @@ function Review({ understood, waitlist, brief, houseId, onEdit, onNext }: {
   };
   return (
     <section className="mx-auto max-w-2xl rounded-2xl bg-card p-6 text-ink shadow-xl sm:p-8">
-      <h1 className="text-2xl font-bold">Here&apos;s what we understood</h1>
+      <h1 className="text-2xl">Here&apos;s what we understood</h1>
       <ul className="mt-4 space-y-2">
         {understood.map((s) => <li key={s} className="flex gap-2 text-ink"><Check className="mt-0.5 h-4 w-4 shrink-0 text-green" />{s}</li>)}
       </ul>

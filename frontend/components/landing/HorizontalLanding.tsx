@@ -35,7 +35,7 @@ function Reveal({ on, delay = 0, children, className = '' }: { on: boolean; dela
 
 function Plate({ n, label, light }: { n: number; label: string; light?: boolean }) {
   return (
-    <p className={`font-mono text-[11px] uppercase tracking-[0.25em] ${light ? 'text-white/75' : ''}`} style={light ? undefined : { color: C.muted }}>
+    <p className={`font-medium text-[11px] uppercase tracking-[0.25em] ${light ? 'text-white/75' : ''}`} style={light ? undefined : { color: C.muted }}>
       <span style={{ color: light ? C.gold : C.terra }}>{String(n).padStart(2, '0')}</span> / {label}
     </p>
   );
@@ -342,7 +342,7 @@ export default function HorizontalLanding({ variant = 'v1' }: { variant?: 'v1' |
       <div className={`fixed inset-x-0 bottom-0 z-30 flex items-center gap-4 px-5 pb-5 md:px-10 ${(v2 ? [3, 4] : [0, 3, 4]).includes(cur) ? 'text-white' : ''}`}>
         <button type="button" onClick={() => go(cur - 1)} disabled={cur === 0} aria-label="Previous" className="rounded-full border border-current p-2 disabled:opacity-30"><ArrowLeft className="h-4 w-4" /></button>
         <div className="h-px flex-1 bg-current/30 relative"><div className="absolute inset-y-0 left-0 bg-current transition-all duration-500" style={{ width: `${((cur + 1) / SCENES.length) * 100}%`, height: 2, top: -0.5 }} /></div>
-        <span className="font-mono text-xs tabular-nums">{String(cur + 1).padStart(2, '0')} / {String(SCENES.length).padStart(2, '0')}</span>
+        <span className="text-xs font-medium tabular-nums tracking-[0.2em]">{String(cur + 1).padStart(2, '0')} / {String(SCENES.length).padStart(2, '0')}</span>
         <button type="button" onClick={() => go(cur + 1)} disabled={cur === SCENES.length - 1} aria-label="Next" className="rounded-full border border-current p-2 disabled:opacity-30"><ArrowRight className="h-4 w-4" /></button>
       </div>
     </div>

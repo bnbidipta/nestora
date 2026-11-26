@@ -66,7 +66,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
                 className={`rounded px-2 py-0.5 tabular-nums text-[11px] capitalize ${t === tier ? 'bg-card text-ink' : 'border border-line text-ink/80'}`}>{t}</button>
             ))}
           </div>
-          <p className="mt-2 tabular-nums text-2xl font-bold text-ink">{formatINR(total)}</p>
+          <p className="mt-2 tabular-nums text-2xl font-semibold text-ink">{formatINR(total)}</p>
           {range && <p className="text-xs text-muted">Range {formatINR(range.low.total)} – {formatINR(range.high.total)}</p>}
           <p className="mt-1 text-xs text-muted">
             {area > 0 ? `${formatINR(perAreaRate(total / area, u))} per ${perArea(u)} over ${fmtArea(area, u)}` : 'No floors generated'}
@@ -74,14 +74,14 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
         </div>
         <div className="rounded-2xl border border-line bg-card p-5">
           <span className="tabular-nums text-xs text-muted">YOUR BUDGET</span>
-          <p className="mt-2 tabular-nums text-2xl font-bold text-ink">{formatINR(budget.total_budget_inr)}</p>
+          <p className="mt-2 tabular-nums text-2xl font-semibold text-ink">{formatINR(budget.total_budget_inr)}</p>
           <p className={`mt-1 text-xs ${overBudget > 0 ? 'text-red-700' : 'text-green'}`}>
             {overBudget > 0 ? `${formatINR(overBudget)} over budget` : `${formatINR(-overBudget)} under budget`}
           </p>
         </div>
         <div className="rounded-2xl border border-line bg-card p-5">
           <span className="tabular-nums text-xs text-muted">ESTIMATED MONTHLY EMI</span>
-          <p className="mt-2 tabular-nums text-2xl font-bold text-gold-dark">{formatINR(monthly)} / mo</p>
+          <p className="mt-2 tabular-nums text-2xl font-semibold text-gold-dark">{formatINR(monthly)} / mo</p>
           <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
             <label className="flex flex-col gap-1 text-ink/80">Loan %
               <input type="number" min={0} max={90} value={loanPct} onChange={(e) => setLoanPct(clamp(Number(e.target.value), 0, 90))} className={input} />
@@ -98,7 +98,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-line bg-card p-6">
-          <h2 className="mb-4 flex items-center gap-2 tabular-nums text-sm font-bold uppercase tracking-wider text-ink">
+          <h2 className="mb-4 flex items-center gap-2 tabular-nums text-sm uppercase tracking-wider text-ink">
             <Coins className="h-4 w-4 text-terra" aria-hidden /> Cost breakdown ({tier})
           </h2>
           <table className="w-full text-left text-sm">
@@ -114,7 +114,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
                   {range && <td className="py-2 text-right text-muted">{formatINR(range.high[k])}</td>}
                 </tr>
               ))}
-              <tr className="font-bold text-ink">
+              <tr className="font-semibold text-ink">
                 <td className="py-2">Total</td>
                 {range && <td className="py-2 text-right">{formatINR(range.low.total)}</td>}
                 <td className="py-2 text-right text-green">{formatINR(total)}</td>
@@ -126,7 +126,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
         </section>
 
         <section className="rounded-2xl border border-line bg-card p-6">
-          <h2 className="mb-4 flex items-center gap-2 tabular-nums text-sm font-bold uppercase tracking-wider text-ink">
+          <h2 className="mb-4 flex items-center gap-2 tabular-nums text-sm uppercase tracking-wider text-ink">
             <FileSpreadsheet className="h-4 w-4 text-terra" aria-hidden /> Material quantities
           </h2>
           <table className="w-full text-left text-sm">
@@ -141,7 +141,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
       </div>
 
       <section className="rounded-2xl border border-line bg-card p-6">
-        <h2 className="mb-1 tabular-nums text-sm font-bold uppercase tracking-wider text-ink">Payment stages</h2>
+        <h2 className="mb-1 tabular-nums text-sm uppercase tracking-wider text-ink">Payment stages</h2>
         <p className="mb-4 text-xs text-muted">From this estimate&apos;s own cost lines. Your contractor&apos;s schedule will differ.</p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           {STAGES.map((s) => {
@@ -149,7 +149,7 @@ export default function BOQTable({ twin }: { twin: HouseTwin }) {
             return (
               <div key={s.name} className="rounded-2xl border border-line bg-card/60 p-4">
                 <span className="tabular-nums text-xs text-muted">{total > 0 ? Math.round((amt / total) * 100) : 0}%</span>
-                <p className="mt-1 text-sm font-bold text-ink">{s.name}</p>
+                <p className="mt-1 text-sm font-semibold text-ink">{s.name}</p>
                 <p className="mt-2 tabular-nums text-xs text-terra">{formatINR(amt)}</p>
               </div>
             );

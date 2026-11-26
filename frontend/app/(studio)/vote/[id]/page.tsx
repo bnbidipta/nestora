@@ -44,7 +44,7 @@ export default function VotePage({ params }: { params: { id: string } }) {
   if (!opts) return <p className="py-20 text-center text-muted">Loading the designs…</p>;
   return (
     <div className="mx-auto max-w-5xl">
-      <h1 className="text-2xl font-bold text-ink">Which home do you like?</h1>
+      <h1 className="text-2xl text-ink">Which home do you like?</h1>
       <p className="mt-1 text-sm text-muted">Your family is choosing a house design. Tap the heart on the ones you like; you can pick more than one.</p>
       <label className="mt-4 block max-w-xs text-sm text-ink/80">Your name (optional)
         <input value={name} maxLength={30} onChange={(e) => setName(e.target.value)} placeholder="e.g. Amma"
@@ -57,7 +57,7 @@ export default function VotePage({ params }: { params: { id: string } }) {
           return (
             <article key={o.id} className={`rounded-2xl bg-card p-4 text-ink ${liked ? 'ring-2 ring-rose-400' : ''}`}>
               <header className="flex items-center justify-between">
-                <h2 className="font-bold">Option {i + 1}</h2>
+                <h2 className="">Option {i + 1}</h2>
                 <span className="text-xs text-muted">{o.look ? LOOK_NAME[o.look.archetype] : ''}</span>
               </header>
               <div className="mt-3 aspect-[4/3] rounded-lg bg-card p-2"><PlanThumb rooms={o.preview} floor={0} envelope={o.summary.envelope_ft} /></div>

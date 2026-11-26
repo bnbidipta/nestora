@@ -1,12 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Fraunces, Inter } from 'next/font/google';
+import { body, display } from '@/lib/fonts';
 import SentryInit from '@/components/SentryInit';
 import WakingNotice from '@/components/WakingNotice';
 import ConsentBanner from '@/components/ConsentBanner';
 
-const display = Fraunces({ subsets: ['latin'], variable: '--font-display', display: 'swap' });
-const body = Inter({ subsets: ['latin'], variable: '--font-body', display: 'swap' });
 
 export const metadata: Metadata = {
   title: 'Nestora: concept house design and cost estimates',

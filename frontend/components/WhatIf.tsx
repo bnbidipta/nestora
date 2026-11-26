@@ -31,7 +31,7 @@ export default function WhatIf({ houseId, onKept }: { houseId: string; onKept: (
   const floors = p ? Array.from(new Set(p.preview.map((r) => r.f))).sort() : [];
   return (
     <section className="rounded-2xl border border-line bg-card p-4 print:hidden" aria-label="What if">
-      <h3 className="flex items-center gap-2 tabular-nums text-xs font-bold uppercase tracking-wider text-ink"><Sparkles className="h-4 w-4 text-gold-dark" aria-hidden />What if…</h3>
+      <h3 className="flex items-center gap-2 tabular-nums text-xs font-semibold uppercase tracking-wider text-ink"><Sparkles className="h-4 w-4 text-gold-dark" aria-hidden />What if…</h3>
       <div className="mt-3 flex flex-wrap gap-2">
         {CHIPS.map(([c, label]) => (
           <button key={c} type="button" disabled={busy !== null} onClick={() => ask(c)}
