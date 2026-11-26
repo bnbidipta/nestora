@@ -46,16 +46,15 @@ function Film({ src, mobile, poster }: { src: string; mobile: string; poster: st
   useEffect(() => {
     const el = v.current;
     if (!el) return;
+    // browsers ignore media="" on <source> inside <video>, so pick the file here: phones get the ~1 MB version
+    el.src = window.matchMedia('(max-width: 767px)').matches ? mobile : src;
     el.muted = true;
     const io = new IntersectionObserver(([e]) => (e.isIntersecting ? el.play().catch(() => {}) : el.pause()), { threshold: 0.2 });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [src, mobile]);
   return (
-    <video ref={v} poster={poster} muted loop playsInline autoPlay preload="metadata" aria-hidden className="absolute inset-0 h-full w-full object-cover">
-      <source src={mobile} type="video/mp4" media="(max-width: 767px)" />
-      <source src={src} type="video/mp4" />
-    </video>
+    <video ref={v} poster={poster} muted loop playsInline autoPlay preload="metadata" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
   );
 }
 
