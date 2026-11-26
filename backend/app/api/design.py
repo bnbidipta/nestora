@@ -3,7 +3,7 @@ import copy
 import random
 from typing import Any, Dict, List, Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
@@ -206,6 +206,35 @@ def edit(house_id: str, body: EditIn, _u: Optional[str] = Depends(require_edit))
     if body.action != "mirror" and abs(sum(r["w"] * r["d"] for r in c["layout"]["rooms"] if r["id"] == body.room) - before.get(body.room, 0)) < 0.05:
         raise HTTPException(status_code=422, detail="That room can't change size here: its row is already at its limits.")
     return orchestrator.commit_edit(house_id, brief, c, f"Edit: {body.action} {body.room or 'plan'}.")
+
+
+class PhotoIn(BaseModel):
+    image: str = Field(max_length=6_000_000)  # data:image/png;base64,... street-view snapshot from the browser's 3D model
+
+
+@router.post("/house/{house_id}/photo", dependencies=[Depends(rate_limit("photo", 6))])
+def request_photo(house_id: str, body: PhotoIn, bg: BackgroundTasks, _u: Optional[str] = Depends(require_edit)):
+    """Starts a photoreal picture of the chosen design from the browser's snapshot; poll the house for metadata.render."""
+    import base64
+    from backend.app.services import photo
+    twin = _twin(house_id)
+    render = twin.metadata.get("render") or {}
+    if not twin.metadata.get("chosen_candidate") or not render.get("key"):
+        raise HTTPException(status_code=409, detail="Choose a design first.")
+    if render.get("status") == "done":
+        return {"render": render}
+    try:
+        png = base64.b64decode(body.image.split(",", 1)[-1], validate=True)
+    except Exception:
+        raise HTTPException(status_code=422, detail="The snapshot is not a valid image.")
+    if png[:4] != bytes([0x89, 0x50, 0x4E, 0x47]) or len(png) > 4_000_000:  # PNG signature
+        raise HTTPException(status_code=422, detail="The snapshot must be a PNG under 4 MB.")
+    key = render["key"]
+    guide = photo.upload(f"{house_id}/{key}_guide.png", png, "image/png")
+    twin.metadata["render"] = {**render, "status": "working", "guide": guide, "started": __import__("time").time()}
+    HouseTwinRepository.save(twin)
+    bg.add_task(photo.make_photo, house_id, key, png)
+    return {"render": twin.metadata["render"]}
 
 
 class ExteriorIn(BaseModel):

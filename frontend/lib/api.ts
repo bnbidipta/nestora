@@ -208,6 +208,9 @@ export const exteriorVocab = () =>
 export const setExterior = (houseId: string, body: { choices?: Record<string, unknown>; text?: string; reset?: boolean }) =>
   call<{ status: string; reply: string; unsupported: string[] }>(`/api/v1/house/${houseId}/exterior`, { method: 'POST', body: JSON.stringify(body) }, houseId);
 
+export const requestPhoto = (houseId: string, image: string) =>
+  call<{ render: Record<string, unknown> }>(`/api/v1/house/${houseId}/photo`, { method: 'POST', body: JSON.stringify({ image }) }, houseId);
+
 export const dxfUrl = (houseId: string) => `${API_BASE}/api/v1/house/${houseId}/export/dxf`;
 
 export const generateHouse = (houseId: string) =>

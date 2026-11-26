@@ -151,3 +151,19 @@ def test_render_queued_and_requeued_on_change():
     client.post(f"/api/v1/house/{hid}/exterior", json={"choices": {"railing": "glass"}}, headers=auth)
     r2 = client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"]["render"]
     assert r2["status"] == "queued" and r2["key"] != r1["key"]  # a changed look needs a new photo
+
+
+def test_photo_request_falls_back_to_queue_without_gpu():
+    import base64, io
+    from PIL import Image
+    hid, auth = _new()
+    client.post(f"/api/v1/house/{hid}/brief", json=BRIEF, headers=auth)
+    opts = client.post(f"/api/v1/house/{hid}/options", headers=auth).json()["options"]
+    assert client.post(f"/api/v1/house/{hid}/photo", json={"image": "data:image/png;base64,AAAA"}, headers=auth).status_code == 409
+    client.post(f"/api/v1/house/{hid}/options/choose", json={"id": opts[0]["id"]}, headers=auth)
+    assert client.post(f"/api/v1/house/{hid}/photo", json={"image": "data:image/png;base64,bm90IGEgcG5n"}, headers=auth).status_code == 422
+    buf = io.BytesIO(); Image.new("RGB", (64, 36), "white").save(buf, "PNG")
+    r = client.post(f"/api/v1/house/{hid}/photo", json={"image": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()}, headers=auth)
+    assert r.status_code == 200
+    render = client.get(f"/api/v1/house/{hid}").json()["data"]["metadata"]["render"]
+    assert render["status"] == "queued" and render.get("fallback")  # no GPU configured in tests -> Kaggle queue
