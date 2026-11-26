@@ -12,7 +12,10 @@ import time
 import urllib.request
 
 BLENDER = "https://download.blender.org/release/Blender4.2/blender-4.2.3-linux-x64.tar.xz"
-DATA = glob.glob("/kaggle/input/*nestora-renders*")[0]
+_found = glob.glob("/kaggle/input/**/render_house.py", recursive=True)  # the mount path differs between Kaggle versions
+if not _found:
+    raise SystemExit("dataset not found; /kaggle/input has: " + str(glob.glob("/kaggle/input/**", recursive=True)[:30]))
+DATA = os.path.dirname(_found[0])
 OUT = "/kaggle/working"
 
 t0 = time.time()

@@ -52,8 +52,8 @@ full = QUALITY == "full"
 sc.cycles.samples = 256 if full else 32
 sc.cycles.use_denoising = True
 sc.render.resolution_x, sc.render.resolution_y = (1920, 1080) if full else (640, 360)
-sc.view_settings.view_transform = "AgX"
-sc.view_settings.look = "AgX - Medium High Contrast"
+sc.view_settings.view_transform = "Standard"
+sc.view_settings.exposure = -0.4
 
 bpy.ops.wm.obj_import(filepath=os.path.join(HOUSE, "house.obj"), forward_axis="Y", up_axis="Z")
 house = [o for o in sc.objects if o.type == "MESH"]
@@ -64,8 +64,14 @@ def finish_nodes(nt, bsdf, finish, base):
     """Adds a procedural texture for a wall or roof finish, feeding Base Color (and a little bump)."""
     n, link = nt.nodes, nt.links
     coord = n.new("ShaderNodeTexCoord")
+    sep = n.new("ShaderNodeSeparateXYZ")
+    link.new(coord.outputs["Object"], sep.inputs["Vector"])
+    along = n.new("ShaderNodeMath"); along.operation = "ADD"
+    link.new(sep.outputs["X"], along.inputs[0]); link.new(sep.outputs["Y"], along.inputs[1])
+    comb = n.new("ShaderNodeCombineXYZ")
+    link.new(along.outputs["Value"], comb.inputs["X"]); link.new(sep.outputs["Z"], comb.inputs["Y"])
     mapping = n.new("ShaderNodeMapping")
-    link.new(coord.outputs["Object"], mapping.inputs["Vector"])
+    link.new(comb.outputs["Vector"], mapping.inputs["Vector"])
     bump = n.new("ShaderNodeBump")
     bump.inputs["Strength"].default_value = 0.25
     link.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
@@ -84,7 +90,7 @@ def finish_nodes(nt, bsdf, finish, base):
     elif finish in ("wood_cladding", "charred_timber", "metal_cladding", "wood_shingle", "metal_seam"):
         t = n.new("ShaderNodeTexWave")
         t.wave_type = "BANDS"
-        t.bands_direction = "X" if finish != "wood_shingle" else "Z"
+        t.bands_direction = "X" if finish != "wood_shingle" else "Y"
         t.inputs["Scale"].default_value = 6 if "metal" in finish else 10
         link.new(mapping.outputs["Vector"], t.inputs["Vector"])
         ramp = n.new("ShaderNodeValToRGB")
@@ -140,7 +146,7 @@ for mat in bpy.data.materials:
 x0, y0, x1, y1 = scene_info["plot"]
 bpy.ops.mesh.primitive_plane_add(size=1, location=((x0 + x1) / 2, (y0 + y1) / 2, -0.16))
 g = sc.objects[-1] if False else bpy.context.active_object
-g.scale = (max(80, (x1 - x0) * 6), max(80, (y1 - y0) * 6), 1)
+g.scale = (4000, 4000, 1)  # to the horizon
 gm = bpy.data.materials.new("ground"); gm.use_nodes = True
 gm.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = hex_rgba("#7E9A5A")
 gm.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 1
@@ -159,8 +165,18 @@ sky.sky_type = "NISHITA"
 sky.sun_elevation = math.radians(14)
 sky.sun_rotation = math.radians(225)
 sky.sun_intensity = 0.6
-world.node_tree.links.new(sky.outputs["Color"], world.node_tree.nodes["Background"].inputs["Color"])
-world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.35
+wn, wl = world.node_tree.nodes, world.node_tree.links
+light_bg = wn["Background"]; light_bg.inputs["Strength"].default_value = 0.35
+wl.new(sky.outputs["Color"], light_bg.inputs["Color"])
+cam_bg = wn.new("ShaderNodeBackground"); cam_bg.inputs["Strength"].default_value = 1.0
+grad = wn.new("ShaderNodeTexGradient"); gco = wn.new("ShaderNodeTexCoord"); gsep = wn.new("ShaderNodeSeparateXYZ")
+wl.new(gco.outputs["Generated"], gsep.inputs["Vector"])
+ramp = wn.new("ShaderNodeValToRGB")
+ramp.color_ramp.elements[0].color = hex_rgba("#F6EBDD"); ramp.color_ramp.elements[1].color = hex_rgba("#8FB4D8")
+wl.new(gsep.outputs["Z"], ramp.inputs["Fac"]); wl.new(ramp.outputs["Color"], cam_bg.inputs["Color"])
+lp = wn.new("ShaderNodeLightPath"); mix = wn.new("ShaderNodeMixShader")
+wl.new(lp.outputs["Is Camera Ray"], mix.inputs["Fac"]); wl.new(light_bg.outputs["Background"], mix.inputs[1]); wl.new(cam_bg.outputs["Background"], mix.inputs[2])
+wl.new(mix.outputs["Shader"], wn["World Output"].inputs["Surface"])
 sun = bpy.data.lights.new("sun", "SUN"); sun.energy = 4.0; sun.angle = math.radians(1.5); sun.color = (1.0, 0.82, 0.62)
 so = bpy.data.objects.new("sun", sun); sc.collection.objects.link(so)
 so.rotation_euler = (math.radians(90 - 14), 0, math.radians(225 - 180))
