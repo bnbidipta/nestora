@@ -1,8 +1,9 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import LoginOptions from '@/components/LoginOptions';
 
 /** Only allow redirects back into this site. */
 const safeNext = (next: string | null) => (next && next.startsWith('/') && !next.startsWith('//') ? next : '/');
@@ -10,10 +11,6 @@ const safeNext = (next: string | null) => (next && next.startsWith('/') && !next
 function LoginForm() {
   const router = useRouter();
   const next = safeNext(useSearchParams().get('next'));
-  const [email, setEmail] = useState('');
-  const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
-  const [error, setError] = useState<string | null>(null);
-
   // Arriving back from the magic link: supabase-js reads the session from the URL.
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -22,55 +19,11 @@ function LoginForm() {
     return () => data.subscription.unsubscribe();
   }, [next, router]);
 
-  const send = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setState('sending');
-    setError(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/login?next=${encodeURIComponent(next)}` },
-    });
-    if (error) {
-      setError(error.message);
-      setState('idle');
-    } else {
-      setState('sent');
-    }
-  };
-
   return (
     <div className="mx-auto max-w-sm py-16">
       <h1 className="text-2xl text-ink">Sign in to save your designs</h1>
-      <p className="mt-2 text-sm text-muted">We&apos;ll email you a sign-in link. No password needed.</p>
-      {process.env.NEXT_PUBLIC_GOOGLE_AUTH === '1' && (
-        <button type="button"
-          onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/login?next=${encodeURIComponent(next)}` } })}
-          className="mt-6 w-full rounded-2xl border border-line bg-card px-4 py-2.5 text-sm font-semibold text-ink hover:bg-paper2">
-          Continue with Google
-        </button>
-      )}
-      {state === 'sent' ? (
-        <p role="status" className="mt-6 rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-4 text-sm text-green">
-          Check your inbox at <strong>{email}</strong> and click the link to continue.
-        </p>
-      ) : (
-        <form onSubmit={send} className="mt-6 space-y-3">
-          <label htmlFor="email" className="block text-sm text-ink/80">Email</label>
-          <input
-            id="email"
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-2xl border border-line bg-card px-3 py-2.5 text-ink"
-          />
-          <button type="submit" disabled={state === 'sending'} className="w-full rounded-full bg-terra px-4 py-2.5 text-sm font-semibold text-white hover:bg-terra disabled:opacity-50">
-            {state === 'sending' ? 'Sending…' : 'Email me a sign-in link'}
-          </button>
-          {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-        </form>
-      )}
+      <p className="mt-2 text-sm text-muted">Keep your designs and pick up on any phone or computer.</p>
+      <div className="mt-6"><LoginOptions next={next} /></div>
     </div>
   );
 }

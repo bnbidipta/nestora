@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, Heart, Loader2, RefreshCw } from 'lucide-react';
-import { Option, OptionsResponse, chooseOption, optionsProgress, selectOptions, startOptions, makeVoteLink, ownerVotes } from '@/lib/api';
+import { Option, OptionsResponse, chooseOption, claimHouse, optionsProgress, selectOptions, startOptions, makeVoteLink, ownerVotes } from '@/lib/api';
 import { formatINR } from '@/lib/twin';
+import { supabase } from '@/lib/supabase';
+import LoginOptions from '@/components/LoginOptions';
 import { track } from '@/lib/analytics';
 import { area, useLengthUnit } from '@/lib/units';
 import PlanThumb from '@/components/PlanThumb';
@@ -66,7 +68,14 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
     return () => clearInterval(id);
   }, [pending, houseId]);
 
+  const [loginFor, setLoginFor] = useState<string | null>(null);
+
   useEffect(() => {
+    const back = new URLSearchParams(window.location.search).get('choose');
+    if (back) {  // returning from sign-in: finish the choice, keep the existing options
+      void finish(back);
+      return;
+    }
     startOptions(houseId)
       .then((r) => { setRes(r); track('options_shown', { ms: Date.now() - started }); })
       .catch((e) => setError(e.message))
@@ -90,16 +99,25 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
     }
   };
 
+  // Choosing a design needs an account, so the house is never lost to a cleared browser or a new phone.
   const choose = async (id: string) => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) { setLoginFor(id); return; }
+    await finish(id);
+  };
+
+  const finish = async (id: string) => {
     setBusy('choose');
     setError(null);
     try {
       await chooseOption(houseId, id);
+      await claimHouse(houseId);  // saved to the account: no 7-day expiry (after choosing: claiming drops the edit token)
       track('design_chosen', { round: res?.round ?? 1 });
       router.push(`/house/${houseId}?intro=1`);  // open straight into the 3D walk-in
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save your choice.');
       setBusy(null);
+      if (new URLSearchParams(window.location.search).has('choose')) router.replace(`/house/${houseId}/options`);
     }
   };
 
@@ -171,6 +189,17 @@ export default function OptionsBoard({ houseId }: { houseId: string }) {
               Designing option {res.options.length + i + 1}…
             </div>
           ))}
+        </div>
+      )}
+      {loginFor && (
+        <div role="dialog" aria-modal="true" aria-labelledby="login-title" className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-3 sm:items-center"
+          onClick={() => setLoginFor(null)}>
+          <div className="w-full max-w-sm rounded-3xl bg-card p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h2 id="login-title" className="text-2xl text-ink">Save this design to your account</h2>
+            <p className="mt-2 mb-5 text-sm text-muted">So you can open it on any phone and never lose it. We&apos;ll take you straight to your house.</p>
+            <LoginOptions next={`/house/${houseId}/options?choose=${loginFor}`} />
+            <button type="button" onClick={() => setLoginFor(null)} className="mt-4 w-full text-center text-xs text-muted">Not now</button>
+          </div>
         </div>
       )}
     </div>
