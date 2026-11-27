@@ -77,7 +77,8 @@ export default function House3D({ twin, intro = false }: { twin: HouseTwin; intr
     (name) => t.furniture?.rooms?.[name]?.door_wall,
     { paint: paint ? Object.fromEntries(Object.entries(t.paint ?? {}).map(([k, v]: [string, any]) => [k, v.walls ?? []])) : undefined,
       look: md(twin).look as Look | undefined,
-      plot: [-sbSide, -sbFront, -sbSide + twin.plot.plot_width_ft, -sbFront + twin.plot.plot_depth_ft] as [number, number, number, number] },
+      plot: [-sbSide, -sbFront, -sbSide + twin.plot.plot_width_ft, -sbFront + twin.plot.plot_depth_ft] as [number, number, number, number],
+      doorSpan: (name) => t.furniture?.rooms?.[name]?.door_span },
   ), [twin, paint, t]);
 
   const sun = useMemo(() => {

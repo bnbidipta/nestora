@@ -38,6 +38,13 @@ def list_styles():
     return {"groups": sorted({x["group"] for x in s.values()}), "styles": rows}
 
 
+@router.get("/plot-check")
+def plot_check(w: float, d: float, road: float = 9, city: str = "mumbai"):
+    if not (15 <= w <= 200 and 15 <= d <= 300 and 3 <= road <= 60):
+        raise HTTPException(status_code=422, detail="Plot or road size out of range.")
+    return orchestrator.plot_check(w, d, road, city if city == "mumbai" else "mumbai")
+
+
 @router.get("/traditions")
 def list_traditions():
     return {"traditions": [{"id": k, "name": v["display_name"], "description": v["description"], "verified": v.get("verified", False),

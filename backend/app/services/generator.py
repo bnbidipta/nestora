@@ -116,7 +116,7 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
     add("living", "living", g, 1)
     add("kitchen", "kitchen", g, 1)
     add("toilet_common", "toilet", g, 2 if brief.elders else 1)  # the elder's toilet can double as common
-    if brief.kitchen == "closed":
+    if brief.kitchen == "closed" and not brief.compact:  # compact: a fold-down table in the living room instead
         add("dining", "dining", g, 3 if brief.dining_seats <= 4 else 2)
         rooms[-1]["min_area"] = {2: 4.5, 4: 6.0, 6: 8.0, 8: 10.5}.get(min(8, brief.dining_seats - brief.dining_seats % 2), 12.0)
     else:  # open kitchen: the living room absorbs dining
@@ -146,15 +146,15 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
         m = next((x for x in rooms if x["id"] == "bedroom_master"), None)
         if m:
             m["min_area"] += 3.0
-    if brief.guest_room:
+    if brief.guest_room and not brief.compact:  # compact: guests sleep on the living room sofa-cum-bed
         add("bedroom_guest", "bedroom", g if not brief.elders else upper[0], 2)
     for f in upper:
         if f != g and not any(x["floor"] == f and x["type"] == "toilet" and x["id"] != "toilet_master" for x in rooms):
             add(f"toilet_{f}", "toilet", f, 2)
-        if f != g:
+        if f != g and not brief.compact:
             add(f"lounge_{f}", "lounge", f, 3)
             add(f"balcony_{f}", "balcony", f, 3)
-    if brief.wfh_people:
+    if brief.wfh_people and not brief.compact:  # compact: a fold-down wall desk in a bedroom
         add("study", "study", upper[-1], 2)
     if rental:
         f = living_floors[-1]
@@ -165,6 +165,15 @@ def program(brief: Brief, r: Dict[str, Any], floors: int, parking: str, stilt: b
     for f in range(floors):
         if any(x["floor"] == f for x in rooms) and floors > 1:
             add(f"passage_{f}", "passage", f, 2)
+    if brief.compact:  # second bedrooms at the code second-room minimum; a wall bed keeps them usable
+        for x in rooms:
+            if x["type"] == "bedroom":
+                x["min_area"], x["min_w"] = r["habitable_other_m2"], r["habitable_other_width_m"]
+    for x in rooms:  # the user's own sizes, never below code
+        want = brief.room_sizes.get(x["id"]) or brief.room_sizes.get(x["type"])
+        if want:
+            x["min_area"] = max(x["min_area"], want)
+            x["min_w"] = max(x["min_w"], min(want ** 0.5 * 0.8, 4.0))  # not a sliver: about 4:5 at the asked size
     return rooms
 
 

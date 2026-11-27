@@ -51,6 +51,8 @@ def rules(plot_w_m: float, plot_d_m: float, road_m: float, city: str = "mumbai")
         "max_height_m": _v(p["max_height"]),
         "habitable_min_m2": _v(mr["habitable_area_m2"]),
         "habitable_min_width_m": _v(mr["habitable_min_width_m"]),
+        "habitable_other_m2": _v(mr.get("habitable_other_area_m2", mr["habitable_area_m2"])),
+        "habitable_other_width_m": _v(mr.get("habitable_other_min_width_m", mr["habitable_min_width_m"])),
         "kitchen_min_m2": _v(mr["kitchen_area_m2"]),
         "toilet_min_m2": _v(mr["toilet_area_m2"]),
         "window_ratio": _v(p["ventilation"]["window_to_floor_ratio"]),

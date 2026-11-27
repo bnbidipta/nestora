@@ -119,12 +119,15 @@ export interface Brief {
   rental_floor: boolean;
   puja: 'none' | 'nook' | 'room';
   kitchen: 'closed' | 'open';
+  bedroom_privacy: 'private' | 'open';
   dining_seats?: number;
   guest_room: boolean;
   help_room: boolean;
   laundry: boolean;
   store_room: boolean;
   master_dressing: boolean;
+  room_sizes?: Record<string, number>; // m2 per room type; at least this big
+  compact?: boolean; // set by the server when standard sizes don't fit
   terrace_garden: boolean;
   traditions: Record<string, Strictness>;
   styles: string[];
@@ -153,7 +156,7 @@ export interface Option {
   score: { total: number; brief_fit: Record<string, number>; features: Record<string, number> };
   summary: {
     floors: number; parking: string; stilt: boolean; arrangement: string; built_up_sqft: number; fsi_used: number;
-    bedrooms: number; cost_inr: { low: number; expected: number; high: number }; dropped: string[]; envelope_ft: [number, number];
+    bedrooms: number; cost_inr: { low: number; expected: number; high: number }; dropped: string[]; compact?: boolean; envelope_ft: [number, number];
   };
   preview: { f: number; id: string; t: string; x: number; y: number; w: number; d: number }[];
   look?: import('./house3d').Look;
@@ -173,6 +176,8 @@ export const extractBrief = (text: string) =>
   call<{ fields: Partial<Brief>; evidence: Record<string, string>; questions: string[]; source: string }>(
     '/api/v1/brief/extract', { method: 'POST', body: JSON.stringify({ text }) });
 
+export const plotCheck = (w: number, d: number, road: number) =>
+  call<{ ok: boolean; buildable_m2: number; need_m2: number; envelope_m: [number, number]; reason: string }>(`/api/v1/plot-check?w=${w}&d=${d}&road=${road}`);
 export const getStyles = () => call<{ groups: string[]; styles: StyleEntry[] }>('/api/v1/styles');
 
 export const getTraditions = () =>

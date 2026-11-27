@@ -51,6 +51,7 @@ def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[s
             "bedrooms": sum(1 for f in twin.floors for r in f.rooms if (r.type or "").startswith("bedroom")),
             "cost_inr": {k: tier[k]["total"] for k in ("low", "expected", "high")},
             "dropped": c["layout"]["dropped"],
+            "compact": brief.compact,
             "envelope_ft": [twin.metadata["envelope_width_ft"], twin.metadata["envelope_depth_ft"]],
         },
         "preview": _preview(c),
@@ -90,6 +91,18 @@ def _solved(brief: Brief, prefs: Dict[str, float], scored, seed: int, on_each=No
     if not jobs:
         jobs = [{"strategy": s} for s in generator.strategies(brief, r)[:SOLVE]]
     rng = random.Random(seed)
+    from backend.app.services import library
+    try:  # pre-solved plans fitted to this plot (milliseconds); the live solver only runs when the library has none
+        lib = library.plans(brief, generator.strategies(brief, r), random.Random(seed))
+    except Exception:
+        log.warning("plan library failed", exc_info=True)
+        lib = []
+    if lib:
+        out = [(c, evaluate(brief, c, prefs)) for c in lib]
+        if on_each:
+            for i, x in enumerate(out):
+                on_each(x, len(out) - i - 1)
+        return out
 
     def one(i_h):
         i, h = i_h
@@ -164,6 +177,22 @@ def _diverse(items: List[Tuple[Dict[str, Any], Dict[str, Any]]], k: int, exclude
     return out
 
 
+def plot_check(w_ft: float, d_ft: float, road_m: float, city: str = "mumbai") -> Dict[str, Any]:
+    """Can the smallest home (one storey, one bedroom, compact rooms) fit this plot at all? Checked before the questionnaire
+    goes on, so a too-small plot is flagged where it is entered."""
+    from backend.app.services import pack
+    W, D = w_ft * FT, d_ft * FT
+    r = pack.rules(W, D, road_m, city)
+    env = pack.envelope(W, D, r)
+    b = Brief(plot_width_ft=w_ft, plot_depth_ft=d_ft, road_width_m=road_m, city=city, floors_wanted=1, singles=1, couples=0,
+              bedrooms=1, puja="none", parking="two_wheeler", compact=True)
+    need = sum(x["min_area"] for x in generator.program(b, r, 1, "two_wheeler", False) if x["prio"] == 1)
+    have = min(env["width_m"] * env["depth_m"], W * D * r["fsi_max"])
+    ok = have >= need and min(env["width_m"], env["depth_m"]) >= r["habitable_min_width_m"]
+    return {"ok": ok, "buildable_m2": round(env["width_m"] * env["depth_m"], 1), "need_m2": round(need, 1),
+            "envelope_m": [round(env["width_m"], 2), round(env["depth_m"], 2)], "reason": "" if ok else infeasible_reason(b)}
+
+
 def infeasible_reason(brief: Brief) -> str:
     from backend.app.services import pack
     W, D = brief.plot_width_ft * FT, brief.plot_depth_ft * FT
@@ -187,6 +216,12 @@ def start_options(house_id: str, seed: Optional[int] = None, background=None) ->
     seed = seed if seed is not None else random.randrange(1 << 30)
     prefs = twin.metadata.get("prefs", {})
     scored = _fast(brief, prefs, seed)
+    if not brief.compact and not _rank(scored):  # standard rooms don't fit: try compact rooms with fold-away furniture
+        cb = brief.model_copy(update={"compact": True})
+        cs = _fast(cb, prefs, seed)
+        if _rank(cs):
+            brief, scored = cb, cs
+            twin.metadata["brief"] = {**twin.metadata.get("brief", {}), "compact": True}
     fast = _rank(scored)
     if background and len(fast) >= FAST_SHOW:
         shown = _diverse(fast, FAST_SHOW, set())
@@ -203,6 +238,13 @@ def start_options(house_id: str, seed: Optional[int] = None, background=None) ->
         return {"success": True, "status": "choosing", "round": 1, "options": twin.metadata["options"], "pool_size": len(fast),
                 "pending": SOLVE}
     good = _rank(scored + _solved(brief, prefs, scored, seed))
+    if not good and not brief.compact:
+        cb = brief.model_copy(update={"compact": True})
+        cs = _fast(cb, prefs, seed)
+        good = _rank(cs + _solved(cb, prefs, cs, seed))
+        if good:
+            brief = cb
+            twin.metadata["brief"] = {**twin.metadata.get("brief", {}), "compact": True}
     if not good:
         twin.status = "infeasible"
         twin.metadata["infeasible_reason"] = infeasible_reason(brief)

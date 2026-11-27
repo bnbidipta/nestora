@@ -60,6 +60,7 @@ class Room(BaseModel):
     type: Optional[str] = None
     exterior: Optional[bool] = None
     compass: Optional[str] = None
+    opens_to: Optional[str] = None  # the room this one's door opens onto (from the plan solver)
 
 
 class Floor(BaseModel):

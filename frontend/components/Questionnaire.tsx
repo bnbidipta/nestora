@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 const PlotHouse3D = dynamic(() => import('@/components/landing/PlotHouse3D'), { ssr: false });
 import { ArrowLeft, ArrowRight, Check, Loader2, MapPin, Sparkles } from 'lucide-react';
 import {
-  Brief, StyleEntry, Strictness, createHouse, extractBrief, getStyles, getTraditions, joinWaitlist, saveBrief,
+  Brief, StyleEntry, Strictness, createHouse, extractBrief, getStyles, getTraditions, joinWaitlist, plotCheck, saveBrief,
 } from '@/lib/api';
 import { InfoTip, NumberField, Select, TextArea, Toggle } from '@/components/form';
 import { track } from '@/lib/analytics';
@@ -17,7 +17,7 @@ const DEFAULT: Brief = {
   build_type: 'new_plot', city: 'mumbai', plot_width_ft: 30, plot_depth_ft: 40, road_width_m: 9, facing: 'E', corner_plot: false,
   soil: 'black_cotton', floors_wanted: 2, parking: 'two_wheeler', cars: 0, two_wheelers: 1, flood_prone: false, future_extra_floor: false, lift: 'none', low_maintenance: false, budget_inr: 4000000, tier: 'standard', adults: 2, elders: 0, couples: 1, singles: 0, elder_couples: 0, elder_singles: 0, bedrooms: null,
   elder_mobility_issue: false, kids: 0, pets: false, wfh_people: 0, joint_family: false, rental_floor: false, puja: 'nook',
-  kitchen: 'closed', guest_room: false, help_room: false, laundry: false, store_room: false, master_dressing: false,
+  kitchen: 'closed', bedroom_privacy: 'private', guest_room: false, help_room: false, laundry: false, store_room: false, master_dressing: false,
   terrace_garden: false, traditions: { vaastu: 'soft' }, styles: [], styles_locked: false, free_text: '',
 };
 
@@ -43,6 +43,12 @@ function readCountry(): string | null {
 
 /** The API lists styles most-searched first (Google Trends, docs/research/style-search-trends.md). */
 const POPULAR = 'Most popular';
+
+const SQM_PER_SQFT = 0.092903;
+const ROOM_SIZES: [string, string][] = [
+  ['living', 'Living room'], ['kitchen', 'Kitchen'], ['bedroom_master', 'Main bedroom'], ['bedroom', 'Other bedrooms'],
+  ['dining', 'Dining'], ['toilet', 'Bathrooms'],
+];
 
 export default function Questionnaire() {
   const router = useRouter();
@@ -83,7 +89,15 @@ export default function Questionnaire() {
   // ponytail: a 2-floor house with elders defaults to a lift once; the user can still turn it off.
   const hasElders = elderCount > 0;
   useEffect(() => { if (hasElders && b.floors_wanted === 2) setB((x) => (x.lift === 'none' ? { ...x, lift: 'lift' } : x)); }, [hasElders, b.floors_wanted]);
-  const plotOk = b.plot_width_ft >= 15 && b.plot_depth_ft >= 15 && b.plot_width_ft <= 200 && b.plot_depth_ft <= 300;
+  const sizeOk = b.plot_width_ft >= 15 && b.plot_depth_ft >= 15 && b.plot_width_ft <= 200 && b.plot_depth_ft <= 300;
+  // can the smallest home fit at all after the required setbacks? checked as the plot is typed
+  const [fit, setFit] = useState<{ ok: boolean; reason: string } | null>(null);
+  useEffect(() => {
+    if (!sizeOk) return setFit(null);
+    const t = setTimeout(() => plotCheck(b.plot_width_ft, b.plot_depth_ft, b.road_width_m).then(setFit).catch(() => setFit(null)), 400);
+    return () => clearTimeout(t);
+  }, [sizeOk, b.plot_width_ft, b.plot_depth_ft, b.road_width_m]);
+  const plotOk = sizeOk && fit?.ok !== false;
   const outsidePilot = b.build_type !== 'new_plot' || b.city !== 'mumbai';
   const groups = useMemo(() => [POPULAR, ...Array.from(new Set(styles.map((s) => s.group)))], [styles]);
 
@@ -166,7 +180,8 @@ export default function Questionnaire() {
                 options={[{ value: 'mumbai', label: 'Mumbai' }, { value: 'pune', label: 'Pune (coming soon)' }, { value: 'bengaluru', label: 'Bengaluru (coming soon)' },
                   { value: 'delhi', label: 'Delhi NCR (coming soon)' }, { value: 'other', label: 'Somewhere else (coming soon)' }]} />
               <PlotSize widthFt={b.plot_width_ft} lengthFt={b.plot_depth_ft} onChange={(w, l) => setB((x) => ({ ...x, plot_width_ft: w, plot_depth_ft: l }))} />
-              {!plotOk && <p role="alert" className="text-sm text-red-700 sm:col-span-2">The plot must be 15–200 ft (5–60 m) wide and 15–300 ft (5–90 m) long.</p>}
+              {!sizeOk && <p role="alert" className="text-sm text-red-700 sm:col-span-2">The plot must be 15–200 ft (5–60 m) wide and 15–300 ft (5–90 m) long.</p>}
+              {sizeOk && fit && !fit.ok && <p role="alert" className="text-sm text-red-700 sm:col-span-2">This plot is too small for a home, even a compact one-storey one. {fit.reason}</p>}
               <Select label="Which side of the plot is the road on?" value={roadDir}
                 onChange={(v) => { setRoadDir(v); set('facing', SNAP[v]); }}
                 options={[...DIRS.map(([value, label]) => ({ value: value as string, label })), { value: 'unsure', label: 'Not sure' }]} />
@@ -217,6 +232,9 @@ export default function Questionnaire() {
               <NumberField label="Two-wheelers" value={b.two_wheelers} min={0} max={6} onChange={(v) => setB((x) => ({ ...x, two_wheelers: v, parking: parkingOf(x.cars, v) }))} />
               <Select label="Kitchen" value={b.kitchen} onChange={(v) => set('kitchen', v)}
                 options={[{ value: 'closed', label: 'Closed kitchen' }, { value: 'open', label: 'Open kitchen' }]} />
+              <Select label="Bedroom doors" value={b.bedroom_privacy} onChange={(v) => set('bedroom_privacy', v)}
+                info="A private passage gives more privacy; opening off the living room leaves more space for the rooms. Elders' rooms always get a passage where one fits."
+                options={[{ value: 'private', label: 'Off a private passage' }, { value: 'open', label: 'Can open off the living room' }]} />
               <Select label="Puja / prayer space" value={b.puja} onChange={(v) => set('puja', v)}
                 options={[{ value: 'none', label: 'None' }, { value: 'nook', label: 'A corner or niche' }, { value: 'room', label: 'A separate room' }]} />
               <Toggle label="Guest bedroom" checked={b.guest_room} onChange={(v) => set('guest_room', v)} />
@@ -227,6 +245,18 @@ export default function Questionnaire() {
               <Toggle label="Terrace garden on top" checked={b.terrace_garden} onChange={(v) => set('terrace_garden', v)} />
               <Toggle label="Top floor as a rental unit" info="Separate kitchen and entry." checked={b.rental_floor} onChange={(v) => set('rental_floor', v)} />
               <Toggle label="We may add a floor later" info="Columns and footings are sized for it now, which costs a little more." checked={b.future_extra_floor} onChange={(v) => set('future_extra_floor', v)} />
+            </div>
+            <Header title="Room sizes (optional)" info="The smallest you would accept for each room. Leave blank and we size rooms to fit the plot. We never go below the building code; if your plot is tight, we may suggest compact rooms with fold-away furniture." />
+            <div className="grid gap-5 sm:grid-cols-2">
+              {ROOM_SIZES.map(([id, label]) => (
+                <NumberField key={id} label={label} unit="sq ft" min={0} max={600} step={10} placeholder="Any"
+                  value={b.room_sizes?.[id] ? Math.round(b.room_sizes[id] / SQM_PER_SQFT) : NaN}
+                  onChange={(v) => setB((x) => {
+                    const rs = { ...(x.room_sizes ?? {}) };
+                    if (Number.isFinite(v) && v > 0) rs[id] = +(v * SQM_PER_SQFT).toFixed(2); else delete rs[id];
+                    return { ...x, room_sizes: rs };
+                  })} />
+              ))}
             </div>
           </div>
         )}

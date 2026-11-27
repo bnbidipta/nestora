@@ -83,7 +83,8 @@ def main():
             try:
                 res = ask(folder, files)
             except Exception as ex:  # quota, login or a bad reply: stop, re-run later resumes
-                print("stopped:", str(ex)[:300], flush=True)
+                why = getattr(ex, "stderr", None) or getattr(ex, "output", None) or ""
+                print("stopped:", type(ex).__name__, str(ex)[-200:], str(why)[-400:], flush=True)
                 break
             for x in res:
                 if x.get("file") in files:

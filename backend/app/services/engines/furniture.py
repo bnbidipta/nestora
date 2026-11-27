@@ -19,12 +19,18 @@ CLEAR = 0.6  # metres around beds and in front of storage
 def _items(r: Room, brief: Brief) -> List[Tuple[str, float, float, bool]]:
     """(name, width_m along wall, depth_m from wall, needs_front_clearance)."""
     t, area = r.type or "", r.area_sqft * 0.0929
+    if brief.compact and t == "bedroom" and area < 9.5:  # wall bed: folds up by day, the room is free floor
+        return [("wall bed (folds up)", 1.5, 0.45, True), ("wardrobe", 1.2, 0.6, True)] + \
+            ([("fold-down wall desk", 1.0, 0.3, True)] if brief.wfh_people else [])
     if t.startswith("bedroom") or t == "help":
         bed = (1.8, 2.0) if area >= 14 else (1.5, 2.0) if area >= 10.5 else (0.9, 1.9)
         wardrobe = 2.4 if t == "bedroom_master" and brief.master_dressing else 1.8 if area >= 12 else 1.2
         return [("bed", *bed, True), ("wardrobe", wardrobe, 0.6, True), ("side table", 0.45, 0.4, False)] + \
-            ([("desk", 1.0, 0.5, True)] if area >= 13 and t != "help" else [])
+            ([("desk", 1.0, 0.5, True)] if area >= 13 and t != "help" else
+             [("fold-down wall desk", 1.0, 0.3, True)] if brief.compact and brief.wfh_people and t == "bedroom_master" else [])
     if t in ("living", "lounge"):
+        if brief.compact and t == "living":  # sofa-cum-bed for guests, fold-down dining table on the wall
+            return [("sofa-cum-bed", 2.0, 0.9, True), ("tv unit", 1.5, 0.4, True), ("fold-down dining table", 1.2, 0.3, True)]
         return [("sofa", 2.1, 0.9, True), ("tv unit", 1.8, 0.4, True), ("armchair", 0.8, 0.8, False)] + \
             ([("dining table", 1.2, 0.8, True)] if t == "living" and brief.kitchen == "open" else [])
     if t == "dining":
@@ -59,6 +65,19 @@ def _door_side(r: Room, rooms: List[Room], twin: HouseTwin) -> str:
     return inner[0]["side"] if inner else "front"
 
 
+def _door(r: Room, rooms: List[Room], twin: HouseTwin) -> Tuple[str, Optional[List[float]]]:
+    """Door wall and, when the plan says which room the door opens onto, the stretch of that wall shared with it
+    ([from, to] in plan ft along the wall), so the door lands where the two rooms actually meet."""
+    to = next((o for o in rooms if r.opens_to and o.name == r.opens_to), None)
+    if not to or shared_wall_m(r, to) <= 0:
+        return _door_side(r, rooms, twin), None
+    side = ("front" if abs(to.y + to.width_ft - r.y) < 0.05 else "rear" if abs(r.y + r.width_ft - to.y) < 0.05
+            else "left" if abs(to.x + to.length_ft - r.x) < 0.05 else "right")
+    a, b = ((max(r.x, to.x), min(r.x + r.length_ft, to.x + to.length_ft)) if side in ("front", "rear")
+            else (max(r.y, to.y), min(r.y + r.width_ft, to.y + to.width_ft)))
+    return side, [round(a, 2), round(b, 2)]
+
+
 def _rect_on_wall(r: Room, side: str, along: float, width: float, depth: float) -> Tuple[float, float, float, float]:
     """Rectangle (x, y, w, d) in plan feet for an item of width x depth (m) placed on a wall, `along` m from its start."""
     W, D = r.length_ft, r.width_ft
@@ -80,23 +99,25 @@ def _inside(a, r: Room) -> bool:
     return a[0] >= r.x - 1e-3 and a[1] >= r.y - 1e-3 and a[0] + a[2] <= r.x + r.length_ft + 1e-3 and a[1] + a[3] <= r.y + r.width_ft + 1e-3
 
 
-def _door_zone(r: Room, side: str, door_mm: int) -> Tuple[float, float, float, float]:
-    """Door at the start of its wall plus its swing square and a 0.3 m step-in margin."""
+def _door_zone(r: Room, side: str, door_mm: int, span: Optional[List[float]] = None) -> Tuple[float, float, float, float]:
+    """Door (at the start of its shared stretch, else of its wall) plus its swing square and a 0.3 m step-in margin."""
     s = (door_mm / 1000 + 0.3) * M
     w = door_mm / 1000 * M
+    start = (r.x if side in ("front", "rear") else r.y)
+    at = (span[0] if span else start) + 0.1
     if side == "front":
-        return (r.x + 0.1, r.y, w + 0.3, s)
+        return (at, r.y, w + 0.3, s)
     if side == "rear":
-        return (r.x + 0.1, r.y + r.width_ft - s, w + 0.3, s)
+        return (at, r.y + r.width_ft - s, w + 0.3, s)
     if side == "left":
-        return (r.x, r.y + 0.1, s, w + 0.3)
-    return (r.x + r.length_ft - s, r.y + 0.1, s, w + 0.3)
+        return (r.x, at, s, w + 0.3)
+    return (r.x + r.length_ft - s, at, s, w + 0.3)
 
 
 def place_room(r: Room, rooms: List[Room], twin: HouseTwin, brief: Brief) -> Dict[str, Any]:
     ws = {w["side"]: w for w in walls(r, twin)}
-    door = _door_side(r, rooms, twin)
-    dz = _door_zone(r, door, r.door_width_mm)
+    door, span = _door(r, rooms, twin)
+    dz = _door_zone(r, door, r.door_width_mm, span)
     bodies: list = []          # furniture footprints: nothing may overlap these
     zones: list = [dz]         # door swing + clearances: free floor, may overlap each other but not furniture
     placed, dropped = [], []
@@ -126,7 +147,7 @@ def place_room(r: Room, rooms: List[Room], twin: HouseTwin, brief: Brief) -> Dic
                 break
         if not done:
             dropped.append(name)
-    return {"door_wall": door, "door_zone": [round(v, 2) for v in dz], "items": placed, "did_not_fit": dropped}
+    return {"door_wall": door, "door_span": span, "door_zone": [round(v, 2) for v in dz], "items": placed, "did_not_fit": dropped}
 
 
 def kitchen_triangle(r: Room, twin: HouseTwin) -> Dict[str, Any]:
@@ -153,12 +174,17 @@ def analyse(twin: HouseTwin, brief: Brief) -> Dict[str, Any]:
         for r in f.rooms:
             if (r.type or "") == "kitchen":
                 k = kitchen_triangle(r, twin)
-                res = {"door_wall": _door_side(r, f.rooms, twin), "items": k["items"], "did_not_fit": [], "triangle_ft": k["triangle_ft"]}
+                side, span = _door(r, f.rooms, twin)
+                res = {"door_wall": side, "door_span": span, "items": k["items"], "did_not_fit": [], "triangle_ft": k["triangle_ft"]}
                 tri = k["triangle_ft"] if tri is None else max(tri, k["triangle_ft"])
             else:
                 if not _items(r, brief):
-                    continue
-                res = place_room(r, f.rooms, twin, brief)
+                    if not r.opens_to:
+                        continue
+                    side, span = _door(r, f.rooms, twin)  # no furniture, but the 3D still needs its door
+                    res = {"door_wall": side, "door_span": span, "items": [], "did_not_fit": []}
+                else:
+                    res = place_room(r, f.rooms, twin, brief)
             res["floor"] = f.floor_no
             out[r.name] = res
     return {"rooms": out, "kitchen_triangle_ft": tri,

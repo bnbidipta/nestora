@@ -1,0 +1,56 @@
+# Builds the pre-solved floor-plan library on free GitHub runners (40 shards, 20 at a time), then merges the shares into
+# one artifact (plans.json.gz) to download and commit. Started by hand (Actions > Plan library > Run workflow).
+name: Plan library
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: plan-library
+  cancel-in-progress: true
+
+jobs:
+  solve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install -r backend/requirements.txt
+      - name: Solve shard ${{ matrix.shard }}
+        env:
+          NESTORA_SOLVER_WORKERS: "4"
+        run: python scripts/build_plan_library.py --shard ${{ matrix.shard }} --of 40 --out lib
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ matrix.shard }}
+          path: lib/
+          retention-days: 7
+
+  merge:
+    needs: solve
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r backend/requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          path: lib
+      - run: python scripts/build_plan_library.py --merge lib
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan-library
+          path: backend/app/data/library/plans.json.gz
+          retention-days: 30
