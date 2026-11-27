@@ -1,11 +1,9 @@
 # Builds the pre-solved floor-plan library on free GitHub runners (40 shards, 20 at a time), then merges the shares into
-# one artifact (plans.json.gz) to download and commit. Started by hand, or by pushing a plan-library/* branch.
+# one artifact (plans.json.gz) to download and commit. Started by hand (Actions > Plan library > Run workflow).
 name: Plan library
 
 on:
   workflow_dispatch:
-  push:
-    branches: ["plan-library/**"]
 
 concurrency:
   group: plan-library
