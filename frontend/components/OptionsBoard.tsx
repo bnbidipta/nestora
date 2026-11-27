@@ -257,6 +257,10 @@ function OptionCard({ o, n, kept, busy, onKeep, onChoose, comparing, onCompare, 
           <div key={k} className="contents"><dt className="text-muted">{k.replace('_', ' ')}</dt><dd className="text-right">{Math.round((v.score + 1) * 50)}% aligned</dd></div>
         ))}
       </dl>
+      {s.compact && (
+        <p className="mt-2 text-xs text-ink/80"><span className="mr-1 rounded-full bg-paper px-2 py-0.5 font-medium">Compact</span>
+          Smaller rooms with fold-away furniture (wall beds, fold-down dining, a sofa-cum-bed for guests, wall desks) so everything fits this plot.</p>
+      )}
       {(misses.length > 0 || s.dropped.length > 0) && (
         <p className="mt-2 text-xs text-amber-800">
           {misses.length > 0 && <>Doesn&apos;t meet: {misses.join(', ')}. </>}

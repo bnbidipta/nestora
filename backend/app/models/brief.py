@@ -50,6 +50,11 @@ class Brief(BaseModel):
     laundry: bool = False  # separate wash/utility area
     store_room: bool = False
     master_dressing: bool = False  # walk-in dressing in the master bedroom
+    # compact: code-minimum second rooms with fold-away furniture (wall bed, fold-down dining, sofa-cum-bed, wall desk)
+    # instead of separate dining/guest/study rooms. Set automatically when standard sizes don't fit the plot.
+    compact: bool = False
+    # the user's own minimum floor area (m2) per room type or room id, e.g. {"bedroom": 12, "kitchen": 8}; never below code
+    room_sizes: Dict[str, float] = Field(default_factory=dict, max_length=20)
     terrace_garden: bool = False  # prefers keeping an open terrace on the top floor
     traditions: Dict[str, Strictness] = Field(default_factory=lambda: {"vaastu": "soft"})
     styles: List[str] = Field(default_factory=list, max_length=60)  # no cap: pick as many as you like
@@ -61,6 +66,7 @@ class Brief(BaseModel):
 
     @model_validator(mode="after")
     def _derive(self):
+        self.room_sizes = {k: min(60.0, max(0.5, float(v))) for k, v in self.room_sizes.items() if len(k) <= 30}
         if self.exterior:
             from backend.app.services import look  # lazy: look imports models
             self.exterior = look.valid_overrides(self.exterior)

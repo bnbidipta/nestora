@@ -19,12 +19,18 @@ CLEAR = 0.6  # metres around beds and in front of storage
 def _items(r: Room, brief: Brief) -> List[Tuple[str, float, float, bool]]:
     """(name, width_m along wall, depth_m from wall, needs_front_clearance)."""
     t, area = r.type or "", r.area_sqft * 0.0929
+    if brief.compact and t == "bedroom" and area < 9.5:  # wall bed: folds up by day, the room is free floor
+        return [("wall bed (folds up)", 1.5, 0.45, True), ("wardrobe", 1.2, 0.6, True)] + \
+            ([("fold-down wall desk", 1.0, 0.3, True)] if brief.wfh_people else [])
     if t.startswith("bedroom") or t == "help":
         bed = (1.8, 2.0) if area >= 14 else (1.5, 2.0) if area >= 10.5 else (0.9, 1.9)
         wardrobe = 2.4 if t == "bedroom_master" and brief.master_dressing else 1.8 if area >= 12 else 1.2
         return [("bed", *bed, True), ("wardrobe", wardrobe, 0.6, True), ("side table", 0.45, 0.4, False)] + \
-            ([("desk", 1.0, 0.5, True)] if area >= 13 and t != "help" else [])
+            ([("desk", 1.0, 0.5, True)] if area >= 13 and t != "help" else
+             [("fold-down wall desk", 1.0, 0.3, True)] if brief.compact and brief.wfh_people and t == "bedroom_master" else [])
     if t in ("living", "lounge"):
+        if brief.compact and t == "living":  # sofa-cum-bed for guests, fold-down dining table on the wall
+            return [("sofa-cum-bed", 2.0, 0.9, True), ("tv unit", 1.5, 0.4, True), ("fold-down dining table", 1.2, 0.3, True)]
         return [("sofa", 2.1, 0.9, True), ("tv unit", 1.8, 0.4, True), ("armchair", 0.8, 0.8, False)] + \
             ([("dining table", 1.2, 0.8, True)] if t == "living" and brief.kitchen == "open" else [])
     if t == "dining":

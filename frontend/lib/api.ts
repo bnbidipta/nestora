@@ -126,6 +126,8 @@ export interface Brief {
   laundry: boolean;
   store_room: boolean;
   master_dressing: boolean;
+  room_sizes?: Record<string, number>; // m2 per room type; at least this big
+  compact?: boolean; // set by the server when standard sizes don't fit
   terrace_garden: boolean;
   traditions: Record<string, Strictness>;
   styles: string[];
@@ -154,7 +156,7 @@ export interface Option {
   score: { total: number; brief_fit: Record<string, number>; features: Record<string, number> };
   summary: {
     floors: number; parking: string; stilt: boolean; arrangement: string; built_up_sqft: number; fsi_used: number;
-    bedrooms: number; cost_inr: { low: number; expected: number; high: number }; dropped: string[]; envelope_ft: [number, number];
+    bedrooms: number; cost_inr: { low: number; expected: number; high: number }; dropped: string[]; compact?: boolean; envelope_ft: [number, number];
   };
   preview: { f: number; id: string; t: string; x: number; y: number; w: number; d: number }[];
   look?: import('./house3d').Look;

@@ -44,6 +44,12 @@ function readCountry(): string | null {
 /** The API lists styles most-searched first (Google Trends, docs/research/style-search-trends.md). */
 const POPULAR = 'Most popular';
 
+const SQM_PER_SQFT = 0.092903;
+const ROOM_SIZES: [string, string][] = [
+  ['living', 'Living room'], ['kitchen', 'Kitchen'], ['bedroom_master', 'Main bedroom'], ['bedroom', 'Other bedrooms'],
+  ['dining', 'Dining'], ['toilet', 'Bathrooms'],
+];
+
 export default function Questionnaire() {
   const router = useRouter();
   const [step, setStepRaw] = useState(0);
@@ -230,6 +236,18 @@ export default function Questionnaire() {
               <Toggle label="Terrace garden on top" checked={b.terrace_garden} onChange={(v) => set('terrace_garden', v)} />
               <Toggle label="Top floor as a rental unit" info="Separate kitchen and entry." checked={b.rental_floor} onChange={(v) => set('rental_floor', v)} />
               <Toggle label="We may add a floor later" info="Columns and footings are sized for it now, which costs a little more." checked={b.future_extra_floor} onChange={(v) => set('future_extra_floor', v)} />
+            </div>
+            <Header title="Room sizes (optional)" info="The smallest you would accept for each room. Leave blank and we size rooms to fit the plot. We never go below the building code; if your plot is tight, we may suggest compact rooms with fold-away furniture." />
+            <div className="grid gap-5 sm:grid-cols-2">
+              {ROOM_SIZES.map(([id, label]) => (
+                <NumberField key={id} label={label} unit="sq ft" min={0} max={600} step={10} placeholder="Any"
+                  value={b.room_sizes?.[id] ? Math.round(b.room_sizes[id] / SQM_PER_SQFT) : NaN}
+                  onChange={(v) => setB((x) => {
+                    const rs = { ...(x.room_sizes ?? {}) };
+                    if (Number.isFinite(v) && v > 0) rs[id] = +(v * SQM_PER_SQFT).toFixed(2); else delete rs[id];
+                    return { ...x, room_sizes: rs };
+                  })} />
+              ))}
             </div>
           </div>
         )}

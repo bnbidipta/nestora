@@ -51,6 +51,7 @@ def evaluate(brief: Brief, c: Dict[str, Any], prefs: Dict[str, float]) -> Dict[s
             "bedrooms": sum(1 for f in twin.floors for r in f.rooms if (r.type or "").startswith("bedroom")),
             "cost_inr": {k: tier[k]["total"] for k in ("low", "expected", "high")},
             "dropped": c["layout"]["dropped"],
+            "compact": brief.compact,
             "envelope_ft": [twin.metadata["envelope_width_ft"], twin.metadata["envelope_depth_ft"]],
         },
         "preview": _preview(c),
@@ -199,6 +200,12 @@ def start_options(house_id: str, seed: Optional[int] = None, background=None) ->
     seed = seed if seed is not None else random.randrange(1 << 30)
     prefs = twin.metadata.get("prefs", {})
     scored = _fast(brief, prefs, seed)
+    if not brief.compact and not _rank(scored):  # standard rooms don't fit: try compact rooms with fold-away furniture
+        cb = brief.model_copy(update={"compact": True})
+        cs = _fast(cb, prefs, seed)
+        if _rank(cs):
+            brief, scored = cb, cs
+            twin.metadata["brief"] = {**twin.metadata.get("brief", {}), "compact": True}
     fast = _rank(scored)
     if background and len(fast) >= FAST_SHOW:
         shown = _diverse(fast, FAST_SHOW, set())
@@ -215,6 +222,13 @@ def start_options(house_id: str, seed: Optional[int] = None, background=None) ->
         return {"success": True, "status": "choosing", "round": 1, "options": twin.metadata["options"], "pool_size": len(fast),
                 "pending": SOLVE}
     good = _rank(scored + _solved(brief, prefs, scored, seed))
+    if not good and not brief.compact:
+        cb = brief.model_copy(update={"compact": True})
+        cs = _fast(cb, prefs, seed)
+        good = _rank(cs + _solved(cb, prefs, cs, seed))
+        if good:
+            brief = cb
+            twin.metadata["brief"] = {**twin.metadata.get("brief", {}), "compact": True}
     if not good:
         twin.status = "infeasible"
         twin.metadata["infeasible_reason"] = infeasible_reason(brief)

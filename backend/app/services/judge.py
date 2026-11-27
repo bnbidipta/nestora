@@ -130,10 +130,18 @@ class JudgeService:
         hab_min = r["habitable_min_m2"] / SQFT
         hab_w = r["habitable_min_width_m"] / FT
         has_elder = twin.family.elders > 0
+        # code: one habitable room must meet the full minimum; any others may meet the (smaller) second-room minimum
+        habs = [rm for fl in twin.floors for rm in fl.rooms
+                if _kind(rm.name, rm.type) in HABITABLE and _kind(rm.name, rm.type) not in ("study", "help")]
+        biggest = max(habs, key=lambda rm: rm.area_sqft, default=None)
         for floor in twin.floors:
             for room in floor.rooms:
                 k = _kind(room.name, room.type)
                 short = min(room.length_ft, room.width_ft)
+                if room is biggest:
+                    hab_min, hab_w = r["habitable_min_m2"] / SQFT, r["habitable_min_width_m"] / FT
+                else:
+                    hab_min, hab_w = r["habitable_other_m2"] / SQFT, r["habitable_other_width_m"] / FT
                 if k in HABITABLE and k not in ("study", "help"):
                     if room.area_sqft < hab_min * (1 - TOL):
                         result.add_failure("B_MIN_HABITABLE_AREA", f"{room.name} is {room.area_sqft:.0f} sqft; habitable rooms need {hab_min:.0f} sqft.")

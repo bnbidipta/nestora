@@ -172,6 +172,22 @@
       "confidence": "high",
       "notes": "Minimum clear width of habitable room (approx 7 ft 10 in)."
     },
+    "habitable_other_area_m2": {
+      "value": 7.5,
+      "unit": "m2",
+      "source": "NBC 2016 Part 3 Clause 8.1.1",
+      "verified": false,
+      "confidence": "medium",
+      "notes": "Where a dwelling has two or more habitable rooms, one must meet habitable_area_m2 and the others may be 7.5 m2 (approx 80.7 sqft)."
+    },
+    "habitable_other_min_width_m": {
+      "value": 2.1,
+      "unit": "m",
+      "source": "NBC 2016 Part 3 Clause 8.1.1",
+      "verified": false,
+      "confidence": "medium",
+      "notes": "Minimum width of the second and further habitable rooms."
+    },
     "kitchen_area_m2": {
       "value": 5.5,
       "unit": "m2",
