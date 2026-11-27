@@ -11,6 +11,7 @@ Soft: fill the footprint, bathrooms over bathrooms, close to the generator's pos
 Grid: 20 cm; a final pass grows rooms into any gap the solver left. Coordinates: x along the road, y away from it (front = 0), metres in the output.
 """
 import logging
+import os
 import random
 import threading
 from typing import Any, Dict, List, Optional
@@ -24,11 +25,15 @@ log = logging.getLogger(__name__)
 S = 5  # grid cells per metre (20 cm)
 DOOR = 5  # shared wall needed for a door, 1.0 m
 CIRC = ("passage", "lounge", "living", "dining", "entrance")
-TIME_LIMIT_S = 3.0
+TIME_LIMIT_S = float(os.environ.get("NESTORA_SOLVER_SECONDS", 3.0))
+WORKERS = int(os.environ.get("NESTORA_SOLVER_WORKERS", 8))
+CONTAIN = True  # upper floors inside the floor below
+HOLE_M2 = 0.4  # gaps inside a floor's footprint the solver may leave for the grow pass to close
 KEEP = ("store", "puja")
 # extra size caps (m2) for service rooms, so leftover space goes to the rooms people live in
 CAP = {"living": 30.0, "lounge": 18.0, "toilet": 5.5, "entrance": 5.0, "puja": 3.5, "store": 4.5, "laundry": 4.5, "balcony": 9.0, "porch": 40.0}
-GROWS = ("living", "dining", "kitchen", "lounge", "bedroom", "bedroom_master", "bedroom_elder", "study", "passage", "help")  # small rooms the old engine used to drop; the solver must find them a place
+GROWS = ("living", "dining", "kitchen", "lounge", "bedroom", "bedroom_master", "bedroom_elder", "study", "help")  # passages never grow
+PRIVATE = ("passage", "lounge", "entrance")  # what a private bedroom may open onto  # small rooms the old engine used to drop; the solver must find them a place
 
 
 def _rect(m, W, D, y_min, rm):
@@ -71,14 +76,17 @@ def _adjacent(m, a, b, door=DOOR):
     return adj
 
 
-def _needs(rm, floor_rooms):
-    """Which rooms this one must open onto (any one of them)."""
+def _needs(rm, floor_rooms, private=False):
+    """Which rooms this one must open onto (any one of them). Private: bedrooms and study only off a passage/lounge;
+    the elders' room is always private when its floor has a passage."""
     t, rid = rm["type"], rm["id"]
     of = lambda *types: [o for o in floor_rooms if o["type"] in types and o is not rm]
     if rid == "toilet_master":
         return of("bedroom_master")
     if rid == "toilet_elder":
         return of("bedroom_elder")
+    if t in ("bedroom", "bedroom_master", "bedroom_elder", "study") and (private or t == "bedroom_elder") and of(*PRIVATE):
+        return of(*PRIVATE)
     if t in ("bedroom", "bedroom_master", "bedroom_elder", "study", "help", "puja", "store", "toilet", "lift"):
         return of(*CIRC)
     if t == "kitchen":
@@ -108,14 +116,22 @@ def solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Optiona
         log.warning("solver busy; skipped")
         return None
     try:
-        return _solve(brief, strat, rng, hint, step_m, resize)
+        private = brief.bedroom_privacy == "private"
+        # then: floor area shared evenly (lower floors otherwise take what the top floor needs);
+        # last: no privacy rule (too tight for private passages, or the elders' one)
+        for priv, even in ((private, False), (private, True), (None, True)):
+            c = _solve(brief, strat, rng, hint, step_m, resize, priv, even)
+            if c is not None or (even and strat["floors"] == 1):
+                return c
+        return None
     finally:
         _LOCK.release()
 
 
 def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Optional[Dict[str, Any]] = None,
-           step_m: Optional[float] = None, resize: Optional[Dict[str, tuple]] = None) -> Optional[Dict[str, Any]]:
-    """A guaranteed plan for one strategy, near the generator candidate `hint` (its positions) when given.
+           step_m: Optional[float] = None, resize: Optional[Dict[str, tuple]] = None,
+           private: Optional[bool] = False, even: bool = False) -> Optional[Dict[str, Any]]:
+    """private: True/False as asked; None = no privacy rule at all (last resort). A guaranteed plan for one strategy, near the generator candidate `hint` (its positions) when given.
     Floors are solved bottom-up: the stair/lift position is chosen on the first floor and fixed above, and each
     upper floor sees the wet rooms below it, so bathrooms can stack."""
     W_m, D_m = brief.plot_width_ft * pack.FT, brief.plot_depth_ft * pack.FT
@@ -127,10 +143,12 @@ def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Option
     step = int(S * (step_m if step_m is not None else rng.choice([0, 0, 1.5, 2.5])))
     stair_box = pack.stair_box(r)
     hint_pos = {rm["id"]: rm for rm in hint["layout"]["rooms"]} if hint else {}
-    cap_left = int(W_m * D_m * r["fsi_max"] * S * S)
+    cap_left = cap_total = int(W_m * D_m * r["fsi_max"] * S * S)
     core = {}  # type -> fixed (x, y, w, h) once placed
     boxes, dropped = {}, []
     zone_y = {"front": 0.15, "middle": 0.5, "rear": 0.85}
+    opens = {}  # room id -> the room its door opens onto
+    rects = {}  # floor -> built footprint (x, y, w, h) in cells: one solid block, upper floors inside the one below
 
     for f in sorted({rm["floor"] for rm in rooms}):
         fr = [rm for rm in rooms if rm["floor"] == f]
@@ -160,6 +178,26 @@ def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Option
                 for k, val in (("x", h0["x"]), ("y", max(h0["y"] * S, fy0) / S), ("w", h0["w"]), ("h", h0["d"])):
                     m.AddHint(v[k], int(round(val * S)))
 
+        # the floor's built footprint: a solid rectangle the rooms tile with no holes (the FSI leftover stays open
+        # ground or terrace outside it); an upper floor stands inside the floor below, so its walls sit on walls
+        stilt_floor = f < first_living
+        lx, ly, lw, lh = rects.get(f - 1, (0, 0, W, D)) if CONTAIN else (0, 0, W, D)
+        if stilt_floor:
+            bx, by, bw, bd = (m.NewConstant(c) for c in (0, 0, W, D))
+        else:
+            bx, bw, bd = m.NewIntVar(lx, lx + lw, ""), m.NewIntVar(1, lw, ""), m.NewIntVar(1, D, "")
+            by = m.NewIntVar(max(fy0, ly), ly + lh, "") if f > first_living else m.NewConstant(0)  # ground floor starts at the front
+            m.Add(bx + bw <= lx + lw)
+            m.Add(by + bd <= ly + lh)
+            barea = m.NewIntVar(0, W * D, "")
+            m.AddMultiplicationEquality(barea, [bw, bd])
+        for rm in fr:
+            v, p = vars_[rm["id"]], present[rm["id"]]
+            m.Add(v["x"] >= bx).OnlyEnforceIf(p)
+            m.Add(v["x"] + v["w"] <= bx + bw).OnlyEnforceIf(p)
+            m.Add(v["y"] >= by).OnlyEnforceIf(p)
+            m.Add(v["y"] + v["h"] <= by + bd).OnlyEnforceIf(p)
+
         xs, ys = [], []
         for rm in fr:
             v, p = vars_[rm["id"]], present[rm["id"]]
@@ -169,23 +207,30 @@ def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Option
             xs.append(m.NewOptionalIntervalVar(v["x"], v["w"], ex, p, ""))
             ys.append(m.NewOptionalIntervalVar(v["y"], v["h"], ey, p, ""))
         m.AddNoOverlap2D(xs, ys)
+        st_, lf_ = (next((x for x in fr if x["type"] == t), None) for t in ("stair", "lift"))
+        if st_ and lf_ and "stair" not in core:  # one stair-and-lift core: the lift beside the stair, so upper floors stay compact
+            m.Add(_adjacent(m, vars_[st_["id"]], vars_[lf_["id"]], door=int(generator.LIFT_M * S)) == 1)
 
+        door_links = {}
         for rm in fr:  # reachability, outside walls, main door
             v, p = vars_[rm["id"]], present[rm["id"]]
-            need = _needs(rm, fr)
+            need = _needs(rm, fr) if private is None else _needs(rm, fr, private)
+            if private is None and rm["type"] == "bedroom_elder":
+                need = [o for o in fr if o["type"] in CIRC]
             if need:
                 links = []
                 for o in need:
                     a = _adjacent(m, v, vars_[o["id"]])
                     m.AddImplication(a, present[o["id"]])
                     links.append(a)
+                    door_links.setdefault(rm["id"], []).append((o["id"], a))
                 m.AddBoolOr(links).OnlyEnforceIf(p)
             if rm["ext"] and rm["type"] not in ("stair", "lift"):
                 e = [m.NewBoolVar("") for _ in range(4)]
-                m.Add(v["x"] == 0).OnlyEnforceIf(e[0])
-                m.Add(v["x"] + v["w"] == W).OnlyEnforceIf(e[1])
-                m.Add(v["y"] == fy0).OnlyEnforceIf(e[2])
-                m.Add(v["y"] + v["h"] == D).OnlyEnforceIf(e[3])
+                m.Add(v["x"] == bx).OnlyEnforceIf(e[0])
+                m.Add(v["x"] + v["w"] == bx + bw).OnlyEnforceIf(e[1])
+                m.Add(v["y"] == by).OnlyEnforceIf(e[2])
+                m.Add(v["y"] + v["h"] == by + bd).OnlyEnforceIf(e[3])
                 m.AddBoolOr(e).OnlyEnforceIf(p)
             if rm["type"] in ("porch", "entrance") or (rm["type"] == "living" and f == first_living and not any(x["type"] == "entrance" for x in fr)):
                 m.Add(v["y"] == 0).OnlyEnforceIf(p)
@@ -230,17 +275,21 @@ def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Option
         reserve = int(S * S * (1.15 * sum(need(x) for x in above if x["prio"] == 1 or x["type"] in ("stair", "lift", "toilet"))
                                + 6.0 * len({x["floor"] for x in above})))  # + a passage to reach them on each floor
         m.Add(sum(built) <= max(0, cap_left - reserve))
+        if even and f >= first_living:  # this floor's fair share of the house's floor area
+            m.Add(sum(built) <= int(cap_total * 1.1 / max(1, strat["floors"] - first_living)))
+        if not stilt_floor:  # no holes: the rooms cover the footprint (a little slack the grow pass fills)
+            m.Add(sum(eff.values()) >= barea - int(HOLE_M2 * S * S))
 
-        terms = [2 * eff[rm["id"]] for rm in fr]  # fill the footprint
+        terms = [(-1 if rm["type"] == "passage" else 2) * eff[rm["id"]] for rm in fr]  # fill the footprint with rooms, not corridor
         below = [boxes[x["id"]] for x in rooms if x["floor"] == f - 1 and x.get("wet") and x["id"] in boxes]
         for t in (x for x in fr if x["type"] == "toilet"):  # bathrooms over bathrooms (or the kitchen)
             a, hits = vars_[t["id"]], []
-            for bx, by, bw, bh in below:
+            for wx, wy, ww, wh in below:
                 s = m.NewBoolVar("")
-                m.Add(a["x"] + 3 <= bx + bw).OnlyEnforceIf(s)
-                m.Add(a["x"] + a["w"] >= bx + 3).OnlyEnforceIf(s)
-                m.Add(a["y"] + 3 <= by + bh).OnlyEnforceIf(s)
-                m.Add(a["y"] + a["h"] >= by + 3).OnlyEnforceIf(s)
+                m.Add(a["x"] + 3 <= wx + ww).OnlyEnforceIf(s)
+                m.Add(a["x"] + a["w"] >= wx + 3).OnlyEnforceIf(s)
+                m.Add(a["y"] + 3 <= wy + wh).OnlyEnforceIf(s)
+                m.Add(a["y"] + a["h"] >= wy + 3).OnlyEnforceIf(s)
                 hits.append(s)
             if hits:
                 stacked = m.NewBoolVar("")
@@ -262,7 +311,7 @@ def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Option
 
         sol = cp_model.CpSolver()
         sol.parameters.max_time_in_seconds = TIME_LIMIT_S
-        sol.parameters.num_workers = 8
+        sol.parameters.num_workers = WORKERS
         sol.parameters.random_seed = rng.randrange(1000)
         status = sol.Solve(m)
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
@@ -273,29 +322,47 @@ def _solve(brief: Brief, strat: Dict[str, Any], rng: random.Random, hint: Option
                 dropped.append(rm["id"])
                 continue
             boxes[rm["id"]] = [sol.Value(vars_[rm["id"]][k]) for k in ("x", "y", "w", "h")]
+            to = next((o for o, a in door_links.get(rm["id"], []) if sol.Value(a)), None)
+            if to:
+                opens[rm["id"]] = to
             if rm["type"] in ("stair", "lift"):
                 core.setdefault(rm["type"], boxes[rm["id"]])
+        rects[f] = tuple(sol.Value(c) for c in (bx, by, bw, bd))
         used = sum(boxes[x["id"]][2] * boxes[x["id"]][3] for x in fr if x["id"] in boxes and x["type"] not in generator.NON_FSI)
-        _grow(boxes, [rm for rm in fr if rm["id"] in boxes], W, D, step, first_living, budget=max(0, cap_left - reserve - used))
+        placed_here = [rm for rm in fr if rm["id"] in boxes]
+        budget = max(0, cap_left - reserve - used)
+        _grow(boxes, placed_here, rects[f], budget=budget)
+        used2 = sum(boxes[x["id"]][2] * boxes[x["id"]][3] for x in placed_here if x["type"] not in generator.NON_FSI)
+        # then any room but the stair/lift may close a leftover gap (within its own size cap)
+        _grow(boxes, placed_here, rects[f], budget=max(0, budget - (used2 - used)), types=tuple(t for t in generator.TYPES if t not in ("stair", "lift")))
         cap_left -= sum(boxes[x["id"]][2] * boxes[x["id"]][3] for x in fr if x["id"] in boxes and x["type"] not in generator.NON_FSI
                         and not (strat["stilt"] and f == 0 and x["type"] != "stair"))
 
+    return _candidate(rooms, boxes, rects, opens, dropped, strat, env, r, step, "private" if private else "open",
+                      hint["arrangement"] if hint else "solver", hint["id"] if hint else None, rng)
+
+
+def _candidate(rooms, boxes, rects, opens, dropped, strat, env, r, step, privacy, arrangement, parent, rng, engine="solver"):
+    """The plan as the rest of the app reads it (metres), from grid boxes (cells) and floor footprints."""
     placed = []
     for rm in rooms:
         if rm["id"] not in boxes:
             continue
         x, y, w, h = (val / S for val in boxes[rm["id"]])
         out = {k: val for k, val in rm.items() if k != "key"}
-        fy0 = step / S if rm["floor"] > first_living else 0
+        fx, fy, fw, fd = (c / S for c in rects[rm["floor"]])
+        if rm["id"] in opens:
+            out["opens_to"] = opens[rm["id"]]
         out.update(x=round(x, 3), y=round(y, 3), w=round(w, 3), d=round(h, 3),
-                   exterior=x < 1e-3 or abs(y - fy0) < 1e-3 or abs(x + w - W / S) < 1e-3 or abs(y + h - D / S) < 1e-3)
+                   exterior=abs(x - fx) < 1e-3 or abs(y - fy) < 1e-3 or abs(x + w - fx - fw) < 1e-3 or abs(y + h - fy - fd) < 1e-3)
         placed.append(out)
     stair = next((p for p in placed if p["type"] == "stair"), None)
     return {
-        "id": f"s{rng.randrange(16**6):06x}", "strategy": strat, "arrangement": hint["arrangement"] if hint else "solver", "jitter": 0,
+        "id": f"s{rng.randrange(16**6):06x}", "strategy": strat, "arrangement": arrangement, "jitter": 0,
         "layout": {"rooms": placed, "dropped": dropped, "depths": {}, "stair_left": bool(stair and stair["x"] < env["width_m"] / 2),
-                   "collapse": False, "stilt": strat["stilt"], "engine": "solver", "upper_step_m": step / S},
-        "envelope": env, "rules": r, "floors": strat["floors"], "parent": hint["id"] if hint else None,
+                   "collapse": False, "stilt": strat["stilt"], "engine": engine, "privacy": privacy, "upper_step_m": step / S,
+                   "footprints": {f: [round(c / S, 3) for c in rc] for f, rc in rects.items()}},
+        "envelope": env, "rules": r, "floors": strat["floors"], "parent": parent,
     }
 
 
@@ -304,30 +371,32 @@ def mirror(c: Dict[str, Any]) -> None:
     W = c["envelope"]["width_m"]
     for rm in c["layout"]["rooms"]:
         rm["x"] = round(W - rm["x"] - rm["w"], 3)
+    for fp in c["layout"].get("footprints", {}).values():
+        fp[0] = round(W - fp[0] - fp[2], 3)
     c["layout"]["stair_left"] = not c["layout"].get("stair_left", True)
 
 
-def _grow(boxes, rooms, W, D, step, first_living, budget=10**9):
-    """Extend rooms into empty space next to them (largest gain first) so the floor has no leftover holes,
-    within the FSI area still allowed (budget, in grid cells)."""
+def _grow(boxes, rooms, rect, budget=10**9, types=GROWS):
+    """Extend rooms into empty space next to them (largest gain first) so the footprint `rect` (x, y, w, h) has no
+    leftover holes, within the FSI area still allowed (budget, in grid cells)."""
+    X0, y0, RW, RH = rect
     by_floor = {}
     for rm in rooms:
         if rm["id"] in boxes:
             by_floor.setdefault(rm["floor"], []).append(rm)
     for f, fr in by_floor.items():
-        y0 = step if f > first_living else 0
         changed = True
         while changed:
             changed = False
             best = None
             for rm in fr:
-                if rm["type"] not in GROWS:
+                if rm["type"] not in types:
                     continue
                 x, y, w, h = boxes[rm["id"]]
-                cap = (generator.MAX_AREA.get(rm["type"]) or 60) * S * S * 1.15
+                cap = (generator.MAX_AREA.get(rm["type"]) or CAP.get(rm["type"]) or 60) * S * S * 1.15
                 others = [boxes[o["id"]] for o in fr if o is not rm]
                 for side in ("l", "r", "t", "b"):
-                    room_for = {"l": x, "r": W - x - w, "t": y - y0, "b": D - y - h}[side]
+                    room_for = {"l": x - X0, "r": X0 + RW - x - w, "t": y - y0, "b": y0 + RH - y - h}[side]
                     for o in others:
                         ox, oy, ow, oh = o
                         if side in ("l", "r") and oy < y + h and y < oy + oh:

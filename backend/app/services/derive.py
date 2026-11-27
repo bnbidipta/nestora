@@ -89,7 +89,7 @@ def build_floors(brief: Brief, cand: Dict[str, Any]) -> List[Floor]:
                 material_floor=_floor_material(rm["type"], st, brief),
                 x=round(rm["x"] / FT, 2), y=round(rm["y"] / FT, 2), is_ground_floor=f == 0,
                 has_attached_bath=rm["type"] in ("bedroom_master", "bedroom_elder"),
-                exterior=rm["exterior"], compass=generator.compass(rm, env, brief.facing),
+                exterior=rm["exterior"], compass=generator.compass(rm, env, brief.facing), opens_to=rm.get("opens_to"),
             ))
         h = pack.FLOOR_HEIGHT_M / FT
         floors.append(Floor(floor_no=f, floor_height_ft=round(h, 2), clear_height_ft=round(2.75 / FT, 2),

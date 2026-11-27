@@ -2,7 +2,7 @@
  * Turns the twin's room rectangles into one connected building: walls merged where rooms share them, door and window
  * openings cut in, slabs, a stair, a roof parapet. Pure geometry (plan feet), no three.js, so it can be checked on its own.
  * Plan: x along the road, y away from the road (front of the house at y = 0).
- * ponytail: doors sit near the start of the room's door wall; real door positions come with a full drawing set.
+ * Doors sit where the room meets the room it opens onto (the plan solver's choice), else near the start of the door wall.
  */
 export interface PRoom { name: string; type?: string | null; x: number; y: number; length_ft: number; width_ft: number; exterior?: boolean; window_area_sqft?: number; door_width_mm?: number }
 export type Kind = 'wall' | 'parapet' | 'slab' | 'step' | 'lining' | 'glass' | 'chhajja' | 'jaali' | 'plinth' | 'band' | 'pergola' | 'tank' | 'garden' | 'mumty' | 'rail'
@@ -99,7 +99,7 @@ function pitched(x0: number, y0: number, x1: number, y1: number, z0: number, for
   return out;
 }
 
-export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string | undefined, opts: { paint?: Record<string, { side: string; hex: string }[]>; terrace?: boolean; look?: Look; plot?: [number, number, number, number] } = {}) {
+export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string | undefined, opts: { paint?: Record<string, { side: string; hex: string }[]>; terrace?: boolean; look?: Look; plot?: [number, number, number, number]; doorSpan?: (room: string) => number[] | null | undefined } = {}) {
   const look = opts.look;
   const ex = look?.exterior;
   let mainDoor: { a: number; b: number; c: number } | null = null;
@@ -127,8 +127,10 @@ export function buildHouse(floors: FloorIn[], doorWall: (room: string) => string
         const main = ['entrance', 'living'].includes(t) && f.floor_no === 0;
         let e = es.find((x) => x.side === doorWall(r.name)) ?? es[0];
         if (isExt(e.horiz, e.c) && !main) e = [...es].filter((x) => !isExt(x.horiz, x.c)).sort((p, q) => (q.b - q.a) - (p.b - p.a))[0] ?? e;
-        const w = Math.min((r.door_width_mm ?? 900) / 304.8, e.b - e.a - 0.6);
-        if (w > 1.5 && t !== 'stair' && t !== 'lift') addOp(e.horiz, e.c, { a: e.a + 0.4, b: e.a + 0.4 + w, bottom: 0, top: DOOR_H });
+        const span = e.side === doorWall(r.name) ? opts.doorSpan?.(r.name) : null;  // where it meets the room it opens onto
+        const lo = span ? Math.max(e.a, span[0]) : e.a, hi = span ? Math.min(e.b, span[1]) : e.b;
+        const w = Math.min((r.door_width_mm ?? 900) / 304.8, hi - lo - 0.6);
+        if (w > 1.5 && t !== 'stair' && t !== 'lift') addOp(e.horiz, e.c, { a: lo + 0.3, b: lo + 0.3 + w, bottom: 0, top: DOOR_H });
         if (main && !mainDoor && e.side === 'front' && isExt(e.horiz, e.c)) mainDoor = { a: e.a + 0.4, b: e.a + 0.4 + w, c: e.c };
         if (t === 'stair' || t === 'lift') addOp(e.horiz, e.c, { a: e.a + 0.3, b: e.a + 0.3 + Math.min(3.2, e.b - e.a - 0.6), bottom: 0, top: DOOR_H });
       }

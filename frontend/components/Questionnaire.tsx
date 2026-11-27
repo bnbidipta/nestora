@@ -17,7 +17,7 @@ const DEFAULT: Brief = {
   build_type: 'new_plot', city: 'mumbai', plot_width_ft: 30, plot_depth_ft: 40, road_width_m: 9, facing: 'E', corner_plot: false,
   soil: 'black_cotton', floors_wanted: 2, parking: 'two_wheeler', cars: 0, two_wheelers: 1, flood_prone: false, future_extra_floor: false, lift: 'none', low_maintenance: false, budget_inr: 4000000, tier: 'standard', adults: 2, elders: 0, couples: 1, singles: 0, elder_couples: 0, elder_singles: 0, bedrooms: null,
   elder_mobility_issue: false, kids: 0, pets: false, wfh_people: 0, joint_family: false, rental_floor: false, puja: 'nook',
-  kitchen: 'closed', guest_room: false, help_room: false, laundry: false, store_room: false, master_dressing: false,
+  kitchen: 'closed', bedroom_privacy: 'private', guest_room: false, help_room: false, laundry: false, store_room: false, master_dressing: false,
   terrace_garden: false, traditions: { vaastu: 'soft' }, styles: [], styles_locked: false, free_text: '',
 };
 
@@ -217,6 +217,9 @@ export default function Questionnaire() {
               <NumberField label="Two-wheelers" value={b.two_wheelers} min={0} max={6} onChange={(v) => setB((x) => ({ ...x, two_wheelers: v, parking: parkingOf(x.cars, v) }))} />
               <Select label="Kitchen" value={b.kitchen} onChange={(v) => set('kitchen', v)}
                 options={[{ value: 'closed', label: 'Closed kitchen' }, { value: 'open', label: 'Open kitchen' }]} />
+              <Select label="Bedroom doors" value={b.bedroom_privacy} onChange={(v) => set('bedroom_privacy', v)}
+                info="A private passage gives more privacy; opening off the living room leaves more space for the rooms. Elders' rooms always get a passage where one fits."
+                options={[{ value: 'private', label: 'Off a private passage' }, { value: 'open', label: 'Can open off the living room' }]} />
               <Select label="Puja / prayer space" value={b.puja} onChange={(v) => set('puja', v)}
                 options={[{ value: 'none', label: 'None' }, { value: 'nook', label: 'A corner or niche' }, { value: 'room', label: 'A separate room' }]} />
               <Toggle label="Guest bedroom" checked={b.guest_room} onChange={(v) => set('guest_room', v)} />

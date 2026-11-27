@@ -42,6 +42,8 @@ class Brief(BaseModel):
     joint_family: bool = False
     rental_floor: bool = False
     puja: Literal["none", "nook", "room"] = "nook"
+    # private: bedrooms and the study open off a passage or lounge; open: they may also open off living/dining (less corridor)
+    bedroom_privacy: Literal["private", "open"] = "private"
     kitchen: Literal["closed", "open"] = "closed"  # open: kitchen + dining flow into living, no separate dining room
     guest_room: bool = False
     help_room: bool = False  # live-in domestic help

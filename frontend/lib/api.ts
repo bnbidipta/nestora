@@ -119,6 +119,7 @@ export interface Brief {
   rental_floor: boolean;
   puja: 'none' | 'nook' | 'room';
   kitchen: 'closed' | 'open';
+  bedroom_privacy: 'private' | 'open';
   dining_seats?: number;
   guest_room: boolean;
   help_room: boolean;
