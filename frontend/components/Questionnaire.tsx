@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 const PlotHouse3D = dynamic(() => import('@/components/landing/PlotHouse3D'), { ssr: false });
 import { ArrowLeft, ArrowRight, Check, Loader2, MapPin, Sparkles } from 'lucide-react';
 import {
-  Brief, StyleEntry, Strictness, createHouse, extractBrief, getStyles, getTraditions, joinWaitlist, saveBrief,
+  Brief, StyleEntry, Strictness, createHouse, extractBrief, getStyles, getTraditions, joinWaitlist, plotCheck, saveBrief,
 } from '@/lib/api';
 import { InfoTip, NumberField, Select, TextArea, Toggle } from '@/components/form';
 import { track } from '@/lib/analytics';
@@ -89,7 +89,15 @@ export default function Questionnaire() {
   // ponytail: a 2-floor house with elders defaults to a lift once; the user can still turn it off.
   const hasElders = elderCount > 0;
   useEffect(() => { if (hasElders && b.floors_wanted === 2) setB((x) => (x.lift === 'none' ? { ...x, lift: 'lift' } : x)); }, [hasElders, b.floors_wanted]);
-  const plotOk = b.plot_width_ft >= 15 && b.plot_depth_ft >= 15 && b.plot_width_ft <= 200 && b.plot_depth_ft <= 300;
+  const sizeOk = b.plot_width_ft >= 15 && b.plot_depth_ft >= 15 && b.plot_width_ft <= 200 && b.plot_depth_ft <= 300;
+  // can the smallest home fit at all after the required setbacks? checked as the plot is typed
+  const [fit, setFit] = useState<{ ok: boolean; reason: string } | null>(null);
+  useEffect(() => {
+    if (!sizeOk) return setFit(null);
+    const t = setTimeout(() => plotCheck(b.plot_width_ft, b.plot_depth_ft, b.road_width_m).then(setFit).catch(() => setFit(null)), 400);
+    return () => clearTimeout(t);
+  }, [sizeOk, b.plot_width_ft, b.plot_depth_ft, b.road_width_m]);
+  const plotOk = sizeOk && fit?.ok !== false;
   const outsidePilot = b.build_type !== 'new_plot' || b.city !== 'mumbai';
   const groups = useMemo(() => [POPULAR, ...Array.from(new Set(styles.map((s) => s.group)))], [styles]);
 
@@ -172,7 +180,8 @@ export default function Questionnaire() {
                 options={[{ value: 'mumbai', label: 'Mumbai' }, { value: 'pune', label: 'Pune (coming soon)' }, { value: 'bengaluru', label: 'Bengaluru (coming soon)' },
                   { value: 'delhi', label: 'Delhi NCR (coming soon)' }, { value: 'other', label: 'Somewhere else (coming soon)' }]} />
               <PlotSize widthFt={b.plot_width_ft} lengthFt={b.plot_depth_ft} onChange={(w, l) => setB((x) => ({ ...x, plot_width_ft: w, plot_depth_ft: l }))} />
-              {!plotOk && <p role="alert" className="text-sm text-red-700 sm:col-span-2">The plot must be 15–200 ft (5–60 m) wide and 15–300 ft (5–90 m) long.</p>}
+              {!sizeOk && <p role="alert" className="text-sm text-red-700 sm:col-span-2">The plot must be 15–200 ft (5–60 m) wide and 15–300 ft (5–90 m) long.</p>}
+              {sizeOk && fit && !fit.ok && <p role="alert" className="text-sm text-red-700 sm:col-span-2">This plot is too small for a home, even a compact one-storey one. {fit.reason}</p>}
               <Select label="Which side of the plot is the road on?" value={roadDir}
                 onChange={(v) => { setRoadDir(v); set('facing', SNAP[v]); }}
                 options={[...DIRS.map(([value, label]) => ({ value: value as string, label })), { value: 'unsure', label: 'Not sure' }]} />

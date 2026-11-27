@@ -176,6 +176,8 @@ export const extractBrief = (text: string) =>
   call<{ fields: Partial<Brief>; evidence: Record<string, string>; questions: string[]; source: string }>(
     '/api/v1/brief/extract', { method: 'POST', body: JSON.stringify({ text }) });
 
+export const plotCheck = (w: number, d: number, road: number) =>
+  call<{ ok: boolean; buildable_m2: number; need_m2: number; envelope_m: [number, number]; reason: string }>(`/api/v1/plot-check?w=${w}&d=${d}&road=${road}`);
 export const getStyles = () => call<{ groups: string[]; styles: StyleEntry[] }>('/api/v1/styles');
 
 export const getTraditions = () =>

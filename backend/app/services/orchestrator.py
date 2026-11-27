@@ -177,6 +177,22 @@ def _diverse(items: List[Tuple[Dict[str, Any], Dict[str, Any]]], k: int, exclude
     return out
 
 
+def plot_check(w_ft: float, d_ft: float, road_m: float, city: str = "mumbai") -> Dict[str, Any]:
+    """Can the smallest home (one storey, one bedroom, compact rooms) fit this plot at all? Checked before the questionnaire
+    goes on, so a too-small plot is flagged where it is entered."""
+    from backend.app.services import pack
+    W, D = w_ft * FT, d_ft * FT
+    r = pack.rules(W, D, road_m, city)
+    env = pack.envelope(W, D, r)
+    b = Brief(plot_width_ft=w_ft, plot_depth_ft=d_ft, road_width_m=road_m, city=city, floors_wanted=1, singles=1, couples=0,
+              bedrooms=1, puja="none", parking="two_wheeler", compact=True)
+    need = sum(x["min_area"] for x in generator.program(b, r, 1, "two_wheeler", False) if x["prio"] == 1)
+    have = min(env["width_m"] * env["depth_m"], W * D * r["fsi_max"])
+    ok = have >= need and min(env["width_m"], env["depth_m"]) >= r["habitable_min_width_m"]
+    return {"ok": ok, "buildable_m2": round(env["width_m"] * env["depth_m"], 1), "need_m2": round(need, 1),
+            "envelope_m": [round(env["width_m"], 2), round(env["depth_m"], 2)], "reason": "" if ok else infeasible_reason(b)}
+
+
 def infeasible_reason(brief: Brief) -> str:
     from backend.app.services import pack
     W, D = brief.plot_width_ft * FT, brief.plot_depth_ft * FT
