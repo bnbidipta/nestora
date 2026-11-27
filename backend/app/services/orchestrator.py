@@ -90,6 +90,18 @@ def _solved(brief: Brief, prefs: Dict[str, float], scored, seed: int, on_each=No
     if not jobs:
         jobs = [{"strategy": s} for s in generator.strategies(brief, r)[:SOLVE]]
     rng = random.Random(seed)
+    from backend.app.services import library
+    try:  # pre-solved plans fitted to this plot (milliseconds); the live solver only runs when the library has none
+        lib = library.plans(brief, generator.strategies(brief, r), random.Random(seed))
+    except Exception:
+        log.warning("plan library failed", exc_info=True)
+        lib = []
+    if lib:
+        out = [(c, evaluate(brief, c, prefs)) for c in lib]
+        if on_each:
+            for i, x in enumerate(out):
+                on_each(x, len(out) - i - 1)
+        return out
 
     def one(i_h):
         i, h = i_h
